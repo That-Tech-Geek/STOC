@@ -41,7 +41,7 @@ def load_data(company_name, start_date, end_date, chunk_size=1000):
     for i in range(0, (end_date - start_date).days, chunk_size):
         start = start_date + timedelta(days=i)
         end = start + timedelta(days=chunk_size)
-        chunk = yf.download(company_name, start=start, end=end)
+        chunk = yf.download(company_name, start=start, end=end, timeout=120)
         data.append(chunk)
     return pd.concat(data, ignore_index=True)
 
