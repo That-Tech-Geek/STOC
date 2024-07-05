@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
-from alpha_vantage.timeseries import TimeSeries
+from googlefinance import getQuotes
 from datetime import date, timedelta
 
 st.markdown("""
@@ -41,32 +41,29 @@ def main():
     
     if company_name:
         try:
-            api_key = 'YOUR_API_KEY'  # Replace with your Alpha Vantage API key
-            ts = TimeSeries(key=api_key, output_format='pandas')
-            data, meta_data = ts.get_daily_adjusted(symbol=company_name, outputsize='full')
+            data = getQuotes(company_name)
+            df = pd.DataFrame(data)
             
-            st.write("Data since 1900-01-01 to date of usage:")
-            st.dataframe(data)
+            st.write("Data:")
+            st.dataframe(df)
             
-            data.to_csv(f'{company_name}.csv', mode='a', header=False, index=True)
+            df.to_csv(f'{company_name}.csv', mode='a', header=False, index=True)
             
-            columns = ['4. close', '5. adjusted close', '6. volume', '1. open']
-            column_titles = {'4. close': 'Closing Stock Prices', '5. adjusted close': 'Adjusted Closing Stock Prices', '6. volume': 'Share Trade Volume', '1. open': 'Opening Stock Prices'}
-            column_desc = {'4. close': 'The closing price of the stock at the end of the trading day.', 
-                        '5. adjusted close': 'The adjusted closing price of the stock at the end of the trading day, adjusted for dividends and splits.', 
-                        '6. volume': 'The number of shares traded during the day.',
-                        '1. open': 'The opening price of the stock at the beginning of the trading day.'}
+            columns = ['LastTradePrice', 'Volume', 'Open']
+            column_titles = {'LastTradePrice': 'Last Trade Price', 'Volume': 'Share Trade Volume', 'Open': 'Opening Price'}
+            column_desc = {'LastTradePrice': 'The last trade price of the stock.', 
+                        'Volume': 'The number of shares traded during the day.',
+                        'Open': 'The opening price of the stock.'}
             plot_descriptions = {
-                '4. close': 'This graph shows the trend of closing stock prices for the selected company over the specified time period.',
-                '5. adjusted close': 'This graph shows the trend of adjusted closing stock prices for the selected company over the specified time period.',
-                '6. volume': 'This graph shows the share trade volume for the selected company over the specified time period.',
-                '4. close-5. adjusted close': "This graph compares the trend of closing stock prices and adjusted closing stock prices for the selected company over the specified time period. This is important so that the investor can know about the dividend payouts of the stock. Contrary to popular belief, the majority of an investor's earnings come from dividend payouts, and not the resale value of the stock he/she holds.",
-                '4. close-1. open': "This graph compares the trend of closing stock prices and opening stock prices for the selected company over the specified time period. This is important so that the investor can know about the daily price movement of the stock."
+                'LastTradePrice': 'This graph shows the trend of last trade prices for the selected company.',
+                'Volume': 'This graph shows the share trade volume for the selected company.',
+                'Open': 'This graph shows the opening prices for the selected company.',
+                'LastTradePrice-Open': "This graph compares the trend of last trade prices and opening prices for the selected company."
             }
             
-            option = st.selectbox('Select a plot:', ['4. close', '5. adjusted close', '6. volume', '4. close-5. adjusted close', '4. close-1. open'])
+            option = st.selectbox('Select a plot:', ['LastTradePrice', 'Volume', 'Open', 'LastTradePrice-Open'])
             
-            if option == '4. close':
+            if option == 'LastTradePrice':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -78,9 +75,9 @@ def main():
                 ax.spines['right'].set_color('white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                ax.plot(data[option])
+                ax.plot(df[option])
                 st.pyplot(fig)
-            elif option == '5. adjusted close':
+            elif option == 'Volume':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -92,9 +89,9 @@ def main():
                 ax.spines['right'].set_color('white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                ax.plot(data[option])
+                ax.plot(df[option])
                 st.pyplot(fig)
-            elif option == '6. volume':
+            elif option == 'Open':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -106,9 +103,9 @@ def main():
                 ax.spines['right'].set_color('white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                ax.plot(data[option])
+                ax.plot(df[option])
                 st.pyplot(fig)
-            elif option == '4. close-5. adjusted close':
+            elif option == 'LastTradePrice-Open':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -120,24 +117,8 @@ def main():
                 ax.spines['right'].set_color('white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                ax.plot(data['4. close'], label='Close')
-                ax.plot(data['5. adjusted close'], label='Adj Close')
-                ax.legend()
-                st.pyplot(fig)
-            elif option == '4. close-1. open':
-                st.write(f"**You selected: {column_titles[option]}**")
-                st.write(f"{column_desc[option]}")
-                st.write(f"{plot_descriptions[option]}")
-                fig, ax = plt.subplots(figsize=(10,6))
-                plt.style.use('dark_background')  # Set dark background
-                ax.spines['bottom'].set_color('white')  # Set axis color
-                ax.spines['left'].set_color('white')
-                ax.spines['top'].set_color('white')
-                ax.spines['right'].set_color('white')
-                ax.tick_params(axis='x', colors='white')
-                ax.tick_params(axis='y', colors='white')
-                ax.plot(data['4. close'], label='Close')
-                ax.plot(data['1. open'], label='Open')
+                ax.plot(df['LastTradePrice'], label='Last Trade Price')
+                ax.plot(df['Open'], label='Opening Price')
                 ax.legend()
                 st.pyplot(fig)
         except Exception as e:
