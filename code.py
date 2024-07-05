@@ -40,7 +40,7 @@ def main():
     company_name = st.text_input("Enter a company ticker symbol:")
     
     if company_name:
-        data = yf.download(company_name, start='2000-01-01', end=date.today())
+        data = yf.download(company_name, start='2000-01-01', end=date.today(), progress=False)
         
         columns = ['Close', 'Adj Close', 'Volume', 'Open']
         column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume', 'Open': 'Opening Stock Prices'}
@@ -91,7 +91,7 @@ def main():
             st.write(f"{column_desc[option]}")
             st.write(f"{plot_descriptions[option]}")
             fig, ax = plt.subplots(figsize=(10,6))
-            plt.style.use('dark_background')  # Set dark background
+            plt.style.use('dark_background')  # Setdark background
             ax.spines['bottom'].set_color('white')  # Set axis color
             ax.spines['left'].set_color('white')
             ax.spines['top'].set_color('white')
