@@ -40,6 +40,7 @@ def main():
     company_name = st.text_input("Enter a company ticker symbol:")
     
     if company_name:
+        yf.shared._PROGRESS_BAR.disable()  # Add this line to disable the progress bar
         data = yf.download(company_name, start='2000-01-01', end=date.today())
         
         columns = ['Close', 'Adj Close', 'Volume', 'Open']
@@ -91,7 +92,7 @@ def main():
             st.write(f"{column_desc[option]}")
             st.write(f"{plot_descriptions[option]}")
             fig, ax = plt.subplots(figsize=(10,6))
-            plt.style.use('dark_background')  # Set dark background
+plt.style.use('dark_background')  # Set dark background
             ax.spines['bottom'].set_color('white')  # Set axis color
             ax.spines['left'].set_color('white')
             ax.spines['top'].set_color('white')
