@@ -49,7 +49,7 @@ def main():
                 start = f'{year}-01-01'
                 end = f'{year}-12-31' if year < end_date.year else end_date.strftime('%Y-%m-%d')
                 temp_data = yf.download(company_name + '.NS', start=start, end=end, progress=False)
-                st.write(temp_data)
+                st.title(f"stock data for {temp_data} from date of IPO to date of usage:")
                 data = pd.concat([data, temp_data])
 
             st.write("Data since 1900-01-01 to date of usage:")
