@@ -47,8 +47,17 @@ def main():
             ticker_symbol = company_data.loc[company_data["NAME OF COMPANY"] == company_name, "NSE CODE"].values[0]
             
             # Load data from GitHub
-            file_path = f"https://raw.githubusercontent.com/your-username/your-repo-name/main/{ticker_symbol}.csv"
-            data = pd.read_csv(file_path)
+            file_path1 = f"https://raw.githubusercontent.com/That-Tech-Geek/STOC/main/Datasets/{ticker_symbol}.csv"
+            file_path2 = f"https://raw.githubusercontent.com/That-Tech-Geek/STOC/main/datasets2/{ticker_symbol}.csv"
+            
+            try:
+                data = pd.read_csv(file_path1)
+            except FileNotFoundError:
+                try:
+                    data = pd.read_csv(file_path2)
+                except FileNotFoundError:
+                    st.write("Error: File not found in either path")
+                    return
             
             data['Date'] = pd.to_datetime(data['Date'], format='%Y-%m-%d')
             
@@ -105,7 +114,7 @@ def main():
                 st.pyplot(fig)  
             
             #... (rest of the code remains the same)
-        
+
         except Exception as e:
             st.write("Error:", str(e))
 
