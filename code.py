@@ -41,8 +41,17 @@ def main():
     
     if company_name:
         try:
-            data = yf.download(company_name + '.NS', start='2000-01-01', end=date.today(), progress=False)
-            st.write("Data since 2000-01-01 to date of usage:")
+            start_date = '1900-01-01'
+            end_date = date.today()
+            data = pd.DataFrame()
+
+            for year in range(1900, end_date.year + 1):
+                start = f'{year}-01-01'
+                end = f'{year}-12-31' if year < end_date.year else end_date.strftime('%Y-%m-%d')
+                temp_data = yf.download(company_name + '.NS', start=start, end=end, progress=False)
+                data = pd.concat([data, temp_data])
+
+            st.write("Data since 1900-01-01 to date of usage:")
             st.dataframe(data)
             
             columns = ['Close', 'Adj Close', 'Volume', 'Open']
@@ -135,8 +144,9 @@ def main():
                 ax.plot(data['Open'], label='Open')
                 ax.legend()
                 st.pyplot(fig)
-        except:
+        except Exception as e:
             st.write("Error: Unable to download data for the specified company. Please check the company ticker symbol and try again.")
+            st.write(str(e))
 
 if __name__ == '__main__':
     main()
