@@ -45,7 +45,7 @@ def main():
             end_date = date.today()
             data = pd.DataFrame()
 
-            for year in range(1900, end_date.year + 1):
+            for year in range(2000, end_date.year + 1):
                 start = f'{year}-01-01'
                 end = f'{year}-12-31' if year < end_date.year else end_date.strftime('%Y-%m-%d')
                 temp_data = yf.download(company_name + '.NS', start=start, end=end, progress=False)
