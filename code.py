@@ -42,6 +42,9 @@ def main():
     if company_name:
         data = yf.download(company_name, start='2000-01-01', end=date.today(), progress=False)
         
+        st.write("Data since 2000-01-01 to date of usage:")
+        st.write(data)
+        
         columns = ['Close', 'Adj Close', 'Volume', 'Open']
         column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume', 'Open': 'Opening Stock Prices'}
         column_desc = {'Close': 'The closing price of the stock at the end of the trading day.', 
@@ -91,7 +94,7 @@ def main():
             st.write(f"{column_desc[option]}")
             st.write(f"{plot_descriptions[option]}")
             fig, ax = plt.subplots(figsize=(10,6))
-            plt.style.use('dark_background')  # Setdark background
+            plt.style.use('dark_background')  # Set dark background
             ax.spines['bottom'].set_color('white')  # Set axis color
             ax.spines['left'].set_color('white')
             ax.spines['top'].set_color('white')
