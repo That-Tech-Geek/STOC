@@ -1,3 +1,4 @@
+python
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
@@ -20,7 +21,7 @@ body {
     background-color: #000000;
     color: #FFFFFF;
 }
-.stSidebar .stRadio {
+.stSidebar.stRadio {
     color: #FFFFFF;
 }
 .stButton {
