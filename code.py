@@ -3,6 +3,7 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import streamlit as st
 from datetime import date, timedelta
+from functools import lru_cache
 
 st.markdown("""
 <style>
@@ -34,6 +35,16 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
+@lru_cache(maxsize=32)
+def load_data(company_name, start_date, end_date, chunk_size=1000):
+    data = []
+    for i in range(0, (end_date - start_date).days, chunk_size):
+        start = start_date + timedelta(days=i)
+        end = start + timedelta(days=chunk_size)
+        chunk = yf.download(company_name, start=start, end=end)
+        data.append(chunk)
+    return pd.concat(data, ignore_index=True)
+
 def main():
     st.title("Welcome to S.T.O.C (Strategic Trading Optimization Console)!")
     
@@ -41,7 +52,10 @@ def main():
     
     if company_name:
         try:
-            data = yf.download(company_name, start=date.today() - timedelta(days=365), end=date.today())  # Download data from Yahoo Finance
+            start_date = date.today() - timedelta(days=365)
+            end_date = date.today()
+            
+            data = load_data(company_name, start_date, end_date)
             
             print("Data loaded:", data.head())
             
@@ -97,71 +111,60 @@ def main():
                 st.write(f"{plot_descriptions[option]}")
                 fig, ax = plt.subplots(figsize=(10,6))
                 plt.style.use('dark_background')  # Set dark background
-                ax.spines['bottom'].set_color('black')  # Set black border
-                ax.spines['left'].set_color('black')  # Set black border
-                ax.tick_params(axis='x', colors='white')  # Set white tick labels
-                ax.tick_params(axis='y', colors='white')  # Set white tick labels
-                ax.grid(True, color='white', linestyle='--', linewidth=0.5)  # Set white grid lines
-                ax.plot(data_filtered['Date'], data_filtered[option], color='blue')  # Set blue plot lines
-                ax.set_title(f'{company_name} {column_titles[option]} Over Time', color='white')  # Set white title
-                ax.set_xlabel('Date', color='white')  # Set white x-axis label
-                ax.set_ylabel(column_titles[option], color='white')  # Set white y-axis label
-                st.pyplot(fig)  # Move this line inside the loop to display each plot separately
-
+                ax.spines['bottom'].set_color('white')  # Set axis color
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_color('white')
+                ax.spines['right'].set_color('white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.plot(data_filtered['Date'], data_filtered['Close'])
+                st.pyplot(fig)
             elif option == 'Adj Close':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
                 fig, ax = plt.subplots(figsize=(10,6))
                 plt.style.use('dark_background')  # Set dark background
-                ax.spines['bottom'].set_color('black')  # Set black border
-                ax.spines['left'].set_color('black')  # Set black border
-                ax.tick_params(axis='x', colors='white')  # Set white tick labels
-                ax.tick_params(axis='y', colors='white')  # Set white tick labels
-                ax.grid(True, color='white', linestyle='--', linewidth=0.5)  # Set white grid lines
-                ax.plot(data_filtered['Date'], data_filtered[option], color='blue')  # Set blue plot lines
-                ax.set_title(f'{company_name} {column_titles[option]} Over Time', color='white')  # Set white title
-                ax.set_xlabel('Date', color='white')  # Set white x-axis label
-                ax.set_ylabel(column_titles[option], color='white')  # Set white y-axis label
-                st.pyplot(fig)  # Move this line inside the loop to display each plot separately
-
+                ax.spines['bottom'].set_color('white')  # Set axis color
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_color('white')
+                ax.spines['right'].set_color('white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.plot(data_filtered['Date'], data_filtered['Adj Close'])
+                st.pyplot(fig)
             elif option == 'Volume':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
                 fig, ax = plt.subplots(figsize=(10,6))
                 plt.style.use('dark_background')  # Set dark background
-                ax.spines['bottom'].set_color('black')  # Set black border
-                ax.spines['left'].set_color('black')  # Set black border
-                ax.tick_params(axis='x', colors='white')  # Set white tick labels
-                ax.tick_params(axis='y', colors='white')  # Set white tick labels
-                ax.grid(True, color='white', linestyle='--', linewidth=0.5)  # Set white grid lines
-                ax.bar(data_filtered['Date'], data_filtered[option], color='blue')  # Set blue plot lines
-                ax.set_title(f'{company_name} {column_titles[option]} Over Time', color='white')  # Set white title
-                ax.set_xlabel('Date', color='white')  # Set white x-axis label
-                ax.set_ylabel(column_titles[option], color='white')  # Set white y-axis label
-                st.pyplot(fig)  # Move this line inside the loop to display each plot separately
-
+                ax.spines['bottom'].set_color('white')  # Set axis color
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_color('white')
+                ax.spines['right'].set_color('white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.bar(data_filtered['Date'], data_filtered['Volume'])
+                st.pyplot(fig)
             elif option == 'Close-Adj Close':
-                st.write(f"**You selected: {column_titles['Close']} and {column_titles['Adj Close']}**")
-                st.write(f"{column_desc['Close']} and {column_desc['Adj Close']}")
+                st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{plot_descriptions[option]}")
                 fig, ax = plt.subplots(figsize=(10,6))
                 plt.style.use('dark_background')  # Set dark background
-                ax.spines['bottom'].set_color('black')  # Set black border
-                ax.spines['left'].set_color('black')  # Set black border
-                ax.tick_params(axis='x', colors='white')  # Set white tick labels
-                ax.tick_params(axis='y', colors='white')  # Set white tick labels
-                ax.grid(True, color='white', linestyle='--', linewidth=0.5)  # Set white grid lines
-                ax.plot(data_filtered['Date'], data_filtered['Close'], color='blue', label='Close')  # Set blue plot lines
-                ax.plot(data_filtered['Date'], data_filtered['Adj Close'], color='red', label='Adj Close')  # Set red plot lines
-                ax.set_title(f'{company_name} {column_titles["Close"]} and {column_titles["Adj Close"]} Over Time', color='white')  # Set white title
-                ax.set_xlabel('Date', color='white')  # Set white x-axis label
-                ax.set_ylabel('Price', color='white')  # Set white y-axis label
-                ax.legend()  # Add legend
-                st.pyplot(fig)  # Move this line inside the loop to display each plot separately
+                ax.spines['bottom'].set_color('white')  # Set axis color
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_color('white')
+                ax.spines['right'].set_color('white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.plot(data_filtered['Date'], data_filtered['Close'], label='Close')
+                ax.plot(data_filtered['Date'], data_filtered['Adj Close'], label='Adj Close')
+                ax.legend()
+                st.pyplot(fig)
+            
         except Exception as e:
-            st.write("Error:", str(e))
+            st.write(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
