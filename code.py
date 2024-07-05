@@ -49,11 +49,12 @@ def main():
                 start = f'{year}-01-01'
                 end = f'{year}-12-31' if year < end_date.year else end_date.strftime('%Y-%m-%d')
                 temp_data = yf.download(company_name + '.NS', start=start, end=end, progress=False)
-                st.title(f"stock data for {temp_data} from date of IPO to date of usage:")
                 data = pd.concat([data, temp_data])
 
             st.write("Data since 1900-01-01 to date of usage:")
             st.dataframe(data)
+            
+            data.to_csv(f'{company_name}.csv', mode='a', header=False, index=True)
             
             columns = ['Close', 'Adj Close', 'Volume', 'Open']
             column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume', 'Open': 'Opening Stock Prices'}
