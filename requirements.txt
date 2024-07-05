@@ -1,5 +1,5 @@
 pandas
-alpha_vantage.timeseries
+yfinance
 matplotlib
 streamlit
 datetime
