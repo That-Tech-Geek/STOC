@@ -164,3 +164,4 @@ def main():
             st.write("Error:", str(e))
 
 if __name__ == "__main__":
+    main()
