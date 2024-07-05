@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
-import yfinance as yf
+from alpha_vantage.timeseries import TimeSeries
 from datetime import date, timedelta
 
 st.markdown("""
@@ -41,38 +41,32 @@ def main():
     
     if company_name:
         try:
-            start_date = '1900-01-01'
-            end_date = date.today()
-            data = pd.DataFrame()
-
-            for year in range(2000, end_date.year + 1):
-                start = f'{year}-01-01'
-                end = f'{year}-12-31' if year < end_date.year else end_date.strftime('%Y-%m-%d')
-                temp_data = yf.download(company_name + '.NS', start=start, end=end, progress=False)
-                data = pd.concat([data, temp_data])
-
+            api_key = 'YOUR_API_KEY'  # Replace with your Alpha Vantage API key
+            ts = TimeSeries(key=api_key, output_format='pandas')
+            data, meta_data = ts.get_daily_adjusted(symbol=company_name, outputsize='full')
+            
             st.write("Data since 1900-01-01 to date of usage:")
             st.dataframe(data)
             
             data.to_csv(f'{company_name}.csv', mode='a', header=False, index=True)
             
-            columns = ['Close', 'Adj Close', 'Volume', 'Open']
-            column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume', 'Open': 'Opening Stock Prices'}
-            column_desc = {'Close': 'The closing price of the stock at the end of the trading day.', 
-                        'Adj Close': 'The adjusted closing price of the stock at the end of the trading day, adjusted for dividends and splits.', 
-                        'Volume': 'The number of shares traded during the day.',
-                        'Open': 'The opening price of the stock at the beginning of the trading day.'}
+            columns = ['4. close', '5. adjusted close', '6. volume', '1. open']
+            column_titles = {'4. close': 'Closing Stock Prices', '5. adjusted close': 'Adjusted Closing Stock Prices', '6. volume': 'Share Trade Volume', '1. open': 'Opening Stock Prices'}
+            column_desc = {'4. close': 'The closing price of the stock at the end of the trading day.', 
+                        '5. adjusted close': 'The adjusted closing price of the stock at the end of the trading day, adjusted for dividends and splits.', 
+                        '6. volume': 'The number of shares traded during the day.',
+                        '1. open': 'The opening price of the stock at the beginning of the trading day.'}
             plot_descriptions = {
-                'Close': 'This graph shows the trend of closing stock prices for the selected company over the specified time period.',
-                'Adj Close': 'This graph shows the trend of adjusted closing stock prices for the selected company over the specified time period.',
-                'Volume': 'This graph shows the share trade volume for the selected company over the specified time period.',
-                'Close-Adj Close': "This graph compares the trend of closing stock prices and adjusted closing stock prices for the selected company over the specified time period. This is important so that the investor can know about the dividend payouts of the stock. Contrary to popular belief, the majority of an investor's earnings come from dividend payouts, and not the resale value of the stock he/she holds.",
-                'Close-Open': "This graph compares the trend of closing stock prices and opening stock prices for the selected company over the specified time period. This is important so that the investor can know about the daily price movement of the stock."
+                '4. close': 'This graph shows the trend of closing stock prices for the selected company over the specified time period.',
+                '5. adjusted close': 'This graph shows the trend of adjusted closing stock prices for the selected company over the specified time period.',
+                '6. volume': 'This graph shows the share trade volume for the selected company over the specified time period.',
+                '4. close-5. adjusted close': "This graph compares the trend of closing stock prices and adjusted closing stock prices for the selected company over the specified time period. This is important so that the investor can know about the dividend payouts of the stock. Contrary to popular belief, the majority of an investor's earnings come from dividend payouts, and not the resale value of the stock he/she holds.",
+                '4. close-1. open': "This graph compares the trend of closing stock prices and opening stock prices for the selected company over the specified time period. This is important so that the investor can know about the daily price movement of the stock."
             }
             
-            option = st.selectbox('Select a plot:', ['Close', 'Adj Close', 'Volume', 'Close-Adj Close', 'Close-Open'])
+            option = st.selectbox('Select a plot:', ['4. close', '5. adjusted close', '6. volume', '4. close-5. adjusted close', '4. close-1. open'])
             
-            if option == 'Close':
+            if option == '4. close':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -86,7 +80,7 @@ def main():
                 ax.tick_params(axis='y', colors='white')
                 ax.plot(data[option])
                 st.pyplot(fig)
-            elif option == 'Adj Close':
+            elif option == '5. adjusted close':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -100,7 +94,7 @@ def main():
                 ax.tick_params(axis='y', colors='white')
                 ax.plot(data[option])
                 st.pyplot(fig)
-            elif option == 'Volume':
+            elif option == '6. volume':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -114,7 +108,7 @@ def main():
                 ax.tick_params(axis='y', colors='white')
                 ax.plot(data[option])
                 st.pyplot(fig)
-            elif option == 'Close-Adj Close':
+            elif option == '4. close-5. adjusted close':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -126,11 +120,11 @@ def main():
                 ax.spines['right'].set_color('white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                ax.plot(data['Close'], label='Close')
-                ax.plot(data['Adj Close'], label='Adj Close')
+                ax.plot(data['4. close'], label='Close')
+                ax.plot(data['5. adjusted close'], label='Adj Close')
                 ax.legend()
                 st.pyplot(fig)
-            elif option == 'Close-Open':
+            elif option == '4. close-1. open':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
@@ -142,8 +136,8 @@ def main():
                 ax.spines['right'].set_color('white')
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
-                ax.plot(data['Close'], label='Close')
-                ax.plot(data['Open'], label='Open')
+                ax.plot(data['4. close'], label='Close')
+                ax.plot(data['1. open'], label='Open')
                 ax.legend()
                 st.pyplot(fig)
         except Exception as e:
