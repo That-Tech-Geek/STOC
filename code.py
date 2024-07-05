@@ -2,8 +2,8 @@ python
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import yfinance as yf
 from datetime import date, timedelta
-from functools import lru_cache
 
 st.markdown("""
 <style>
@@ -41,21 +41,23 @@ def main():
     company_name = st.text_input("Enter a company ticker symbol:")
     
     if company_name:
-        st.write(f"https://github.com/That-Tech-Geek/STOC/blob/main/Datasets/{company_name}.csv")
+        data = yf.download(company_name, start='2000-01-01', end=date.today())
         
-        columns = ['Close', 'Adj Close', 'Volume']
-        column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume'}
+        columns = ['Close', 'Adj Close', 'Volume', 'Open']
+        column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume', 'Open': 'Opening Stock Prices'}
         column_desc = {'Close': 'The closing price of the stock at the end of the trading day.', 
                     'Adj Close': 'The adjusted closing price of the stock at the end of the trading day, adjusted for dividends and splits.', 
-                    'Volume': 'The number of shares traded during the day.'}
+                    'Volume': 'The number of shares traded during the day.',
+                    'Open': 'The opening price of the stock at the beginning of the trading day.'}
         plot_descriptions = {
             'Close': 'This graph shows the trend of closing stock prices for the selected company over the specified time period.',
             'Adj Close': 'This graph shows the trend of adjusted closing stock prices for the selected company over the specified time period.',
             'Volume': 'This graph shows the share trade volume for the selected company over the specified time period.',
-            'Close-Adj Close': "This graph compares the trend of closing stock prices and adjusted closing stock prices for the selected company over the specified time period. This is important so that the investor can know about the dividend payouts of the stock. Contrary to popular belief, the majority of an investor's earnings come from dividend payouts, and not the resale value of the stock he/she holds."
+            'Close-Adj Close': "This graph compares the trend of closing stock prices and adjusted closing stock prices for the selected company over the specified time period. This is important so that the investor can know about the dividend payouts of the stock. Contrary to popular belief, the majority of an investor's earnings come from dividend payouts, and not the resale value of the stock he/she holds.",
+            'Close-Open': "This graph compares the trend of closing stock prices and opening stock prices for the selected company over the specified time period. This is important so that the investor can know about the daily price movement of the stock."
         }
         
-        option = st.selectbox('Select a plot:', ['Close', 'Adj Close', 'Volume', 'Close-Adj Close'])
+        option = st.selectbox('Select a plot:', ['Close', 'Adj Close', 'Volume', 'Close-Adj Close', 'Close-Open'])
         
         if option == 'Close':
             st.write(f"**You selected: {column_titles[option]}**")
@@ -69,7 +71,7 @@ def main():
             ax.spines['right'].set_color('white')
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
-            # Plot the graph here
+            ax.plot(data[option])
             st.pyplot(fig)
         elif option == 'Adj Close':
             st.write(f"**You selected: {column_titles[option]}**")
@@ -83,7 +85,7 @@ def main():
             ax.spines['right'].set_color('white')
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
-            # Plot the graph here
+            ax.plot(data[option])
             st.pyplot(fig)
         elif option == 'Volume':
             st.write(f"**You selected: {column_titles[option]}**")
@@ -97,7 +99,7 @@ def main():
             ax.spines['right'].set_color('white')
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
-            # Plot thegraph here
+            ax.plot(data[option])
             st.pyplot(fig)
         elif option == 'Close-Adj Close':
             st.write(f"**You selected: {column_titles[option]}**")
@@ -111,7 +113,25 @@ def main():
             ax.spines['right'].set_color('white')
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
-            # Plot the graph here
+            ax.plot(data['Close'], label='Close')
+            ax.plot(data['Adj Close'], label='Adj Close')
+            ax.legend()
+            st.pyplot(fig)
+        elif option == 'Close-Open':
+            st.write(f"**You selected: {column_titles[option]}**")
+            st.write(f"{column_desc[option]}")
+            st.write(f"{plot_descriptions[option]}")
+            fig, ax = plt.subplots(figsize=(10,6))
+            plt.style.use('dark_background')  # Set dark background
+            ax.spines['bottom'].set_color('white')  # Set axis color
+            ax.spines['left'].set_color('white')
+            ax.spines['top'].set_color('white')
+            ax.spines['right'].set_color('white')
+            ax.tick_params(axis='x', colors='white')
+            ax.tick_params(axis='y', colors='white')
+            ax.plot(data['Close'], label='Close')
+            ax.plot(data['Open'], label='Open')
+            ax.legend()
             st.pyplot(fig)
 
 if __name__ == '__main__':
