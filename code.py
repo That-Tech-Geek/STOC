@@ -40,8 +40,7 @@ def main():
     company_name = st.text_input("Enter a company ticker symbol:")
     
     if company_name:
-        yf.shared._PROGRESS_BAR.disable()  # Add this line to disable the progress bar
-        data = yf.download(company_name, start='2000-01-01', end=date.today())
+        data = yf.download(company_name, start='2000-01-01', end=date.today(), threads=False)
         
         columns = ['Close', 'Adj Close', 'Volume', 'Open']
         column_titles = {'Close': 'Closing Stock Prices', 'Adj Close': 'Adjusted Closing Stock Prices', 'Volume': 'Share Trade Volume', 'Open': 'Opening Stock Prices'}
