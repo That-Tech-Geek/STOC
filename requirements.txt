@@ -1,5 +1,5 @@
 pandas
-googlefinance
+requests
 matplotlib
 streamlit
 datetime
