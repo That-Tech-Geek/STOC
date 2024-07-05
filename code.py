@@ -1,4 +1,3 @@
-python
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
@@ -21,7 +20,7 @@ body {
     background-color: #000000;
     color: #FFFFFF;
 }
-.stSidebar.stRadio {
+.stSidebar .stRadio {
     color: #FFFFFF;
 }
 .stButton {
@@ -90,6 +89,8 @@ def main():
                 data_filtered.to_csv(f"{company_name}_output.csv", index=False)
                 st.write("CSV file downloaded successfully!")
             
+            st.write(f"https://github.com/That-Tech-Geek/STOC/blob/main/Datasets/{company_name}.csv")
+            
             st.write(data_filtered)
             
             columns = ['Close', 'Adj Close', 'Volume']
@@ -110,6 +111,7 @@ def main():
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
                 st.write(f"{plot_descriptions[option]}")
+               
                 fig, ax = plt.subplots(figsize=(10,6))
                 plt.style.use('dark_background')  # Set dark background
                 ax.spines['bottom'].set_color('white')  # Set axis color
