@@ -59,34 +59,34 @@ def main():
         
         option = st.selectbox('Select a plot:', ['Close', 'Adj Close', 'Volume', 'Close-Adj Close', 'Close-Open'])
         
-        if option == 'Close':
-            st.write(f"**You selected: {column_titles[option]}**")
-            st.write(f"{column_desc[option]}")
-            st.write(f"{plot_descriptions[option]}")
-            fig, ax = plt.subplots(figsize=(10,6))
-            plt.style.use('dark_background')  # Set dark background
-            ax.spines['bottom'].set_color('white')  # Set axis color
-            ax.spines['left'].set_color('white')
-            ax.spines['top'].set_color('white')
-            ax.spines['right'].set_color('white')
-            ax.tick_params(axis='x', colors='white')
-            ax.tick_params(axis='y', colors='white')
-            ax.plot(data[option])
-            st.pyplot(fig)
-        elif option == 'Adj Close':
-            st.write(f"**You selected: {column_titles[option]}**")
-            st.write(f"{column_desc[option]}")
-            st.write(f"{plot_descriptions[option]}")
-            fig, ax = plt.subplots(figsize=(10,6))
-            plt.style.use('dark_background')  # Set dark background
-            ax.spines['bottom'].set_color('white')  # Set axis color
-            ax.spines['left'].set_color('white')
-            ax.spines['top'].set_color('white')
-            ax.spines['right'].set_color('white')
-            ax.tick_params(axis='x', colors='white')
-            ax.tick_params(axis='y', colors='white')
-            ax.plot(data[option])
-            st.pyplot(fig)
+            if option == 'Close':
+                st.write(f"**You selected: {column_titles[option]}**")
+                st.write(f"{column_desc[option]}")
+                st.write(f"{plot_descriptions[option]}")
+                fig, ax = plt.subplots(figsize=(10,6))
+                plt.style.use('dark_background')  # Set dark background
+                ax.spines['bottom'].set_color('white')  # Set axis color
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_color('white')
+                ax.spines['right'].set_color('white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.plot(data[option])
+                st.pyplot(fig)
+            elif option == 'Adj Close':
+                st.write(f"**You selected: {column_titles[option]}**")
+                st.write(f"{column_desc[option]}")
+                st.write(f"{plot_descriptions[option]}")
+                fig, ax = plt.subplots(figsize=(10,6))
+                plt.style.use('dark_background')  # Set dark background
+                ax.spines['bottom'].set_color('white')  # Set axis color
+                ax.spines['left'].set_color('white')
+                ax.spines['top'].set_color('white')
+                ax.spines['right'].set_color('white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.plot(data[option])
+                st.pyplot(fig)
             elif option == 'Volume':
                 st.write(f"**You selected: {column_titles[option]}**")
                 st.write(f"{column_desc[option]}")
@@ -100,7 +100,8 @@ def main():
                 ax.tick_params(axis='x', colors='white')
                 ax.tick_params(axis='y', colors='white')
                 ax.plot(data[option])
-    st.pyplot(fig)
+                st.pyplot(fig)
+                st.pyplot(fig)
 plt.style.use('dark_background')  # Set dark background
             ax.spines['bottom'].set_color('white')  # Set axis color
             ax.spines['left'].set_color('white')
