@@ -41,7 +41,7 @@ def load_data(company_name, start_date, end_date, chunk_size=1000):
     for i in range(0, (end_date - start_date).days, chunk_size):
         start = start_date + timedelta(days=i)
         end = start + timedelta(days=chunk_size)
-        chunk = yf.download(company_name, start=start, end=end, timeout=120)
+        chunk = yf.download(company_name, start=start, end=end, timeout=120, threads=1)  # Added threads=1
         data.append(chunk)
     return pd.concat(data, ignore_index=True)
 
@@ -111,7 +111,7 @@ def main():
                 st.write(f"{plot_descriptions[option]}")
                 fig, ax = plt.subplots(figsize=(10,6))
                 plt.style.use('dark_background')  # Set dark background
-                ax.spines['bottom'].set_color('white')  # Set axis color
+               ax.spines['bottom'].set_color('white')  # Set axis color
                 ax.spines['left'].set_color('white')
                 ax.spines['top'].set_color('white')
                 ax.spines['right'].set_color('white')
