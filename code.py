@@ -120,9 +120,6 @@ def download_data(ticker, exchange, start_date, end_date):
         df['Industry'] = data.get('industry', 'N/A')
         df['Market'] = data.get('market', 'N/A')
         df['QuoteType'] = data.get('quoteType', 'N/A')
-        df['Debt-to-Equity Ratio'] = data.get('debtToEquity', None)
-        df['Current Ratio'] = data.get('currentRatio', None)
-        df['Earning per Share'] = data.get('trailingEps', None)
         df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
         df['Dividend Yield'] = data.get('dividendYield', None)
 
@@ -134,6 +131,8 @@ def download_data(ticker, exchange, start_date, end_date):
 # Function to detect numeric columns
 def get_numeric_columns(df):
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    # Exclude specific columns from plotting
+    numeric_cols = [col for col in numeric_cols if col not in ['Debt-to-Equity Ratio', 'Current Ratio']]
     return numeric_cols
 
 # Function to plot time series and correlation graphs
@@ -160,7 +159,7 @@ def plot_graphs(df, numeric_cols):
 
 # Main function to run the app
 def main():
-    st.title("Welcome to STOC, the Stock Trading Optimisation Console")
+    st.title("Welome to STOC, the Share Trading Optimisation Console!")
 
     ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
     exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
@@ -188,6 +187,12 @@ def main():
                     st.write(numeric_cols)
 
                     plot_graphs(df, numeric_cols)
+
+                    # Save to CSV
+                    csv_file_path = f"{ticker}.csv"
+                    df.to_csv(csv_file_path, index=False)
+                    st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
+                    st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
                 else:
                     st.warning("No numeric columns found in the downloaded data.")
         else:
