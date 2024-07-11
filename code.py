@@ -160,7 +160,7 @@ def plot_graphs(df, numeric_cols):
 
 # Main function to run the app
 def main():
-    st.title("Company Data Downloader and Analyzer")
+    st.title("Welcome to STOC, the Stock Trading Optimisation Console")
 
     ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
     exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
