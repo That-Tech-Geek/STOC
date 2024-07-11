@@ -136,15 +136,22 @@ def get_numeric_columns(df):
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
     return numeric_cols
 
-# Function to edit numeric columns
-def edit_columns(numeric_cols):
-    edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
-    return edited_cols
+# Function to plot time series and correlation graphs
+def plot_graphs(df, numeric_cols):
+    if len(numeric_cols) > 1:
+        fig, axes = plt.subplots(len(numeric_cols), 1, figsize=(12, 6 * len(numeric_cols)))
 
-# Function to plot correlation graphs
-def plot_correlations(df, cols):
-    if len(cols) > 1:
-        corr = df[cols].corr()
+        for i, col in enumerate(numeric_cols):
+            axes[i].plot(df['Date'], df[col], label=col)
+            axes[i].set_xlabel('Date')
+            axes[i].set_ylabel(col)
+            axes[i].legend()
+        
+        plt.tight_layout()
+        st.pyplot(fig)
+
+        # Plot correlation heatmap
+        corr = df[numeric_cols].corr()
         fig, ax = plt.subplots(figsize=(10, 8))
         sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
         st.pyplot(fig)
@@ -174,20 +181,20 @@ def main():
             df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
 
             if not df.empty:
-                # Detect numeric columns
                 numeric_cols = get_numeric_columns(df)
 
                 if numeric_cols:
                     st.write("Numeric columns detected:")
                     st.write(numeric_cols)
 
-                    edited_cols = edit_columns(numeric_cols)
-
-                    if st.button("Generate Correlation Graphs"):
-                        plot_correlations(df, edited_cols)
+                    plot_graphs(df, numeric_cols)
                 else:
                     st.warning("No numeric columns found in the downloaded data.")
         else:
+            st.error("Please provide the ticker symbol and select the exchange.")
+
+if __name__ == "__main__":
+    main()
             st.error("Please provide the ticker symbol and select the exchange.")
 
 if __name__ == "__main__":
