@@ -121,7 +121,6 @@ def download_data(ticker, exchange, start_date, end_date):
         df['Market'] = data.get('market', 'N/A')
         df['QuoteType'] = data.get('quoteType', 'N/A')
         df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
-        df['Dividend Yield'] = data.get('dividendYield', None)
 
         return df
     else:
