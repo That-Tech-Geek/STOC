@@ -195,7 +195,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-            st.error("Please provide the ticker symbol and select the exchange.")
-
-if __name__ == "__main__":
-    main()
