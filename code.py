@@ -2,9 +2,14 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
 # Function to download data and calculate additional metrics
 def download_data(ticker, start_date, end_date):
+    # Convert start_date and end_date to datetime objects if not already
+    start_date = start_date.strftime('%Y-%m-%d')
+    end_date = end_date.strftime('%Y-%m-%d')
+    
     # Download historical data
     quote_summary = yf.download(ticker, start=start_date, end=end_date)
     
@@ -53,21 +58,38 @@ def plot_data(df):
 st.title("Company Data Downloader and Analyzer")
 
 # User input
-company_name = st.text_input("Enter the name of the company (case-insensitive):")
-exchange = st.selectbox("Select the exchange:", ["NASDAQ", "NSE"])
+ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
+exchange = st.selectbox("Select the exchange:", ["", "NYSE", "NASDAQ", "BSE", "NSE"])
+start_date = st.date_input("Enter the start date:")
+end_date = st.date_input("Enter the end date (optional):")
+
 submit_button = st.button("Submit")
 
 if submit_button:
-    if company_name and exchange:
-        company_name = company_name.strip().upper()
-        exchange = exchange.strip().upper()
+    if ticker and exchange:
+        ticker = ticker.strip().upper()
         
-        # Construct the ticker symbol
-        ticker = f"{company_name}.{exchange}"
+        # Add suffix for NSE
+        if exchange == "NSE":
+            ticker = f"{ticker}.NS"
+        
         st.write(f"Fetching data for ticker: {ticker}")
 
+        # Determine end date if not provided
+        if not end_date:
+            end_date = datetime.today().date()
+        else:
+            end_date = end_date
+        
+        # Determine start date if not provided
+        if not start_date:
+            # Default to 100 years ago from the end date
+            start_date = end_date - timedelta(days=365*100)
+        else:
+            start_date = start_date
+        
         # Download data
-        df = download_data(ticker, start_date="1924-01-01", end_date="2024-07-11")
+        df = download_data(ticker, start_date=start_date, end_date=end_date)
 
         if not df.empty:
             # Plot data
@@ -79,4 +101,4 @@ if submit_button:
             st.success(f"Data extracted and saved for {ticker}.")
             st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
     else:
-        st.error("Please provide both the company name and the exchange.")
+        st.error("Please provide the ticker symbol and select the exchange.")
