@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # Function to download data and calculate additional metrics
 def download_data(ticker, start_date, end_date):
@@ -50,15 +51,18 @@ def plot_data(df):
         st.line_chart(df.set_index('Date')[['Close', 'Adj Close']])
 
 # Streamlit app layout
-st.title("Welcome to STOC, The open-source Stock Visualiser!")
-st.write("In case you are unaware of the ticker of the company, feel free to look it up at https://docs.google.com/spreadsheets/d/e/2PACX-1vQCLhtWX-fxnIxqLGrUUgZNtstUvkYztRKHYegInZqTFfzCzXoUOT77nZ2o5DZn33b6g7ydCwH2Kea2/pubhtml")
+st.title("Company Data Downloader and Analyzer")
+
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
-exchange = st.selectbox("Select the exchange:", ["NASDAQ", "NSE"])
+exchange = st.selectbox("Select the exchange:", ["", "NYSE", "NASDAQ", "BSE", "NSE"])
+start_date = st.date_input("Enter the start date:")
+end_date = datetime.today().date()
+
 submit_button = st.button("Submit")
 
 if submit_button:
-    if ticker and exchange:
+    if ticker and exchange and start_date:
         ticker = ticker.strip().upper()
         
         # Add suffix for NSE
@@ -68,7 +72,7 @@ if submit_button:
         st.write(f"Fetching data for ticker: {ticker}")
 
         # Download data
-        df = download_data(ticker, start_date="1924-01-01", end_date="2024-07-04")
+        df = download_data(ticker, start_date=start_date, end_date=end_date)
 
         if not df.empty:
             # Plot data
@@ -80,4 +84,4 @@ if submit_button:
             st.success(f"Data extracted and saved for {ticker}.")
             st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
     else:
-        st.error("Please provide the ticker symbol and select the exchange.")
+        st.error("Please provide the ticker symbol, select the exchange, and enter the start date.")
