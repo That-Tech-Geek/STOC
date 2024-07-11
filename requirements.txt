@@ -1,5 +1,4 @@
-pandas
-requests
+streamlit 
+yfinance 
+pandas 
 matplotlib
-streamlit
-datetime
