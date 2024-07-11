@@ -108,7 +108,7 @@ def download_data(ticker, exchange, start_date, end_date):
     if suffix:
         ticker = f"{ticker}{suffix}"
 
-    quote_summary = yf.download(ticker, start=start_date, end=end_date)
+    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
 
     if not quote_summary.empty:
         t = yf.Ticker(ticker)
