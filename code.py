@@ -2,14 +2,15 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
+from datetime import datetime
+import seaborn as sns
 
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
     "NYSE": "",
     "NASDAQ": "",
     "BSE": "",
-    "NSE": ".NS",  # Example, actual suffix from the data provided
+    "NSE": ".NS",
     "Cboe Indices": ".CI",
     "Chicago Board of Trade (CBOT)***": ".CBT",
     "Chicago Mercantile Exchange (CME)***": ".CME",
@@ -103,22 +104,16 @@ exchange_suffixes = {
 
 # Function to download data and calculate additional metrics
 def download_data(ticker, exchange, start_date, end_date):
-    # Determine suffix based on exchange selection
     suffix = exchange_suffixes.get(exchange, "")
-
-    # Concatenate suffix to ticker if it's not empty
     if suffix:
         ticker = f"{ticker}{suffix}"
 
-    # Download historical data
     quote_summary = yf.download(ticker, start=start_date, end=end_date)
 
     if not quote_summary.empty:
-        # Extract financial data
         t = yf.Ticker(ticker)
         data = t.info
-        
-        # Create a DataFrame with day-wise data
+
         df = quote_summary.reset_index()
         df['Symbol'] = ticker
         df['Sector'] = data.get('sector', 'N/A')
@@ -130,7 +125,7 @@ def download_data(ticker, exchange, start_date, end_date):
         df['Earning per Share'] = data.get('trailingEps', None)
         df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
         df['Dividend Yield'] = data.get('dividendYield', None)
-        
+
         return df
     else:
         st.error("No data available for the given ticker.")
@@ -139,56 +134,101 @@ def download_data(ticker, exchange, start_date, end_date):
 # Function to plot data
 def plot_data(df):
     if not df.empty:
-        # Plotting Close Price
         fig, ax1 = plt.subplots(figsize=(12, 6))
         ax1.plot(df['Date'], df['Close'], label='Close Price', color='blue')
         ax1.set_xlabel('Date')
         ax1.set_ylabel('Close Price', color='blue')
         ax1.tick_params(axis='y', labelcolor='blue')
 
-        # Adding Variability Index on a secondary axis
         ax2 = ax1.twinx()
         ax2.plot(df['Date'], df['Variability Index'], label='Variability Index', color='green')
         ax2.set_ylabel('Variability Index', color='green')
         ax2.tick_params(axis='y', labelcolor='green')
 
-        # Adding titles and legends
         ax1.set_title(f"Stock Data Analysis for {df['Symbol'].iloc[0]}")
         fig.tight_layout()
         st.pyplot(fig)
 
-# Streamlit app layout
-st.title("Company Data Downloader and Analyzer")
+# Function to load CSV file
+def load_csv():
+    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        return df
+    return None
 
-# User input
-ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
-exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
-start_date = st.date_input("Enter the start date:")
-end_date = st.date_input("Enter the end date (optional):")
+# Function to detect numeric columns
+def get_numeric_columns(df):
+    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    return numeric_cols
 
-submit_button = st.button("Submit")
+# Function to edit numeric columns
+def edit_columns(numeric_cols):
+    edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
+    return edited_cols
 
-if submit_button:
-    if ticker and exchange:
-        ticker = ticker.strip().upper()
-        
-        st.write(f"Fetching data for ticker: {ticker} from exchange: {exchange}")
-
-        # Convert start_date and end_date to string format if not None
-        start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
-        end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
-
-        # Download data
-        df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
-
-        if not df.empty:
-            # Plot data
-            plot_data(df)
-            
-            # Save to CSV
-            csv_file_path = f"{ticker}.csv"
-            df.to_csv(csv_file_path, index=False)
-            st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
-            st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+# Function to plot correlation graphs
+def plot_correlations(df, cols):
+    if len(cols) > 1:
+        corr = df[cols].corr()
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+        st.pyplot(fig)
     else:
-        st.error("Please provide the ticker symbol and select the exchange.")
+        st.warning("Select at least two numeric columns to plot correlations.")
+
+# Main function to run the app
+def main():
+    st.title("Company Data Downloader and Analyzer")
+
+    ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
+    exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
+    start_date = st.date_input("Enter the start date:")
+    end_date = st.date_input("Enter the end date (optional):")
+
+    submit_button = st.button("Submit")
+
+    if submit_button:
+        if ticker and exchange:
+            ticker = ticker.strip().upper()
+
+            st.write(f"Fetching data for ticker: {ticker} from exchange: {exchange}")
+
+            start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
+            end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
+
+            df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
+
+            if not df.empty:
+                plot_data(df)
+
+                csv_file_path = f"{ticker}.csv"
+                df.to_csv(csv_file_path, index=False)
+                st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
+                st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+        else:
+            st.error("Please provide the ticker symbol and select the exchange.")
+
+    st.title("Correlation Graphs for Numeric Columns")
+
+    df = load_csv()
+
+    if df is not None:
+        st.write("DataFrame loaded successfully!")
+        numeric_cols = get_numeric_columns(df)
+
+        if numeric_cols:
+            st.write("Numeric columns detected:")
+            st.write(numeric_cols)
+
+            edited_cols = edit_columns(numeric_cols)
+
+            if st.button("Generate Correlation Graphs"):
+                plot_correlations(df, edited_cols)
+        else:
+            st.warning("No numeric columns found in the uploaded CSV file.")
+    else:
+        st.info("Please upload a CSV file to get started.")
+
+if __name__ == "__main__":
+    main()
