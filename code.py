@@ -50,20 +50,21 @@ def plot_data(df):
         st.line_chart(df.set_index('Date')[['Close', 'Adj Close']])
 
 # Streamlit app layout
-st.title("Company Data Downloader and Analyzer")
+st.title("Welcome to STOC, The open-source Stock Visualiser!")
 
 # User input
-company_name = st.text_input("Enter the name of the company (case-insensitive):")
+ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
 exchange = st.selectbox("Select the exchange:", ["NASDAQ", "NSE"])
 submit_button = st.button("Submit")
 
 if submit_button:
-    if company_name and exchange:
-        company_name = company_name.strip().upper()
-        exchange = exchange.strip().upper()
+    if ticker and exchange:
+        ticker = ticker.strip().upper()
         
-        # Construct the ticker symbol
-        ticker = f"{company_name}.{exchange}"
+        # Add suffix for NSE
+        if exchange == "NSE":
+            ticker = f"{ticker}.NS"
+        
         st.write(f"Fetching data for ticker: {ticker}")
 
         # Download data
@@ -79,4 +80,4 @@ if submit_button:
             st.success(f"Data extracted and saved for {ticker}.")
             st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
     else:
-        st.error("Please provide both the company name and the exchange.")
+        st.error("Please provide the ticker symbol and select the exchange.")
