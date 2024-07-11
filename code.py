@@ -51,7 +51,7 @@ def plot_data(df):
 
 # Streamlit app layout
 st.title("Welcome to STOC, The open-source Stock Visualiser!")
-
+st.write("In case you are unaware of the ticker of the company, feel free to look it up at https://docs.google.com/spreadsheets/d/e/2PACX-1vQCLhtWX-fxnIxqLGrUUgZNtstUvkYztRKHYegInZqTFfzCzXoUOT77nZ2o5DZn33b6g7ydCwH2Kea2/pubhtml")
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
 exchange = st.selectbox("Select the exchange:", ["NASDAQ", "NSE"])
