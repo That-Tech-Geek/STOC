@@ -131,24 +131,6 @@ def download_data(ticker, exchange, start_date, end_date):
         st.error("No data available for the given ticker.")
         return pd.DataFrame()
 
-# Function to plot data
-def plot_data(df):
-    if not df.empty:
-        fig, ax1 = plt.subplots(figsize=(12, 6))
-        ax1.plot(df['Date'], df['Close'], label='Close Price', color='blue')
-        ax1.set_xlabel('Date')
-        ax1.set_ylabel('Close Price', color='blue')
-        ax1.tick_params(axis='y', labelcolor='blue')
-
-        ax2 = ax1.twinx()
-        ax2.plot(df['Date'], df['Variability Index'], label='Variability Index', color='green')
-        ax2.set_ylabel('Variability Index', color='green')
-        ax2.tick_params(axis='y', labelcolor='green')
-
-        ax1.set_title(f"Stock Data Analysis for {df['Symbol'].iloc[0]}")
-        fig.tight_layout()
-        st.pyplot(fig)
-
 # Function to detect numeric columns
 def get_numeric_columns(df):
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
@@ -192,32 +174,21 @@ def main():
             df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
 
             if not df.empty:
-                plot_data(df)
+                # Detect numeric columns
+                numeric_cols = get_numeric_columns(df)
 
-                csv_file_path = f"{ticker}.csv"
-                df.to_csv(csv_file_path, index=False)
-                st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
-                st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+                if numeric_cols:
+                    st.write("Numeric columns detected:")
+                    st.write(numeric_cols)
+
+                    edited_cols = edit_columns(numeric_cols)
+
+                    if st.button("Generate Correlation Graphs"):
+                        plot_correlations(df, edited_cols)
+                else:
+                    st.warning("No numeric columns found in the downloaded data.")
         else:
             st.error("Please provide the ticker symbol and select the exchange.")
-
-    st.title("Correlation Graphs for Numeric Columns")
-
-    if 'df' in locals() and not df.empty:
-        numeric_cols = get_numeric_columns(df)
-
-        if numeric_cols:
-            st.write("Numeric columns detected:")
-            st.write(numeric_cols)
-
-            edited_cols = edit_columns(numeric_cols)
-
-            if st.button("Generate Correlation Graphs"):
-                plot_correlations(df, edited_cols)
-        else:
-            st.warning("No numeric columns found in the downloaded data.")
-    else:
-        st.info("Please download data to proceed with correlation analysis.")
 
 if __name__ == "__main__":
     main()
