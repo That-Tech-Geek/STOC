@@ -53,22 +53,21 @@ def plot_data(df):
 st.title("Company Data Downloader and Analyzer")
 
 # User input
-ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
-exchange = st.selectbox("Select the exchange:", ["", "NYSE", "NASDAQ", "BSE", "NSE"])
+company_name = st.text_input("Enter the name of the company (case-insensitive):")
+exchange = st.selectbox("Select the exchange:", ["NASDAQ", "NSE"])
 submit_button = st.button("Submit")
 
 if submit_button:
-    if ticker and exchange:
-        ticker = ticker.strip().upper()
+    if company_name and exchange:
+        company_name = company_name.strip().upper()
+        exchange = exchange.strip().upper()
         
-        # Add suffix for NSE
-        if exchange == "NSE":
-            ticker = f"{ticker}.NS"
-        
+        # Construct the ticker symbol
+        ticker = f"{company_name}.{exchange}"
         st.write(f"Fetching data for ticker: {ticker}")
 
         # Download data
-        df = download_data(ticker, start_date="1924-01-01", end_date="2024-07-04")
+        df = download_data(ticker, start_date="1924-01-01", end_date="2024-07-11")
 
         if not df.empty:
             # Plot data
@@ -80,4 +79,4 @@ if submit_button:
             st.success(f"Data extracted and saved for {ticker}.")
             st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
     else:
-        st.error("Please provide the ticker symbol and select the exchange.")
+        st.error("Please provide both the company name and the exchange.")
