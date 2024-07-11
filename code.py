@@ -149,14 +149,6 @@ def plot_data(df):
         fig.tight_layout()
         st.pyplot(fig)
 
-# Function to load CSV file
-def load_csv():
-    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        return df
-    return None
-
 # Function to detect numeric columns
 def get_numeric_columns(df):
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
@@ -211,10 +203,7 @@ def main():
 
     st.title("Correlation Graphs for Numeric Columns")
 
-    df = load_csv()
-
-    if df is not None:
-        st.write("DataFrame loaded successfully!")
+    if 'df' in locals() and not df.empty:
         numeric_cols = get_numeric_columns(df)
 
         if numeric_cols:
@@ -226,9 +215,9 @@ def main():
             if st.button("Generate Correlation Graphs"):
                 plot_correlations(df, edited_cols)
         else:
-            st.warning("No numeric columns found in the uploaded CSV file.")
+            st.warning("No numeric columns found in the downloaded data.")
     else:
-        st.info("Please upload a CSV file to get started.")
+        st.info("Please download data to proceed with correlation analysis.")
 
 if __name__ == "__main__":
     main()
