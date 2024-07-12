@@ -252,19 +252,19 @@ def main():
             st.write("Correlation Matrix:")
             corr = data.corr()
             fig, ax = plt.subplots(figsize=(12, 8))
-            sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax)
+            sns.heatmap(pd.DataFrame(corr), annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax)
             ax.set_title("Correlation Matrix")
             st.pyplot(fig)
             
             # Most correlated attributes
             st.write("Most Correlated Attributes:")
-            corr_matrix = corr.abs()
+            corr_matrix = pd.DataFrame(corr.abs())
             upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
             to_drop = [(column, other_column) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
             most_correlated = [(column, other_column, upper.loc[column, other_column]) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
             most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
             for column, other_column, correlation in most_correlated:
-                if column!= other_column:
+                if column != other_column:
                     st.write(f"{column} and {other_column} are correlated with a coefficient of {correlation:.2f}")
             
             # Investment assessment
@@ -287,7 +287,7 @@ def main():
             
             if assessment > 0:
                 st.write(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment: {assessment:.2f})")
-            else:
+else:
                 st.write(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment: {assessment:.2f})")
             
             # Download CSV button
