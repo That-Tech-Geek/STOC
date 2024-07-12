@@ -240,11 +240,25 @@ def main():
         st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
         data = fetch_data(symbol, exchange, start_date, end_date)
         vix_data = fetch_vix_data(start_date, end_date)
-        market_cap = fetch_market_cap_data(symbol, exchange)
         
         if not data.empty:
             st.write("Data Sample:")
             st.write(data.head())
+            
+            # Calculate daily returns
+            data['Return'] = data['Close'].pct_change()
+            
+            # Calculate volatility
+            data['Volatility'] = data['Return'].rolling(window=20).std() * (252 ** 0.5)
+            
+            # Calculate dividend yield
+            data['Dividend Yield'] = data['Dividends'] / data['Close'] * 100
+            
+            # Calculate market capitalization
+            data['Market Capitalization'] = ((data['High'] + data['Low']) / 2) * data['Volume']
+            
+            # Calculate compounded daily growth rate
+            data['Compounded Daily Growth Rate'] = (1 + data['Return']).cumprod()
             
             # Plotting parameters against time
             st.write("Plotting parameters against time:")
@@ -274,7 +288,7 @@ def main():
             most_correlated = [(column, other_column, upper.loc[column, other_column]) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
             most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
             for column, other_column, correlation in most_correlated:
-                if column != other_column:
+                if column!= other_column:
                     st.write(f"{column} and {other_column} are correlated with a coefficient of {correlation:.2f}")
             
             # Investment assessment
@@ -283,12 +297,13 @@ def main():
             
             # Weighted metrics
             metrics = [
-                ("Return on Investment (ROI)", data['Close'].pct_change().mean() * 100, 0.2),
-                ("Volatility", data['Close'].pct_change().std() * 100, 0.2),
+                ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.2),
+                ("Volatility", data['Volatility'].mean() * 100, 0.2),
                 ("Correlation with Market", corr.loc['Close', 'Market'], 0.1),
-                ("Dividend Yield", data['Dividends'].mean() / data['Close'].mean() * 100, 0.1),
+                ("Dividend Yield", data['Dividend Yield'].mean(), 0.1),
                 ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.1),
-                ("MarketCapitalization", market_cap / 1e9, 0.3)
+                ("Market Capitalization", data['Market Capitalization'].mean() / 1e9, 0.3),
+                ("Compounded Daily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.1)
             ]
             
             for metric, value, weight in metrics:
