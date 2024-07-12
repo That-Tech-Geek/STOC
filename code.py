@@ -137,7 +137,7 @@ def fetch_national_average(exchange, start_date, end_date):
     # Initialize an empty DataFrame
     national_avg_data = pd.DataFrame()
 
-    # Fetch data for each exchange suffix available in index_ticker_map
+    # Fetch data for each exchange suffix available in exchange_suffixes
     for exch, suffix in exchange_suffixes.items():
         if suffix:  # Only fetch if a suffix is provided
             index_ticker = f"{exch}{suffix}"
@@ -203,6 +203,10 @@ if submit_button:
 
         # Download data
         company_data = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
+        national_avg_data = fetch_national_average(exchange, start_date=start_date_str, end_date=end_date_str)
+
+        if not company_data.empty and not national_avg_data.empty:
+            plot_comparison(company_data, national_avg_data)
         national_avg_data = fetch_national_average(exchange, start_date=start_date_str, end_date=end_date_str)
 
         if not company_data.empty and not national_avg_data.empty:
