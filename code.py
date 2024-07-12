@@ -175,7 +175,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Company Data Downloader and Analyzer")
+st.title("Welcome to STOC, the Share Trading Optimisation Console!")
 
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
