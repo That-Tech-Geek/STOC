@@ -279,7 +279,7 @@ def main():
             st.pyplot(fig)
             
             # Most correlated attributes
-            st.write("Most Correlated Attributes:")
+            st.title("Most Correlated Attributes:")
             corr_matrix = pd.DataFrame(corr.abs())
             upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
             to_drop = [(column, other_column) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
@@ -290,7 +290,7 @@ def main():
                     st.write(f"{column} and {other_column} are correlated with a coefficient of {correlation:.2f}")
             
             # Investment assessment
-            st.write("Investment Assessment:")
+            st.title("Investment Assessment:")
             assessment = 0
             
             # Weighted metrics
@@ -310,9 +310,9 @@ def main():
                 st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
             
             if assessment > 0:
-                st.write(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment: {assessment:.2f})")
+                st.title(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment: {assessment:.2f})")
             else:
-                st.write(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment: {assessment:.2f})")
+                st.title(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment: {assessment:.2f})")
             
             # Download CSV button
             st.write("Download CSV Output:")
