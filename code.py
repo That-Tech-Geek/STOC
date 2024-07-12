@@ -100,121 +100,161 @@ exchange_suffixes = {
     "London Stock Exchange": ".L",
     "Caracas Stock Exchange": ".CR"
 }
-# Function to download data and calculate additional metrics
-def download_data(ticker, exchange, start_date, end_date):
-    # Determine suffix based on exchange selection
-    suffix = exchange_suffixes.get(exchange, "")
 
-    # Concatenate suffix to ticker if it's not empty
-    if suffix:
-        ticker = f"{ticker}{suffix}"
+# Dictionary mapping exchanges to their major indices or benchmarks
+exchange_indices = {
+    "NYSE": "S&P 500",
+    "NASDAQ": "NASDAQ Composite",
+    "BSE": "SENSEX",
+    "NSE": "NIFTY 50",
+    "Cboe Indices": "Cboe Volatility Index (VIX)",
+    "Chicago Board of Trade (CBOT)***": "S&P 500 VIX",
+    "Chicago Mercantile Exchange (CME)***": "CME Group",
+    "Dow Jones Indexes": "Dow Jones Industrial Average",
+    "Nasdaq Stock Exchange": "NASDAQ Composite",
+    "ICE Futures US": "Russell 2000",
+    "New York Commodities Exchange (COMEX)***": "COMEX Gold",
+    "New York Mercantile Exchange (NYMEX)***": "NYMEX Crude Oil",
+    "Options Price Reporting Authority (OPRA)": "OPRA Index",
+    "OTC Markets Group**": "OTCQX Best Market",
+    "S & P Indices": "S&P 500",
+    "Buenos Aires Stock Exchange (BYMA)": "MERVAL",
+    "Vienna Stock Exchange": "ATX",
+    "Australian Stock Exchange (ASX)": "S&P/ASX 200",
+    "Cboe Australia": "S&P/ASX 200 VIX",
+    "Euronext Brussels": "BEL 20",
+    "Sao Paolo Stock Exchange (BOVESPA)": "IBOVESPA",
+    "Canadian Securities Exchange": "S&P/TSX Composite",
+    "Cboe Canada": "S&P/TSX Composite VIX",
+    "Toronto Stock Exchange (TSX)": "S&P/TSX Composite",
+    "TSX Venture Exchange (TSXV)": "TSX Venture Composite",
+    "Santiago Stock Exchange": "IPSA",
+    "Shanghai Stock Exchange": "SSE Composite Index",
+    "Shenzhen Stock Exchange": "SZSE Component Index",
+    "Prague Stock Exchange Index": "PX",
+    "Nasdaq OMX Copenhagen": "OMX Copenhagen 25",
+    "Egyptian Exchange Index (EGID)": "EGX 30",
+    "Nasdaq OMX Tallinn": "OMX Tallinn",
+    "Cboe Europe": "EURO STOXX 50",
+    "Euronext": "Euronext 100",
+    "Nasdaq OMX Helsinki": "OMX Helsinki 25",
+    "Euronext Paris": "CAC 40",
+    "Berlin Stock Exchange": "DAX",
+    "Bremen Stock Exchange": "BREXIT",
+    "Dusseldorf Stock Exchange": "DAX",
+    "Frankfurt Stock Exchange": "DAX",
+    "Hamburg Stock Exchange": "BREXIT",
+    "Hanover Stock Exchange": "BREXIT",
+    "Munich Stock Exchange": "DAX",
+    "Stuttgart Stock Exchange": "BREXIT",
+    "Deutsche Boerse XETRA": "DAX",
+    "Collectable Indices": "COLLECT",
+    "Cryptocurrencies": "CRYPTO",
+    "Currency Rates": "CURRENCY",
+    "MSCI Indices": "MSCI",
+    "Athens Stock Exchange (ATHEX)": "ASE",
+    "Hang Seng Indices": "HANG SENG",
+    "Hong Kong Stock Exchange (HKEX)*": "HANG SENG",
+    "Budapest Stock Exchange": "BUX",
+    "Nasdaq OMX Iceland": "OMX",
+    "Bombay Stock Exchange": "BSE",
+    "National Stock Exchange of India": "NSE",
+    "Indonesia Stock Exchange (IDX)": "IDX",
+    "Euronext Dublin": "INDEX",
+    "Tel Aviv Stock Exchange": "TEL AVIV",
+    "EuroTLX": "EURO TLX",
+    "Italian Stock Exchange": "ITALY",
+    "Nikkei Indices": "NIKKEI",
+    "Tokyo Stock Exchange": "TOKYO",
+    "Boursa Kuwait": "KW",
+    "Nasdaq OMX Riga": "RIGA",
+    "Nasdaq OMX Vilnius": "VILNIUS",
+    "Malaysian Stock Exchange": "MALAYSIA",
+    "Mexico Stock Exchange (BMV)": "BMV",
+    "Euronext Amsterdam": "EUROPE",
+    "New Zealand Stock Exchange (NZX)": "NZX",
+    "Oslo Stock Exchange": "OSLO",
+    "Philippine Stock Exchange Indices": "PHILIPPINES",
+    "Warsaw Stock Exchange": "WSE",
+    "Euronext Lisbon": "LISBON",
+    "Qatar Stock Exchange": "QATAR",
+    "Bucharest Stock Exchange": "BUCHAREST",
+    "Singapore Stock Exchange (SGX)": "SGX",
+    "Johannesburg Stock Exchange": "JOHANNESBURG",
+    "Korea Stock Exchange": "KOREA",
+    "KOSDAQ": "KOSDAQ",
+    "Madrid SE C.A.T.S.": "MADRID",
+    "Saudi Stock Exchange (Tadawul)": "TADAWUL",
+    "Nasdaq OMX Stockholm": "OMX",
+    "Swiss Exchange (SIX)": "SIX",
+    "Taiwan OTC Exchange": "OTC",
+    "Taiwan Stock Exchange (TWSE)": "TWSE",
+    "Stock Exchange of Thailand (SET)": "SET",
+    "Borsa İstanbul": "ISTANBUL",
+    "Dubai Financial Market": "DFM",
+    "Cboe UK": "UK",
+    "FTSE Indices": "FTSE",
+    "London Stock Exchange": "LSE",
+    "Caracas Stock Exchange": "CARACAS"
+}
 
-    # Download historical data
-    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
+# Function to fetch data from Yahoo Finance
+def fetch_data(symbol, exchange):
+    ticker = symbol + exchange_suffixes[exchange]
+    data = yf.download(ticker, start='2020-01-01', end='2023-01-01')
+    return data
 
-    if not quote_summary.empty:
-        # Extract financial data
-        t = yf.Ticker(ticker)
-        data = t.info
+# Main function to run the Streamlit app
+def main():
+    st.title("Stock Data Analysis Tool")
+    
+    # Sidebar options
+    exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
+    symbol = st.sidebar.text_input("Enter Ticker Symbol (e.g., AAPL)")
+    
+    if st.sidebar.button("Get Data"):
+        st.write(f"Fetching data for {symbol} from {exchange}")
+        data = fetch_data(symbol, exchange)
         
-        # Create a DataFrame with day-wise data
-        df = quote_summary.reset_index()
-        df['Symbol'] = ticker
-        df['Sector'] = data.get('sector', 'N/A')
-        df['Industry'] = data.get('industry', 'N/A')
-        df['Market'] = data.get('market', 'N/A')
-        df['QuoteType'] = data.get('quoteType', 'N/A')
-        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
-        
-        return df
-    else:
-        st.error("No data available for the given ticker.")
-        return pd.DataFrame()
-
-# Function to plot data
-def plot_data(df):
-    if not df.empty:
-        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-        numeric_cols = [col for col in numeric_cols if col not in ['Debt-to-Equity Ratio', 'Current Ratio']]
-        
-        plt.style.use('dark_background')
-
-        for col in numeric_cols:
-            if col != 'Date':
-                st.subheader(f"Time Series of {col}")
-                fig, ax = plt.subplots()
-                ax.plot(df['Date'], df[col], color='blue')
-                ax.set_xlabel('Date', color='white')
-                ax.set_ylabel(col, color='white')
-                ax.set_title(f"{col} over Time", color='white')
-                ax.tick_params(axis='x', colors='white')
-                ax.tick_params(axis='y', colors='white')
-                ax.grid(True, color='white')
-                st.pyplot(fig)
-
-        if len(numeric_cols) > 1:
-            st.subheader("Correlation Heatmap")
-            corr = df[numeric_cols].corr()
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-            ax.set_facecolor('black')
-            st.pyplot(fig)
-    else:
-        st.warning("DataFrame is empty. No data to plot.")
-
-# Custom CSS to set background to black
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: black;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.title("Welcome to STOC, the Share Trading Optimisation Console!")
-
-# User input
-ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
-exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
-start_date = st.date_input("Enter the start date:")
-
-# Maximum possible end date
-end_date = st.date_input("Enter the end date (optional):", max_value=pd.Timestamp.today() + pd.DateOffset(years=10))
-
-submit_button = st.button("Submit")
-
-if submit_button:
-    if ticker and exchange:
-        ticker = ticker.strip().upper()
-        
-        st.write(f"Fetching data for ticker: {ticker} from exchange: {exchange}")
-
-        # Convert start_date and end_date to string format if not None
-        start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
-        end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
-
-        # Download data
-        df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
-
-        if not df.empty:
-            # Plot data
-            plot_data(df)
+        if not data.empty:
+            st.write("Data Sample:")
+            st.write(data.head())
             
-            # Save to CSV
-            csv_file_path = f"{ticker}.csv"
-            df.to_csv(csv_file_path, index=False)
-            st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
-            st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+            # Plotting parameters against time
+            st.write("Plotting parameters against time:")
+            columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
+            
+            for column in columns:
+                plt.figure(figsize=(10, 6))
+                plt.plot(data.index, data[column])
+                plt.title(f"{column} over Time")
+                plt.xlabel("Date")
+                plt.ylabel(column)
+                st.pyplot()
+            
+            # Correlation plot
+            st.write("Correlation Matrix:")
+            corr = data.corr()
+            plt.figure(figsize=(12, 8))
+            sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1)
+            plt.title("Correlation Matrix")
+            st.pyplot()
+            
+            # Output CSV with selected columns
+            st.write("CSV Output:")
+            selected_columns = st.multiselect("Select columns to include in CSV", data.columns)
+            if selected_columns:
+                selected_data = data[selected_columns]
+                st.write(selected_data.head())
+                st.markdown(get_csv_download_link(selected_data), unsafe_allow_html=True)
         else:
-            st.warning("No data available for the selected criteria.")
-    else:
-        st.error("Please provide the ticker symbol and select the exchange.")
+            st.write("No data found for the selected symbol and exchange.")
 
+# Function to create a download link for a DataFrame as CSV
+def get_csv_download_link(df):
+    csv = df.to_csv(index=False)
+    href = f'<a href="data:file/csv;base64,{b64encode(csv.encode()).decode()}" download="data.csv">Download CSV File</a>'
+    return href
 
-            else:
-                st.warning("No national averages data available.")
-        else:
-            st.error("No data available for the given ticker.")
+if __name__ == "__main__":
+    main()
