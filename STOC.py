@@ -320,8 +320,8 @@ def main():
                 st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
             
             if assessment > 1500:
-                st.title("We're expecting a decline in growth rate for this company, so we leave it upto you if you want to invest in it. However, we believe that this company holds secure investments which will most probably grow in the long term, so we assess that this is a stable investment. However, we advise that this stock be closely montitored so that no price crashes are missed by you. once daily should be about the right frequency.")
-            if assessment > 1000:
+                st.title("We anticipate a decline in growth rate for this company since it has grown to this extent, so we leave it upto you if you want to invest in it. However, we believe that this company holds secure investments which will most probably grow in the long term, so we assess that this is a stable investment. However, we advise that this stock be closely montitored so that no price crashes are missed by you. once daily should be about the right frequency.")
+            elif assessment > 1000:
                 st.title("This company is about most likely shooting for the stars, and we believe this is the right time to invest in this stock.")
             elif assessment > 150:  # increased threshold for investment recommendation
                 st.title(f"**We recommend strongly that you invest in this stock, since it has immense growth potential on the basis of our analysis**")
