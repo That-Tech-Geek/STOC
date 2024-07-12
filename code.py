@@ -302,26 +302,26 @@ def main():
             st.title("Investment Assessment:")
             assessment = 0
             
-            # Weighted metrics
+            # Weighted metrics (more emphasis on growth metrics)
             metrics = [
-                ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.2),
-                ("Volatility", data['Volatility'].mean() * 100, 0.2),
-                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.3),
+                ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.4),  # increased weightage
+                ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.3),  # increased weightage
                 ("Market Capitalization", market_cap / 1e9, 0.1),
-                ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.3)
+                ("Volatility", data['Volatility'].mean() * 100, 0.1),  # decreased weightage
+                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.1)  # decreased weightage
             ]
             
             if 'Market' in corr.columns:
-                metrics.append(("Correlation with Market", corr.loc['Close', 'Market'], 0.1))
+                metrics.append(("Correlation with Market", corr.loc['Close', 'Market'], 0.05))  # decreased weightage
             
             for metric, value, weight in metrics:
                 assessment += value * weight
                 st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
             
-            if assessment > 0:
-                st.title(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment: {assessment:.2f})")
+            if assessment > 1.5:  # increased threshold for investment recommendation
+                st.title(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment score: {assessment:.2f})")
             else:
-                st.title(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment: {assessment:.2f})")
+                st.title(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment score: {assessment:.2f})")
             
             # Download CSV button
             st.write("Download CSV Output:")
