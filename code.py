@@ -132,37 +132,6 @@ def download_data(ticker, exchange, start_date, end_date):
         st.error("No data available for the given ticker.")
         return pd.DataFrame()
 
-# Function to download data and calculate additional metrics
-def download_data(ticker, exchange, start_date, end_date):
-    # Determine suffix based on exchange selection
-    suffix = exchange_suffixes.get(exchange, "")
-
-    # Concatenate suffix to ticker if it's not empty
-    if suffix:
-        ticker = f"{ticker}{suffix}"
-
-    # Download historical data
-    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
-
-    if not quote_summary.empty:
-        # Extract financial data
-        t = yf.Ticker(ticker)
-        data = t.info
-        
-        # Create a DataFrame with day-wise data
-        df = quote_summary.reset_index()
-        df['Symbol'] = ticker
-        df['Sector'] = data.get('sector', 'N/A')
-        df['Industry'] = data.get('industry', 'N/A')
-        df['Market'] = data.get('market', 'N/A')
-        df['QuoteType'] = data.get('quoteType', 'N/A')
-        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
-        
-        return df
-    else:
-        st.error("No data available for the given ticker.")
-        return pd.DataFrame()
-
 # Function to fetch national average data
 def fetch_national_average(exchange, start_date, end_date):
     # Example: For simplicity, let's assume fetching a major index data for the selected exchange
@@ -185,16 +154,19 @@ def fetch_national_average(exchange, start_date, end_date):
 # Function to plot data
 def plot_data(df_company, df_national_avg):
     if not df_company.empty and not df_national_avg.empty:
-        # Plot company data
-        plt.figure(figsize=(12, 6))
-        plt.plot(df_company['Date'], df_company['Adj Close'], label=f"{df_company['Symbol'].iloc[0]}")
-        plt.plot(df_national_avg['Date'], df_national_avg['Adj Close'], label="National Average", linestyle='--')
-        plt.xlabel('Date')
-        plt.ylabel('Adjusted Close Price')
-        plt.title(f"{df_company['Symbol'].iloc[0]} vs National Average")
-        plt.legend()
-        st.pyplot()
-
+        # Check if 'Date' and 'Adj Close' columns exist in df_national_avg
+        if 'Date' in df_national_avg.columns and 'Adj Close' in df_national_avg.columns:
+            # Plot company data
+            plt.figure(figsize=(12, 6))
+            plt.plot(df_company['Date'], df_company['Adj Close'], label=f"{df_company['Symbol'].iloc[0]}")
+            plt.plot(df_national_avg['Date'], df_national_avg['Adj Close'], label="National Average", linestyle='--')
+            plt.xlabel('Date')
+            plt.ylabel('Adjusted Close Price')
+            plt.title(f"{df_company['Symbol'].iloc[0]} vs National Average")
+            plt.legend()
+            st.pyplot()
+        else:
+            st.error("Required columns 'Date' and/or 'Adj Close' not found in the national average data.")
     else:
         st.warning("No data available for comparison.")
 
