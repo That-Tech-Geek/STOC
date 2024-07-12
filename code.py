@@ -3,7 +3,6 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 import seaborn as sns
-import io
 
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
@@ -164,48 +163,6 @@ def plot_data(df):
     else:
         st.warning("DataFrame is empty. No data to plot.")
 
-# Function to detect numeric columns
-def get_numeric_columns(df):
-    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-    return numeric_cols
-
-# Function to edit numeric columns
-def edit_columns(numeric_cols):
-    edited_cols = st.multiselect("Select numeric columns to include", numeric_cols, default=numeric_cols)
-    return edited_cols
-
-# Function to plot correlation graphs
-def plot_correlations(df, cols):
-    try:
-        if len(cols) > 1:
-            corr = df[cols].corr()
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-            st.pyplot(fig)
-            
-            # Calculate and display correlation coefficients
-            corr_coefficients = corr.unstack().sort_values(ascending=False)
-            st.write("How the financial metrics are related:")
-            st.write(corr_coefficients)
-            
-            # Identify highly correlated columns
-            highly_correlated_cols = [(cols[i], cols[j]) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8 and i != j]
-            st.write("Financial metrics that are strongly linked:")
-            st.write(highly_correlated_cols)
-            
-            # Explain correlations
-            st.write("Positive correlation (+ve) means a direct relationship; negative correlation (-ve) means an inverse relationship.")
-            
-            # Simple weighting to determine good investment
-            weights = {col: abs(corr[col].sum()) for col in cols}
-            weighted_sum = sum(weights.values())
-            if weighted_sum > len(cols):
-                st.success("This appears to be a good investment based on the correlation metrics.")
-            else:
-                st.warning("This may not be a good investment based on the correlation metrics.")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-
 # Custom CSS to set background to black
 st.markdown(
     """
@@ -222,40 +179,34 @@ st.title("Welcome to STOC, the Share Trading Optimisation Console!")
 
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
-exchange = st.selectbox("Select the exchange", list(exchange_suffixes.keys()))
-start_date = st.date_input("Start date")
-end_date = st.date_input("End date")
+exchange = st.selectbox("Select the exchange:", list(exchange_suffixes.keys()))
+start_date = st.date_input("Enter the start date:")
+end_date = st.date_input("Enter the end date (optional):")
 
-if st.button("Fetch Data"):
-    data = download_data(ticker, exchange, start_date, end_date)
-    
-    # Save the dataframe to a CSV buffer
-    csv_buffer = io.StringIO()
-    data.to_csv(csv_buffer, index=False)
-    csv_buffer.seek(0)
+submit_button = st.button("Submit")
 
-    # Display the dataframe
-    st.subheader("Ticker Data")
-    st.dataframe(data)
-
-    # Upload CSV automatically
-    uploaded_file = csv_buffer.getvalue()
-    if uploaded_file:
-        st.subheader("CSV Uploaded Data")
-        df = pd.read_csv(io.StringIO(uploaded_file))
+if submit_button:
+    if ticker and exchange:
+        ticker = ticker.strip().upper()
         
-        # Detect and edit numeric columns
-        numeric_cols = get_numeric_columns(df)
-        edited_cols = edit_columns(numeric_cols)
-        
-        # Plot correlation graphs
-        plot_correlations(df, edited_cols)
+        st.write(f"Fetching data for ticker: {ticker} from exchange: {exchange}")
+
+        # Convert start_date and end_date to string format if not None
+        start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
+        end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
+
+        # Download data
+        df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
+
+        if not df.empty:
+            # Plot data
+            plot_data(df)
+            
+            # Save to CSV
+            csv_file_path = f"{ticker}.csv"
+            df.to_csv(csv_file_path, index=False)
+            st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
+        else:
+            st.warning("No data available for the selected criteria.")
     else:
-        st.error("Error in uploading CSV data.")
-
-# Plot data
-if 'data' in locals() and not data.empty:
-    plot_data(data)
-
-if __name__ == "__main__":
-    main()
+        st.error("Please provide the ticker symbol and select the exchange.")
