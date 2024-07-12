@@ -225,20 +225,20 @@ def main():
             columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
             
             for column in columns:
-                plt.figure(figsize=(10, 6))
-                plt.plot(data.index, data[column])
-                plt.title(f"{column} over Time")
-                plt.xlabel("Date")
-                plt.ylabel(column)
-                st.pyplot()
+                fig, ax = plt.subplots(figsize=(10, 6))
+                ax.plot(data.index, data[column])
+                ax.set_title(f"{column} over Time")
+                ax.set_xlabel("Date")
+                ax.set_ylabel(column)
+                st.pyplot(fig)
             
             # Correlation plot
             st.write("Correlation Matrix:")
             corr = data.corr()
-            plt.figure(figsize=(12, 8))
-            sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1)
-            plt.title("Correlation Matrix")
-            st.pyplot()
+            fig, ax = plt.subplots(figsize=(12, 8))
+            sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax)
+            ax.set_title("Correlation Matrix")
+            st.pyplot(fig)
             
             # Output CSV with selected columns
             st.write("CSV Output:")
