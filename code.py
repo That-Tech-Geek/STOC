@@ -159,6 +159,7 @@ def plot_data(df):
             corr = df[numeric_cols].corr()
             fig, ax = plt.subplots(figsize=(10, 8))
             sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+            ax.set_facecolor('black')
             st.pyplot(fig)
 
 # Streamlit app layout
