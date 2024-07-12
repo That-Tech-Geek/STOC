@@ -4,3 +4,4 @@ pandas
 matplotlib
 datetime
 seaborn
+base64
