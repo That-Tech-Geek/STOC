@@ -100,20 +100,67 @@ exchange_suffixes = {
     "London Stock Exchange": ".L",
     "Caracas Stock Exchange": ".CR"
 }
+# Function to download data and calculate additional metrics
+def download_data(ticker, exchange, start_date, end_date):
+    # Determine suffix based on exchange selection
+    suffix = exchange_suffixes.get(exchange, "")
 
-# Function to fetch national average data for each exchange suffix
-def fetch_national_averages(exchange_suffixes, start_date, end_date):
-    national_avg_data = pd.DataFrame()
+    # Concatenate suffix to ticker if it's not empty
+    if suffix:
+        ticker = f"{ticker}{suffix}"
 
-    for exchange, suffix in exchange_suffixes.items():
-        if suffix:
-            index_ticker = f"{exchange}{suffix}"
-            index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
-            if not index_data.empty:
-                index_data['Exchange'] = exchange
-                national_avg_data = pd.concat([national_avg_data, index_data], axis=0)
+    # Download historical data
+    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
 
-    return national_avg_data
+    if not quote_summary.empty:
+        # Extract financial data
+        t = yf.Ticker(ticker)
+        data = t.info
+        
+        # Create a DataFrame with day-wise data
+        df = quote_summary.reset_index()
+        df['Symbol'] = ticker
+        df['Sector'] = data.get('sector', 'N/A')
+        df['Industry'] = data.get('industry', 'N/A')
+        df['Market'] = data.get('market', 'N/A')
+        df['QuoteType'] = data.get('quoteType', 'N/A')
+        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
+        
+        return df
+    else:
+        st.error("No data available for the given ticker.")
+        return pd.DataFrame()
+
+# Function to plot data
+def plot_data(df):
+    if not df.empty:
+        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+        numeric_cols = [col for col in numeric_cols if col not in ['Debt-to-Equity Ratio', 'Current Ratio']]
+        
+        plt.style.use('dark_background')
+
+        for col in numeric_cols:
+            if col != 'Date':
+                st.subheader(f"Time Series of {col}")
+                fig, ax = plt.subplots()
+                ax.plot(df['Date'], df[col], color='blue')
+                ax.set_xlabel('Date', color='white')
+                ax.set_ylabel(col, color='white')
+                ax.set_title(f"{col} over Time", color='white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.grid(True, color='white')
+                st.pyplot(fig)
+
+        if len(numeric_cols) > 1:
+            st.subheader("Correlation Heatmap")
+            corr = df[numeric_cols].corr()
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+            ax.set_facecolor('black')
+            st.pyplot(fig)
+    else:
+        st.warning("DataFrame is empty. No data to plot.")
 
 # Custom CSS to set background to black
 st.markdown(
@@ -149,39 +196,23 @@ if submit_button:
         start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
         end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
 
-        # Download company data
-        company_data = yf.download(ticker, start=start_date_str, end=end_date_str, progress=False)
+        # Download data
+        df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
 
-        if not company_data.empty:
-            # Fetch national averages for each exchange suffix
-            national_avg_data = fetch_national_averages(exchange_suffixes, start_date=start_date_str, end_date=end_date_str)
+        if not df.empty:
+            # Plot data
+            plot_data(df)
+            
+            # Save to CSV
+            csv_file_path = f"{ticker}.csv"
+            df.to_csv(csv_file_path, index=False)
+            st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
+            st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+        else:
+            st.warning("No data available for the selected criteria.")
+    else:
+        st.error("Please provide the ticker symbol and select the exchange.")
 
-            if not national_avg_data.empty:
-                # Plot comparison with national averages
-                plt.figure(figsize=(12, 6))
-                plt.plot(company_data.index, company_data['Adj Close'], label=f"{ticker} - {exchange} Data")
-
-                for exch, suffix in exchange_suffixes.items():
-                    if suffix:
-                        avg_data = national_avg_data[national_avg_data['Exchange'] == exch]
-                        if not avg_data.empty:
-                            plt.plot(avg_data.index, avg_data['Adj Close'], label=f"{exch} - National Average", linestyle='--')
-
-                plt.xlabel('Date')
-                plt.ylabel('Adjusted Close Price')
-                plt.title(f"{ticker} vs National Averages")
-                plt.legend()
-                st.pyplot()
-
-                # Save company data to CSV
-                company_filename = f"{ticker}_{exchange}_data.csv"
-                company_data.to_csv(company_filename, index=True)
-                st.success(f"Company data saved to {company_filename}")
-
-                # Save national averages data to CSV
-                national_avg_filename = f"national_averages_data.csv"
-                national_avg_data.to_csv(national_avg_filename, index=True)
-                st.success(f"National averages data saved to {national_avg_filename}")
 
             else:
                 st.warning("No national averages data available.")
