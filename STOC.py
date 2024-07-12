@@ -228,7 +228,8 @@ def fetch_market_cap_data(symbol, exchange):
 
 # Main function to run the Streamlit app
 def main():
-    st.title("Stock Data Analysis Tool")
+    st.title("Welcome to STOC!")
+    st.write("STOC is your one-stop colution to all your investing questions!")
     
     # Sidebar options
     exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
