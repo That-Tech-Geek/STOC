@@ -204,6 +204,18 @@ def fetch_data(symbol, exchange, start_date, end_date):
     data = yf.download(ticker, start=start_date, end=end_date, progress=False)  # Suppress progress bar
     return data
 
+# Function to fetch volatility index data from Yahoo Finance
+def fetch_vix_data(start_date, end_date):
+    vix_data = yf.download("^VIX", start=start_date, end=end_date, progress=False)  # Suppress progress bar
+    return vix_data
+
+# Function to fetch market capitalization data from Yahoo Finance
+def fetch_market_cap_data(symbol, exchange):
+    ticker = symbol + exchange_suffixes[exchange]
+    info = yf.Ticker(ticker).info
+    market_cap = info["marketCap"]
+    return market_cap
+
 # Main function to run the Streamlit app
 def main():
     st.title("Stock Data Analysis Tool")
@@ -217,6 +229,8 @@ def main():
     if st.sidebar.button("Get Data"):
         st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
         data = fetch_data(symbol, exchange, start_date, end_date)
+        vix_data = fetch_vix_data(start_date, end_date)
+        market_cap = fetch_market_cap_data(symbol, exchange)
         
         if not data.empty:
             st.write("Data Sample:")
@@ -242,6 +256,40 @@ def main():
             ax.set_title("Correlation Matrix")
             st.pyplot(fig)
             
+            # Most correlated attributes
+            st.write("Most Correlated Attributes:")
+            corr_matrix = corr.abs()
+            upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+            to_drop = [(column, other_column) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
+            most_correlated = [(column, other_column, upper.loc[column, other_column]) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
+            most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
+            for column, other_column, correlation in most_correlated:
+                if column!= other_column:
+                    st.write(f"{column} and {other_column} are correlated with a coefficient of {correlation:.2f}")
+            
+            # Investment assessment
+            st.write("Investment Assessment:")
+            assessment = 0
+            
+            # Weighted metrics
+            metrics = [
+                ("Return on Investment (ROI)", data['Close'].pct_change().mean() * 100, 0.2),
+                ("Volatility", data['Close'].pct_change().std() * 100, 0.2),
+                ("Correlation with Market", corr.loc['Close', 'Market'], 0.1),
+                ("Dividend Yield", data['Dividends'].mean() / data['Close'].mean() * 100, 0.1),
+                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.1),
+                ("MarketCapitalization", market_cap / 1e9, 0.3)
+            ]
+            
+            for metric, value, weight in metrics:
+                assessment += value * weight
+                st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
+            
+            if assessment > 0:
+                st.write(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment: {assessment:.2f})")
+            else:
+                st.write(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment: {assessment:.2f})")
+            
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
@@ -251,4 +299,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
