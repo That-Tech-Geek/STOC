@@ -3,6 +3,7 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
