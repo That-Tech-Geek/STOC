@@ -198,6 +198,15 @@ exchange_indices = {
     "Caracas Stock Exchange": "^IBC"
 }
 
+market_cap_categories = {
+    "Mega-cap": 200e9,
+    "Large-cap": 10e9,
+    "Mid-cap": 2e9,
+    "Small-cap": 500e6,
+    "Micro-cap": 50e6,
+    "Nano-cap": 0
+}
+
 # Function to fetch data from Yahoo Finance
 def fetch_data(symbol, exchange, start_date, end_date):
     ticker = symbol + exchange_suffixes[exchange]
@@ -287,7 +296,7 @@ def main():
             
             if assessment > 0:
                 st.write(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment: {assessment:.2f})")
-else:
+            else:
                 st.write(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment: {assessment:.2f})")
             
             # Download CSV button
