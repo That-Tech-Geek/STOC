@@ -245,7 +245,7 @@ def main():
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
-            st.markdown(f"[Download CSV](data:text/csv;charset=utf-8,{csv})", unsafe_allow_html=True)
+            st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text/csv")
         else:
             st.write("No data found for the selected symbol and exchange.")
 
