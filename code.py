@@ -132,38 +132,38 @@ def download_data(ticker, exchange, start_date, end_date):
         st.error("No data available for the given ticker.")
         return pd.DataFrame()
 
-# Function to fetch national average data
-def fetch_national_average(exchange, start_date, end_date):
+# Function to fetch market average data for the selected exchange
+def fetch_market_average(exchange, start_date, end_date):
     # Initialize an empty DataFrame
-    national_avg_data = pd.DataFrame()
+    market_avg_data = pd.DataFrame()
 
-    # Fetch data for each exchange suffix available in exchange_suffixes
-    for exch, suffix in exchange_suffixes.items():
-        if suffix:  # Only fetch if a suffix is provided
-            index_ticker = f"{exch}{suffix}"
-            index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
-            if not index_data.empty:
-                index_data['Exchange'] = exch
-                national_avg_data = pd.concat([national_avg_data, index_data], axis=0)
+    # Fetch data for the selected exchange suffix
+    suffix = exchange_suffixes.get(exchange, "")
+    if suffix:  # Only fetch if a suffix is provided
+        index_ticker = f"{exchange}{suffix}"
+        index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
+        if not index_data.empty:
+            index_data['Exchange'] = exchange
+            market_avg_data = index_data
 
-    return national_avg_data
+    return market_avg_data
 
 # Function to plot comparison graph
-def plot_comparison(company_data, national_avg_data):
-    if not company_data.empty and not national_avg_data.empty:
-        plt.figure(figsize=(12, 6))
-        plt.plot(company_data['Date'], company_data['Adj Close'], label=f"{company_data['Symbol'].iloc[0]}")
+def plot_comparison(company_data, market_avg_data):
+    if not company_data.empty and not market_avg_data.empty:
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(company_data['Date'], company_data['Adj Close'], label=f"{company_data['Symbol'].iloc[0]}")
         
-        # Plot each national average by exchange
-        for exch in national_avg_data['Exchange'].unique():
-            exch_data = national_avg_data[national_avg_data['Exchange'] == exch]
-            plt.plot(exch_data.index, exch_data['Adj Close'], label=f"{exch} National Average", linestyle='--')
+        # Plot market average
+        ax.plot(market_avg_data.index, market_avg_data['Adj Close'], label=f"{market_avg_data['Exchange'].iloc[0]} Market Average", linestyle='--')
 
-        plt.xlabel('Date')
-        plt.ylabel('Adjusted Close Price')
-        plt.title(f"{company_data['Symbol'].iloc[0]} vs National Averages")
-        plt.legend()
-        st.pyplot()
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Adjusted Close Price')
+        ax.set_title(f"{company_data['Symbol'].iloc[0]} vs {market_avg_data['Exchange'].iloc[0]} Market Average")
+        ax.legend()
+
+        # Display plot using st.pyplot()
+        st.pyplot(fig)
     else:
         st.warning("No data available for comparison.")
 
@@ -203,11 +203,7 @@ if submit_button:
 
         # Download data
         company_data = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
-        national_avg_data = fetch_national_average(exchange, start_date=start_date_str, end_date=end_date_str)
+        market_avg_data = fetch_market_average(exchange, start_date=start_date_str, end_date=end_date_str)
 
-        if not company_data.empty and not national_avg_data.empty:
-            plot_comparison(company_data, national_avg_data)
-        national_avg_data = fetch_national_average(exchange, start_date=start_date_str, end_date=end_date_str)
-
-        if not company_data.empty and not national_avg_data.empty:
-            plot_comparison(company_data, national_avg_data)
+        if not company_data.empty and not market_avg_data.empty:
+            plot_comparison(company_data, market_avg_data)
