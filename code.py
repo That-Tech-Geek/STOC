@@ -134,39 +134,36 @@ def download_data(ticker, exchange, start_date, end_date):
 
 # Function to fetch national average data
 def fetch_national_average(exchange, start_date, end_date):
-    # Example: For simplicity, let's assume fetching a major index data for the selected exchange
-    index_ticker_map = {
-        "NYSE": "^GSPC",    # S&P 500 for NYSE
-        "NASDAQ": "^IXIC",  # NASDAQ Composite for NASDAQ
-        "BSE": "BSESN",      # SENSEX for BSE
-        "NSE": "^NSEI"       # NIFTY 50 for NSE
-        # Add more as needed
-    }
-    index_ticker = index_ticker_map.get(exchange, None)
+    # Initialize an empty DataFrame
+    national_avg_data = pd.DataFrame()
 
-    if index_ticker:
-        index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
-        return index_data
-    else:
-        st.error("No national average available for the selected exchange.")
-        return pd.DataFrame()
+    # Fetch data for each exchange suffix available in index_ticker_map
+    for exch, suffix in exchange_suffixes.items():
+        if suffix:  # Only fetch if a suffix is provided
+            index_ticker = f"{exch}{suffix}"
+            index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
+            if not index_data.empty:
+                index_data['Exchange'] = exch
+                national_avg_data = pd.concat([national_avg_data, index_data], axis=0)
 
-# Function to plot data
-def plot_data(df_company, df_national_avg):
-    if not df_company.empty and not df_national_avg.empty:
-        # Check if 'Date' and 'Adj Close' columns exist in df_national_avg
-        if 'Date' in df_national_avg.columns and 'Adj Close' in df_national_avg.columns:
-            # Plot company data
-            plt.figure(figsize=(12, 6))
-            plt.plot(df_company['Date'], df_company['Adj Close'], label=f"{df_company['Symbol'].iloc[0]}")
-            plt.plot(df_national_avg['Date'], df_national_avg['Adj Close'], label="National Average", linestyle='--')
-            plt.xlabel('Date')
-            plt.ylabel('Adjusted Close Price')
-            plt.title(f"{df_company['Symbol'].iloc[0]} vs National Average")
-            plt.legend()
-            st.pyplot()
-        else:
-            st.error("Required columns 'Date' and/or 'Adj Close' not found in the national average data.")
+    return national_avg_data
+
+# Function to plot comparison graph
+def plot_comparison(company_data, national_avg_data):
+    if not company_data.empty and not national_avg_data.empty:
+        plt.figure(figsize=(12, 6))
+        plt.plot(company_data['Date'], company_data['Adj Close'], label=f"{company_data['Symbol'].iloc[0]}")
+        
+        # Plot each national average by exchange
+        for exch in national_avg_data['Exchange'].unique():
+            exch_data = national_avg_data[national_avg_data['Exchange'] == exch]
+            plt.plot(exch_data.index, exch_data['Adj Close'], label=f"{exch} National Average", linestyle='--')
+
+        plt.xlabel('Date')
+        plt.ylabel('Adjusted Close Price')
+        plt.title(f"{company_data['Symbol'].iloc[0]} vs National Averages")
+        plt.legend()
+        st.pyplot()
     else:
         st.warning("No data available for comparison.")
 
@@ -209,16 +206,4 @@ if submit_button:
         national_avg_data = fetch_national_average(exchange, start_date=start_date_str, end_date=end_date_str)
 
         if not company_data.empty and not national_avg_data.empty:
-            # Plot company vs national average
-            st.subheader(f"Comparison of {ticker} with National Average")
-            plot_data(company_data, national_avg_data)
-            
-            # Save company data to CSV
-            csv_file_path = f"{ticker}.csv"
-            company_data.to_csv(csv_file_path, index=False)
-            st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
-            st.download_button(label="Download CSV", data=company_data.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
-        else:
-            st.warning("No data available for the selected criteria.")
-    else:
-        st.error("Please provide the ticker symbol and select the exchange.")
+            plot_comparison(company_data, national_avg_data)
