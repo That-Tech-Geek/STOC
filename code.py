@@ -101,71 +101,19 @@ exchange_suffixes = {
     "Caracas Stock Exchange": ".CR"
 }
 
-# Function to download data and calculate additional metrics
-def download_data(ticker, exchange, start_date, end_date):
-    # Determine suffix based on exchange selection
-    suffix = exchange_suffixes.get(exchange, "")
+# Function to fetch national average data for each exchange suffix
+def fetch_national_averages(exchange_suffixes, start_date, end_date):
+    national_avg_data = pd.DataFrame()
 
-    # Concatenate suffix to ticker if it's not empty
-    if suffix:
-        ticker = f"{ticker}{suffix}"
+    for exchange, suffix in exchange_suffixes.items():
+        if suffix:
+            index_ticker = f"{exchange}{suffix}"
+            index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
+            if not index_data.empty:
+                index_data['Exchange'] = exchange
+                national_avg_data = pd.concat([national_avg_data, index_data], axis=0)
 
-    # Download historical data
-    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
-
-    if not quote_summary.empty:
-        # Extract financial data
-        t = yf.Ticker(ticker)
-        data = t.info
-        
-        # Create a DataFrame with day-wise data
-        df = quote_summary.reset_index()
-        df['Symbol'] = ticker
-        df['Sector'] = data.get('sector', 'N/A')
-        df['Industry'] = data.get('industry', 'N/A')
-        df['Market'] = data.get('market', 'N/A')
-        df['QuoteType'] = data.get('quoteType', 'N/A')
-        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
-        
-        return df
-    else:
-        st.error("No data available for the given ticker.")
-        return pd.DataFrame()
-
-# Function to fetch market average data for the selected exchange
-def fetch_market_average(exchange, start_date, end_date):
-    # Initialize an empty DataFrame
-    market_avg_data = pd.DataFrame()
-
-    # Fetch data for the selected exchange suffix
-    suffix = exchange_suffixes.get(exchange, "")
-    if suffix:  # Only fetch if a suffix is provided
-        index_ticker = f"{exchange}{suffix}"
-        index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
-        if not index_data.empty:
-            index_data['Exchange'] = exchange
-            market_avg_data = index_data
-
-    return market_avg_data
-
-# Function to plot comparison graph
-def plot_comparison(company_data, market_avg_data):
-    if not company_data.empty and not market_avg_data.empty:
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(company_data['Date'], company_data['Adj Close'], label=f"{company_data['Symbol'].iloc[0]}")
-        
-        # Plot market average
-        ax.plot(market_avg_data.index, market_avg_data['Adj Close'], label=f"{market_avg_data['Exchange'].iloc[0]} Market Average", linestyle='--')
-
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Adjusted Close Price')
-        ax.set_title(f"{company_data['Symbol'].iloc[0]} vs {market_avg_data['Exchange'].iloc[0]} Market Average")
-        ax.legend()
-
-        # Display plot using st.pyplot()
-        st.pyplot(fig)
-    else:
-        st.warning("No data available for comparison.")
+    return national_avg_data
 
 # Custom CSS to set background to black
 st.markdown(
@@ -201,25 +149,41 @@ if submit_button:
         start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
         end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
 
-        # Download data
-        company_data = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
-        market_avg_data = fetch_market_average(exchange, start_date=start_date_str, end_date=end_date_str)
+        # Download company data
+        company_data = yf.download(ticker, start=start_date_str, end=end_date_str, progress=False)
 
-        if not company_data.empty and not market_avg_data.empty:
-            # Plot comparison
-            plot_comparison(company_data, market_avg_data)
+        if not company_data.empty:
+            # Fetch national averages for each exchange suffix
+            national_avg_data = fetch_national_averages(exchange_suffixes, start_date=start_date_str, end_date=end_date_str)
 
-            # Save company data to CSV
-            company_filename = f"{ticker}_{exchange}_data.csv"
-            company_data.to_csv(company_filename, index=False)
-            st.success(f"Company data saved to {company_filename}")
+            if not national_avg_data.empty:
+                # Plot comparison with national averages
+                plt.figure(figsize=(12, 6))
+                plt.plot(company_data.index, company_data['Adj Close'], label=f"{ticker} - {exchange} Data")
 
-            # Save market average data to CSV
-            market_filename = f"{exchange}_market_average_data.csv"
-            market_avg_data.to_csv(market_filename, index=False)
-            st.success(f"Market average data saved to {market_filename}")
+                for exch, suffix in exchange_suffixes.items():
+                    if suffix:
+                        avg_data = national_avg_data[national_avg_data['Exchange'] == exch]
+                        if not avg_data.empty:
+                            plt.plot(avg_data.index, avg_data['Adj Close'], label=f"{exch} - National Average", linestyle='--')
 
-            # Display success message
-            st.write("Data saved successfully.")
+                plt.xlabel('Date')
+                plt.ylabel('Adjusted Close Price')
+                plt.title(f"{ticker} vs National Averages")
+                plt.legend()
+                st.pyplot()
+
+                # Save company data to CSV
+                company_filename = f"{ticker}_{exchange}_data.csv"
+                company_data.to_csv(company_filename, index=True)
+                st.success(f"Company data saved to {company_filename}")
+
+                # Save national averages data to CSV
+                national_avg_filename = f"national_averages_data.csv"
+                national_avg_data.to_csv(national_avg_filename, index=True)
+                st.success(f"National averages data saved to {national_avg_filename}")
+
+            else:
+                st.warning("No national averages data available.")
         else:
-            st.warning("No data available for comparison.")
+            st.error("No data available for the given ticker.")
