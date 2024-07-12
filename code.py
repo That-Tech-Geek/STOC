@@ -132,42 +132,71 @@ def download_data(ticker, exchange, start_date, end_date):
         st.error("No data available for the given ticker.")
         return pd.DataFrame()
 
-# Function to fetch NIFTY500 data
-def fetch_nifty500_data(start_date, end_date):
-    nifty500_ticker = '^NSEI'  # NIFTY500 index ticker on Yahoo Finance
-    nifty500_data = yf.download(nifty500_ticker, start=start_date, end=end_date, progress=False)
-    return nifty500_data
+# Function to download data and calculate additional metrics
+def download_data(ticker, exchange, start_date, end_date):
+    # Determine suffix based on exchange selection
+    suffix = exchange_suffixes.get(exchange, "")
+
+    # Concatenate suffix to ticker if it's not empty
+    if suffix:
+        ticker = f"{ticker}{suffix}"
+
+    # Download historical data
+    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
+
+    if not quote_summary.empty:
+        # Extract financial data
+        t = yf.Ticker(ticker)
+        data = t.info
+        
+        # Create a DataFrame with day-wise data
+        df = quote_summary.reset_index()
+        df['Symbol'] = ticker
+        df['Sector'] = data.get('sector', 'N/A')
+        df['Industry'] = data.get('industry', 'N/A')
+        df['Market'] = data.get('market', 'N/A')
+        df['QuoteType'] = data.get('quoteType', 'N/A')
+        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
+        
+        return df
+    else:
+        st.error("No data available for the given ticker.")
+        return pd.DataFrame()
+
+# Function to fetch national average data
+def fetch_national_average(exchange, start_date, end_date):
+    # Example: For simplicity, let's assume fetching a major index data for the selected exchange
+    index_ticker_map = {
+        "NYSE": "^GSPC",    # S&P 500 for NYSE
+        "NASDAQ": "^IXIC",  # NASDAQ Composite for NASDAQ
+        "BSE": "BSESN",      # SENSEX for BSE
+        "NSE": "^NSEI"       # NIFTY 50 for NSE
+        # Add more as needed
+    }
+    index_ticker = index_ticker_map.get(exchange, None)
+
+    if index_ticker:
+        index_data = yf.download(index_ticker, start=start_date, end=end_date, progress=False)
+        return index_data
+    else:
+        st.error("No national average available for the selected exchange.")
+        return pd.DataFrame()
 
 # Function to plot data
-def plot_data(df):
-    if not df.empty:
-        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-        numeric_cols = [col for col in numeric_cols if col not in ['Debt-to-Equity Ratio', 'Current Ratio']]
-        
-        plt.style.use('dark_background')
+def plot_data(df_company, df_national_avg):
+    if not df_company.empty and not df_national_avg.empty:
+        # Plot company data
+        plt.figure(figsize=(12, 6))
+        plt.plot(df_company['Date'], df_company['Adj Close'], label=f"{df_company['Symbol'].iloc[0]}")
+        plt.plot(df_national_avg['Date'], df_national_avg['Adj Close'], label="National Average", linestyle='--')
+        plt.xlabel('Date')
+        plt.ylabel('Adjusted Close Price')
+        plt.title(f"{df_company['Symbol'].iloc[0]} vs National Average")
+        plt.legend()
+        st.pyplot()
 
-        for col in numeric_cols:
-            if col != 'Date':
-                st.subheader(f"Time Series of {col}")
-                fig, ax = plt.subplots()
-                ax.plot(df['Date'], df[col], color='blue')
-                ax.set_xlabel('Date', color='white')
-                ax.set_ylabel(col, color='white')
-                ax.set_title(f"{col} over Time", color='white')
-                ax.tick_params(axis='x', colors='white')
-                ax.tick_params(axis='y', colors='white')
-                ax.grid(True, color='white')
-                st.pyplot(fig)
-
-        if len(numeric_cols) > 1:
-            st.subheader("Correlation Heatmap")
-            corr = df[numeric_cols].corr()
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-            ax.set_facecolor('black')
-            st.pyplot(fig)
     else:
-        st.warning("DataFrame is empty. No data to plot.")
+        st.warning("No data available for comparison.")
 
 # Custom CSS to set background to black
 st.markdown(
@@ -205,27 +234,12 @@ if submit_button:
 
         # Download data
         company_data = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
-        nifty500_data = fetch_nifty500_data(start_date=start_date_str, end_date=end_date_str)
+        national_avg_data = fetch_national_average(exchange, start_date=start_date_str, end_date=end_date_str)
 
-        if not company_data.empty and not nifty500_data.empty:
-            # Plot company data
-            st.subheader(f"Time Series for {ticker}")
-            plot_data(company_data)
-            
-            # Calculate average returns
-            company_avg_return = company_data['Adj Close'].pct_change().mean()
-            nifty500_avg_return = nifty500_data['Adj Close'].pct_change().mean()
-            
-            st.write(f"Average daily return for {ticker}: {company_avg_return:.4f}")
-            st.write(f"Average daily return for NIFTY500: {nifty500_avg_return:.4f}")
-            
-            # Verdict based on comparison
-            if company_avg_return > nifty500_avg_return:
-                st.write(f"{ticker} shows better performance compared to NIFTY500.")
-            elif company_avg_return < nifty500_avg_return:
-                st.write(f"{ticker} shows weaker performance compared to NIFTY500.")
-            else:
-                st.write(f"{ticker} performs similarly to NIFTY500.")
+        if not company_data.empty and not national_avg_data.empty:
+            # Plot company vs national average
+            st.subheader(f"Comparison of {ticker} with National Average")
+            plot_data(company_data, national_avg_data)
             
             # Save company data to CSV
             csv_file_path = f"{ticker}.csv"
