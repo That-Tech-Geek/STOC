@@ -107,37 +107,30 @@ def download_data(ticker, exchange, start_date, end_date):
     suffix = exchange_suffixes.get(exchange, "")
 
     # Concatenate suffix to ticker if it's not empty
-    # Function to download data and calculate additional metrics
-    def download_data(ticker, exchange, start_date, end_date):
-        # Determine suffix based on exchange selection
-        suffix = exchange_suffixes.get(exchange, "")
-    
-        # Concatenate suffix to ticker if it's not empty
-        if suffix:
-            ticker = f"{ticker}{suffix}"
-    
-        # Download historical data with progress bar suppressed
-        quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
-    
-        if not quote_summary.empty:
-            # Extract financial data
-            t = yf.Ticker(ticker)
-            data = t.info
-            
-            # Create a DataFrame with day-wise data
-            df = quote_summary.reset_index()
-            df['Symbol'] = ticker
-            df['Sector'] = data.get('sector', 'N/A')
-            df['Industry'] = data.get('industry', 'N/A')
-            df['Market'] = data.get('market', 'N/A')
-            df['QuoteType'] = data.get('quoteType', 'N/A')
-            df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
-            
-            return df
-        else:
-            st.error("No data available for the given ticker.")
-            return pd.DataFrame()
+    if suffix:
+        ticker = f"{ticker}{suffix}"
 
+    # Download historical data
+    quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
+
+    if not quote_summary.empty:
+        # Extract financial data
+        t = yf.Ticker(ticker)
+        data = t.info
+        
+        # Create a DataFrame with day-wise data
+        df = quote_summary.reset_index()
+        df['Symbol'] = ticker
+        df['Sector'] = data.get('sector', 'N/A')
+        df['Industry'] = data.get('industry', 'N/A')
+        df['Market'] = data.get('market', 'N/A')
+        df['QuoteType'] = data.get('quoteType', 'N/A')
+        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
+        
+        return df
+    else:
+        st.error("No data available for the given ticker.")
+        return pd.DataFrame()
 
 # Function to plot data
 def plot_data(df):
@@ -167,9 +160,11 @@ def plot_data(df):
             sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
             ax.set_facecolor('black')
             st.pyplot(fig)
+    else:
+        st.warning("DataFrame is empty. No data to plot.")
 
 # Streamlit app layout
-st.title("STOC")
+st.title("Company Data Downloader and Analyzer")
 
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
@@ -201,5 +196,7 @@ if submit_button:
             df.to_csv(csv_file_path, index=False)
             st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
             st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+        else:
+            st.warning("No data available for the selected criteria.")
     else:
         st.error("Please provide the ticker symbol and select the exchange.")
