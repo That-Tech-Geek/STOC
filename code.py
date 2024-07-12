@@ -199,9 +199,9 @@ exchange_indices = {
 }
 
 # Function to fetch data from Yahoo Finance
-def fetch_data(symbol, exchange):
+def fetch_data(symbol, exchange, start_date, end_date):
     ticker = symbol + exchange_suffixes[exchange]
-    data = yf.download(ticker, start='1900-01-01', end='2024-07-12', progress=False)  # Suppress progress bar
+    data = yf.download(ticker, start=start_date, end=end_date, progress=False)  # Suppress progress bar
     return data
 
 # Main function to run the Streamlit app
@@ -211,10 +211,12 @@ def main():
     # Sidebar options
     exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
     symbol = st.sidebar.text_input("Enter Ticker Symbol (e.g., AAPL)")
+    start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime("2020-01-01"))
+    end_date = st.sidebar.date_input("End Date", value=pd.to_datetime("today"))
     
     if st.sidebar.button("Get Data"):
-        st.write(f"Fetching data for {symbol} from {exchange}")
-        data = fetch_data(symbol, exchange)
+        st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
+        data = fetch_data(symbol, exchange, start_date, end_date)
         
         if not data.empty:
             st.write("Data Sample:")
@@ -243,9 +245,10 @@ def main():
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
-            st.markdown(f"[Download CSV]({csv})", unsafe_allow_html=True)
+            st.markdown(f"[Download CSV](data:text/csv;charset=utf-8,{csv})", unsafe_allow_html=True)
         else:
             st.write("No data found for the selected symbol and exchange.")
 
 if __name__ == "__main__":
     main()
+
