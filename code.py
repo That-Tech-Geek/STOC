@@ -163,24 +163,6 @@ def plot_data(df):
     else:
         st.warning("DataFrame is empty. No data to plot.")
 
-# Streamlit app layout
-st.set_page_config(page_title="Company Data Analyzer", page_icon=":chart_with_upwards_trend:", layout="wide")
-
-# Custom CSS to set background to black
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: black;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Streamlit app layout
-st.set_page_config(page_title="Company Data Analyzer", page_icon=":chart_with_upwards_trend:", layout="wide")
-
 # Custom CSS to set background to black
 st.markdown(
     """
