@@ -307,8 +307,8 @@ def main():
                 ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.4),  # increased weightage
                 ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.3),  # increased weightage
                 ("Market Capitalization", market_cap / 1e9, 0.1),
-                ("Volatility", data['Volatility'].mean() * 100, 0.1),  # decreased weightage
-                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.1)  # decreased weightage
+                ("Volatility", data['Volatility'].mean() * 100, 0.2),  # decreased weightage
+                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.3)  # decreased weightage
             ]
             
             if 'Market' in corr.columns:
