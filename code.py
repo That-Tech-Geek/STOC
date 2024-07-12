@@ -103,105 +103,105 @@ exchange_suffixes = {
 
 # Dictionary mapping exchanges to their major indices or benchmarks
 exchange_indices = {
-    "NYSE": "S&P 500",
-    "NASDAQ": "NASDAQ Composite",
-    "BSE": "SENSEX",
-    "NSE": "NIFTY 50",
-    "Cboe Indices": "Cboe Volatility Index (VIX)",
-    "Chicago Board of Trade (CBOT)***": "S&P 500 VIX",
-    "Chicago Mercantile Exchange (CME)***": "CME Group",
-    "Dow Jones Indexes": "Dow Jones Industrial Average",
-    "Nasdaq Stock Exchange": "NASDAQ Composite",
-    "ICE Futures US": "Russell 2000",
-    "New York Commodities Exchange (COMEX)***": "COMEX Gold",
-    "New York Mercantile Exchange (NYMEX)***": "NYMEX Crude Oil",
-    "Options Price Reporting Authority (OPRA)": "OPRA Index",
-    "OTC Markets Group**": "OTCQX Best Market",
-    "S & P Indices": "S&P 500",
-    "Buenos Aires Stock Exchange (BYMA)": "MERVAL",
-    "Vienna Stock Exchange": "ATX",
-    "Australian Stock Exchange (ASX)": "S&P/ASX 200",
-    "Cboe Australia": "S&P/ASX 200 VIX",
-    "Euronext Brussels": "BEL 20",
-    "Sao Paolo Stock Exchange (BOVESPA)": "IBOVESPA",
-    "Canadian Securities Exchange": "S&P/TSX Composite",
-    "Cboe Canada": "S&P/TSX Composite VIX",
-    "Toronto Stock Exchange (TSX)": "S&P/TSX Composite",
-    "TSX Venture Exchange (TSXV)": "TSX Venture Composite",
-    "Santiago Stock Exchange": "IPSA",
-    "Shanghai Stock Exchange": "SSE Composite Index",
-    "Shenzhen Stock Exchange": "SZSE Component Index",
-    "Prague Stock Exchange Index": "PX",
-    "Nasdaq OMX Copenhagen": "OMX Copenhagen 25",
-    "Egyptian Exchange Index (EGID)": "EGX 30",
-    "Nasdaq OMX Tallinn": "OMX Tallinn",
-    "Cboe Europe": "EURO STOXX 50",
-    "Euronext": "Euronext 100",
-    "Nasdaq OMX Helsinki": "OMX Helsinki 25",
-    "Euronext Paris": "CAC 40",
-    "Berlin Stock Exchange": "DAX",
-    "Bremen Stock Exchange": "BREXIT",
-    "Dusseldorf Stock Exchange": "DAX",
-    "Frankfurt Stock Exchange": "DAX",
-    "Hamburg Stock Exchange": "BREXIT",
-    "Hanover Stock Exchange": "BREXIT",
-    "Munich Stock Exchange": "DAX",
-    "Stuttgart Stock Exchange": "BREXIT",
-    "Deutsche Boerse XETRA": "DAX",
-    "Collectable Indices": "COLLECT",
-    "Cryptocurrencies": "CRYPTO",
-    "Currency Rates": "CURRENCY",
-    "MSCI Indices": "MSCI",
-    "Athens Stock Exchange (ATHEX)": "ASE",
-    "Hang Seng Indices": "HANG SENG",
-    "Hong Kong Stock Exchange (HKEX)*": "HANG SENG",
-    "Budapest Stock Exchange": "BUX",
-    "Nasdaq OMX Iceland": "OMX",
-    "Bombay Stock Exchange": "BSE",
-    "National Stock Exchange of India": "NSE",
-    "Indonesia Stock Exchange (IDX)": "IDX",
-    "Euronext Dublin": "INDEX",
-    "Tel Aviv Stock Exchange": "TEL AVIV",
-    "EuroTLX": "EURO TLX",
-    "Italian Stock Exchange": "ITALY",
-    "Nikkei Indices": "NIKKEI",
-    "Tokyo Stock Exchange": "TOKYO",
-    "Boursa Kuwait": "KW",
-    "Nasdaq OMX Riga": "RIGA",
-    "Nasdaq OMX Vilnius": "VILNIUS",
-    "Malaysian Stock Exchange": "MALAYSIA",
-    "Mexico Stock Exchange (BMV)": "BMV",
-    "Euronext Amsterdam": "EUROPE",
-    "New Zealand Stock Exchange (NZX)": "NZX",
-    "Oslo Stock Exchange": "OSLO",
-    "Philippine Stock Exchange Indices": "PHILIPPINES",
-    "Warsaw Stock Exchange": "WSE",
-    "Euronext Lisbon": "LISBON",
-    "Qatar Stock Exchange": "QATAR",
-    "Bucharest Stock Exchange": "BUCHAREST",
-    "Singapore Stock Exchange (SGX)": "SGX",
-    "Johannesburg Stock Exchange": "JOHANNESBURG",
-    "Korea Stock Exchange": "KOREA",
-    "KOSDAQ": "KOSDAQ",
-    "Madrid SE C.A.T.S.": "MADRID",
-    "Saudi Stock Exchange (Tadawul)": "TADAWUL",
-    "Nasdaq OMX Stockholm": "OMX",
-    "Swiss Exchange (SIX)": "SIX",
-    "Taiwan OTC Exchange": "OTC",
-    "Taiwan Stock Exchange (TWSE)": "TWSE",
-    "Stock Exchange of Thailand (SET)": "SET",
-    "Borsa İstanbul": "ISTANBUL",
-    "Dubai Financial Market": "DFM",
-    "Cboe UK": "UK",
-    "FTSE Indices": "FTSE",
-    "London Stock Exchange": "LSE",
-    "Caracas Stock Exchange": "CARACAS"
+    "NYSE": "^GSPC",  # S&P 500
+    "NASDAQ": "^IXIC",  # NASDAQ Composite
+    "BSE": "^BSESN",  # SENSEX
+    "NSE": "^NSEI",  # NIFTY 50
+    "Cboe Indices": "^VIX",  # Cboe Volatility Index (VIX)
+    "Chicago Board of Trade (CBOT)***": "^VIX",  # S&P 500 VIX (example, needs actual ticker)
+    "Chicago Mercantile Exchange (CME)***": "CME",  # CME Group (example, needs actual ticker)
+    "Dow Jones Indexes": "^DJI",  # Dow Jones Industrial Average
+    "Nasdaq Stock Exchange": "^IXIC",  # NASDAQ Composite
+    "ICE Futures US": "^RUT",  # Russell 2000
+    "New York Commodities Exchange (COMEX)***": "GC=F",  # COMEX Gold (example, needs actual ticker)
+    "New York Mercantile Exchange (NYMEX)***": "CL=F",  # NYMEX Crude Oil (example, needs actual ticker)
+    "Options Price Reporting Authority (OPRA)": "OPRA",  # OPRA Index (example, needs actual ticker)
+    "OTC Markets Group**": "OTCM",  # OTCQX Best Market (example, needs actual ticker)
+    "S & P Indices": "^GSPC",  # S&P 500
+    "Buenos Aires Stock Exchange (BYMA)": "^MERV",  # MERVAL
+    "Vienna Stock Exchange": "^ATX",  # ATX
+    "Australian Stock Exchange (ASX)": "^AXJO",  # S&P/ASX 200
+    "Cboe Australia": "^XVI",  # S&P/ASX 200 VIX (example, needs actual ticker)
+    "Euronext Brussels": "^BFX",  # BEL 20
+    "Sao Paolo Stock Exchange (BOVESPA)": "^BVSP",  # IBOVESPA
+    "Canadian Securities Exchange": "^GSPTSE",  # S&P/TSX Composite
+    "Cboe Canada": "^VIXC",  # S&P/TSX Composite VIX (example, needs actual ticker)
+    "Toronto Stock Exchange (TSX)": "^GSPTSE",  # S&P/TSX Composite
+    "TSX Venture Exchange (TSXV)": "^JX",  # TSX Venture Composite (example, needs actual ticker)
+    "Santiago Stock Exchange": "^IPSA",  # IPSA
+    "Shanghai Stock Exchange": "000001.SS",  # SSE Composite Index
+    "Shenzhen Stock Exchange": "399001.SZ",  # SZSE Component Index
+    "Prague Stock Exchange Index": "^PX",  # PX
+    "Nasdaq OMX Copenhagen": "^OMXC25",  # OMX Copenhagen 25
+    "Egyptian Exchange Index (EGID)": "^EGX30.CA",  # EGX 30
+    "Nasdaq OMX Tallinn": "^OMXTGI",  # OMX Tallinn
+    "Cboe Europe": "^STOXX50E",  # EURO STOXX 50
+    "Euronext": "^N100",  # Euronext 100
+    "Nasdaq OMX Helsinki": "^OMXH25",  # OMX Helsinki 25
+    "Euronext Paris": "^FCHI",  # CAC 40
+    "Berlin Stock Exchange": "^GDAXI",  # DAX
+    "Bremen Stock Exchange": "BREXIT",  # BREXIT (example, needs actual ticker)
+    "Dusseldorf Stock Exchange": "^GDAXI",  # DAX
+    "Frankfurt Stock Exchange": "^GDAXI",  # DAX
+    "Hamburg Stock Exchange": "BREXIT",  # BREXIT (example, needs actual ticker)
+    "Hanover Stock Exchange": "BREXIT",  # BREXIT (example, needs actual ticker)
+    "Munich Stock Exchange": "^GDAXI",  # DAX
+    "Stuttgart Stock Exchange": "BREXIT",  # BREXIT (example, needs actual ticker)
+    "Deutsche Boerse XETRA": "^GDAXI",  # DAX
+    "Collectable Indices": "COLLECT",  # COLLECT (example, needs actual ticker)
+    "Cryptocurrencies": "CRYPTO",  # CRYPTO (example, needs actual ticker)
+    "Currency Rates": "CURRENCY",  # CURRENCY (example, needs actual ticker)
+    "MSCI Indices": "MSCI",  # MSCI (example, needs actual ticker)
+    "Athens Stock Exchange (ATHEX)": "^ATG",  # ASE
+    "Hang Seng Indices": "^HSI",  # HANG SENG
+    "Hong Kong Stock Exchange (HKEX)*": "^HSI",  # HANG SENG
+    "Budapest Stock Exchange": "^BUX",  # BUX
+    "Nasdaq OMX Iceland": "^OMXICELAND",  # OMX
+    "Bombay Stock Exchange": "^BSESN",  # BSE
+    "National Stock Exchange of India": "^NSEI",  # NSE
+    "Indonesia Stock Exchange (IDX)": "^JKSE",  # IDX
+    "Euronext Dublin": "^ISEQ",  # INDEX (example, needs actual ticker)
+    "Tel Aviv Stock Exchange": "^TA125.TA",  # TEL AVIV
+    "EuroTLX": "^TLX",  # EURO TLX (example, needs actual ticker)
+    "Italian Stock Exchange": "FTSEMIB.MI",  # ITALY (example, needs actual ticker)
+    "Nikkei Indices": "^N225",  # NIKKEI
+    "Tokyo Stock Exchange": "^TPX",  # TOKYO (example, needs actual ticker)
+    "Boursa Kuwait": "^KWSE",  # KW (example, needs actual ticker)
+    "Nasdaq OMX Riga": "^OMXRGI",  # RIGA
+    "Nasdaq OMX Vilnius": "^OMXVGI",  # VILNIUS
+    "Malaysian Stock Exchange": "^KLSE",  # MALAYSIA (example, needs actual ticker)
+    "Mexico Stock Exchange (BMV)": "^MXX",  # BMV (example, needs actual ticker)
+    "Euronext Amsterdam": "^AEX",  # EUROPE (example, needs actual ticker)
+    "New Zealand Stock Exchange (NZX)": "^NZ50",  # NZX (example, needs actual ticker)
+    "Oslo Stock Exchange": "^OSEAX",  # OSLO (example, needs actual ticker)
+    "Philippine Stock Exchange Indices": "^PSEi",  # PHILIPPINES (example, needs actual ticker)
+    "Warsaw Stock Exchange": "^WIG",  # WSE (example, needs actual ticker)
+    "Euronext Lisbon": "^PSI20",  # LISBON (example, needs actual ticker)
+    "Qatar Stock Exchange": "^QSI",  # QATAR (example, needs actual ticker)
+    "Bucharest Stock Exchange": "^BET",  # BUCHAREST (example, needs actual ticker)
+    "Singapore Stock Exchange (SGX)": "^STI",  # SGX (example, needs actual ticker)
+    "Johannesburg Stock Exchange": "^J203.JO",  # JOHANNESBURG (example, needs actual ticker)
+    "Korea Stock Exchange": "^KS11",  # KOREA (example, needs actual ticker)
+    "KOSDAQ": "^KQ11",  # KOSDAQ (example, needs actual ticker)
+    "Madrid SE C.A.T.S.": "^IBEX",  # MADRID (example, needs actual ticker)
+    "Saudi Stock Exchange (Tadawul)": "^TASI.SR",  # TADAWUL (example, needs actual ticker)
+    "Nasdaq OMX Stockholm": "^OMX",  # OMX (example, needs actual ticker)
+    "Swiss Exchange (SIX)": "^SSMI",  # SIX (example, needs actual ticker)
+    "Taiwan OTC Exchange": "^TWO",  # OTC (example, needs actual ticker)
+    "Taiwan Stock Exchange (TWSE)": "^TWII",  # TWSE (example, needs actual ticker)
+    "Stock Exchange of Thailand (SET)": "^SET.BK",  # SET (example, needs actual ticker)
+    "Borsa İstanbul": "^XU100",  # ISTANBUL (example, needs actual ticker)
+    "Dubai Financial Market": "^DFMGI",  # DFM (example, needs actual ticker)
+    "Cboe UK": "^UKX",  # UK (example, needs actual ticker)
+    "FTSE Indices": "^FTSE",  # FTSE (example, needs actual ticker)
+    "London Stock Exchange": "^FTSE",  # LSE (example, needs actual ticker)
+    "Caracas Stock Exchange": "^IBC"
 }
 
 # Function to fetch data from Yahoo Finance
 def fetch_data(symbol, exchange):
     ticker = symbol + exchange_suffixes[exchange]
-    data = yf.download(ticker, start='2020-01-01', end='2023-01-01')
+    data = yf.download(ticker, start='1900-01-01', end='2024-07-12', progress=False)  # Suppress progress bar
     return data
 
 # Main function to run the Streamlit app
