@@ -258,6 +258,15 @@ def main():
             # Calculate compounded daily growth rate
             data['Compounded Daily Growth Rate'] = (1 + data['Return']).cumprod()
             
+            # Fetch national average data
+            national_average_ticker = "^GSPC"  # S&P 500 index (USA)
+            if exchange == "Canada":
+                national_average_ticker = "^GSPTSE"  # S&P/TSX Composite index (Canada)
+            elif exchange == "UK":
+                national_average_ticker = "^FTSE"  # FTSE 100 index (UK)
+            national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
+            national_average_return = national_average_data['Close'].pct_change().mean() * 100
+            
             # Plotting parameters against time
             st.write("Plotting parameters against time:")
             columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
