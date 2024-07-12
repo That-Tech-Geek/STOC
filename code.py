@@ -206,4 +206,20 @@ if submit_button:
         market_avg_data = fetch_market_average(exchange, start_date=start_date_str, end_date=end_date_str)
 
         if not company_data.empty and not market_avg_data.empty:
+            # Plot comparison
             plot_comparison(company_data, market_avg_data)
+
+            # Save company data to CSV
+            company_filename = f"{ticker}_{exchange}_data.csv"
+            company_data.to_csv(company_filename, index=False)
+            st.success(f"Company data saved to {company_filename}")
+
+            # Save market average data to CSV
+            market_filename = f"{exchange}_market_average_data.csv"
+            market_avg_data.to_csv(market_filename, index=False)
+            st.success(f"Market average data saved to {market_filename}")
+
+            # Display success message
+            st.write("Data saved successfully.")
+        else:
+            st.warning("No data available for comparison.")
