@@ -297,11 +297,13 @@ def main():
             metrics = [
                 ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.2),
                 ("Volatility", data['Volatility'].mean() * 100, 0.2),
-                ("Correlation with Market", corr.loc['Close', 'Market'], 0.1),
                 ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.1),
                 ("Market Capitalization", market_cap / 1e9, 0.3),
                 ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.1)
             ]
+            
+            if 'Market' in corr.columns:
+                metrics.append(("Correlation with Market", corr.loc['Close', 'Market'], 0.1))
             
             for metric, value, weight in metrics:
                 assessment += value * weight
