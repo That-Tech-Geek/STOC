@@ -246,15 +246,9 @@ def main():
             if selected_columns:
                 selected_data = data[selected_columns]
                 st.write(selected_data.head())
-                st.markdown(get_csv_download_link(selected_data), unsafe_allow_html=True)
+                st.markdown(f"[Download CSV File]({selected_data.to_csv(index=False)})", unsafe_allow_html=True)
         else:
             st.write("No data found for the selected symbol and exchange.")
-
-# Function to create a download link for a DataFrame as CSV
-def get_csv_download_link(df):
-    csv = df.to_csv(index=False)
-    href = f'<a href="data:file/csv;base64,{b64encode(csv.encode()).decode()}" download="data.csv">Download CSV File</a>'
-    return href
 
 if __name__ == "__main__":
     main()
