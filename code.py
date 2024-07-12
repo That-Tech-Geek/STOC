@@ -107,30 +107,37 @@ def download_data(ticker, exchange, start_date, end_date):
     suffix = exchange_suffixes.get(exchange, "")
 
     # Concatenate suffix to ticker if it's not empty
-    if suffix:
-        ticker = f"{ticker}{suffix}"
+    # Function to download data and calculate additional metrics
+    def download_data(ticker, exchange, start_date, end_date):
+        # Determine suffix based on exchange selection
+        suffix = exchange_suffixes.get(exchange, "")
+    
+        # Concatenate suffix to ticker if it's not empty
+        if suffix:
+            ticker = f"{ticker}{suffix}"
+    
+        # Download historical data with progress bar suppressed
+        quote_summary = yf.download(ticker, start=start_date, end=end_date, progress=False)
+    
+        if not quote_summary.empty:
+            # Extract financial data
+            t = yf.Ticker(ticker)
+            data = t.info
+            
+            # Create a DataFrame with day-wise data
+            df = quote_summary.reset_index()
+            df['Symbol'] = ticker
+            df['Sector'] = data.get('sector', 'N/A')
+            df['Industry'] = data.get('industry', 'N/A')
+            df['Market'] = data.get('market', 'N/A')
+            df['QuoteType'] = data.get('quoteType', 'N/A')
+            df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
+            
+            return df
+        else:
+            st.error("No data available for the given ticker.")
+            return pd.DataFrame()
 
-    # Download historical data
-    quote_summary = yf.download(ticker, start=start_date, end=end_date)
-
-    if not quote_summary.empty:
-        # Extract financial data
-        t = yf.Ticker(ticker)
-        data = t.info
-        
-        # Create a DataFrame with day-wise data
-        df = quote_summary.reset_index()
-        df['Symbol'] = ticker
-        df['Sector'] = data.get('sector', 'N/A')
-        df['Industry'] = data.get('industry', 'N/A')
-        df['Market'] = data.get('market', 'N/A')
-        df['QuoteType'] = data.get('quoteType', 'N/A')
-        df['Variability Index'] = (df['High'] - df['Low']) / df['Low']
-        
-        return df
-    else:
-        st.error("No data available for the given ticker.")
-        return pd.DataFrame()
 
 # Function to plot data
 def plot_data(df):
