@@ -162,7 +162,7 @@ def plot_data(df):
             st.pyplot(fig)
 
 # Streamlit app layout
-st.title("Company Data Downloader and Analyzer")
+st.title("STOC")
 
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
