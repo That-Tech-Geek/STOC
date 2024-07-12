@@ -318,8 +318,10 @@ def main():
                 assessment += value * weight
                 st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
             
-            if assessment > 1.5:  # increased threshold for investment recommendation
-                st.title(f"**INVESTMENT RECOMMENDATION:** Buy {symbol}! (Assessment score: {assessment:.2f})")
+            if assessment > 50:  # increased threshold for investment recommendation
+                st.title(f"**INVESTMENT RECOMMENDATION:** Buy {symbol} QUICKLY! (Assessment score: {assessment:.2f})")
+            elif assessment > 0:
+                st.title(f"**We recommend you buy this stock, but we cannot assess if this stock will fly or crash. We're expecting this to be a very slow growth.**")
             else:
                 st.title(f"**INVESTMENT RECOMMENDATION:** Avoid {symbol}! (Assessment score: {assessment:.2f})")
             
