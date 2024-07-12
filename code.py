@@ -240,13 +240,10 @@ def main():
             ax.set_title("Correlation Matrix")
             st.pyplot(fig)
             
-            # Output CSV with selected columns
-            st.write("CSV Output:")
-            selected_columns = st.multiselect("Select columns to include in CSV", data.columns)
-            if selected_columns:
-                selected_data = data[selected_columns]
-                st.write(selected_data.head())
-                st.markdown(f"[Download CSV File]({selected_data.to_csv(index=False)})", unsafe_allow_html=True)
+            # Download CSV button
+            st.write("Download CSV Output:")
+            csv = data.to_csv(index=False)
+            st.markdown(f"[Download CSV]({csv})", unsafe_allow_html=True)
         else:
             st.write("No data found for the selected symbol and exchange.")
 
