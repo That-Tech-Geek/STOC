@@ -3,14 +3,13 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
 
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
     "NYSE": "",
     "NASDAQ": "",
     "BSE": "",
-    "NSE": ".NS",
+    "NSE": ".NS",  # Example, actual suffix from the data provided
     "Cboe Indices": ".CI",
     "Chicago Board of Trade (CBOT)***": ".CBT",
     "Chicago Mercantile Exchange (CME)***": ".CME",
@@ -102,7 +101,6 @@ exchange_suffixes = {
     "Caracas Stock Exchange": ".CR"
 }
 
-
 # Function to download data and calculate additional metrics
 def download_data(ticker, exchange, start_date, end_date):
     # Determine suffix based on exchange selection
@@ -112,14 +110,8 @@ def download_data(ticker, exchange, start_date, end_date):
     if suffix:
         ticker = f"{ticker}{suffix}"
 
-    # Disable yfinance progress bar output
-    sys.stderr = None
-
     # Download historical data
     quote_summary = yf.download(ticker, start=start_date, end=end_date)
-
-    # Restore stderr
-    sys.stderr = sys.__stderr__
 
     if not quote_summary.empty:
         # Extract financial data
@@ -139,3 +131,68 @@ def download_data(ticker, exchange, start_date, end_date):
     else:
         st.error("No data available for the given ticker.")
         return pd.DataFrame()
+
+# Function to plot data
+def plot_data(df):
+    if not df.empty:
+        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+        numeric_cols = [col for col in numeric_cols if col not in ['Debt-to-Equity Ratio', 'Current Ratio']]
+        
+        plt.style.use('dark_background')
+
+        for col in numeric_cols:
+            if col != 'Date':
+                st.subheader(f"Time Series of {col}")
+                fig, ax = plt.subplots()
+                ax.plot(df['Date'], df[col], color='blue')
+                ax.set_xlabel('Date', color='white')
+                ax.set_ylabel(col, color='white')
+                ax.set_title(f"{col} over Time", color='white')
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.grid(True, color='white')
+                st.pyplot(fig)
+
+        if len(numeric_cols) > 1:
+            st.subheader("Correlation Heatmap")
+            corr = df[numeric_cols].corr()
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+            ax.set_facecolor('black')
+            st.pyplot(fig)
+
+# Streamlit app layout
+st.title("Company Data Downloader and Analyzer")
+
+# User input
+ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
+exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
+start_date = st.date_input("Enter the start date:")
+end_date = st.date_input("Enter the end date (optional):")
+
+submit_button = st.button("Submit")
+
+if submit_button:
+    if ticker and exchange:
+        ticker = ticker.strip().upper()
+        
+        st.write(f"Fetching data for ticker: {ticker} from exchange: {exchange}")
+
+        # Convert start_date and end_date to string format if not None
+        start_date_str = start_date.strftime('%Y-%m-%d') if start_date else None
+        end_date_str = end_date.strftime('%Y-%m-%d') if end_date else None
+
+        # Download data
+        df = download_data(ticker, exchange, start_date=start_date_str, end_date=end_date_str)
+
+        if not df.empty:
+            # Plot data
+            plot_data(df)
+            
+            # Save to CSV
+            csv_file_path = f"{ticker}.csv"
+            df.to_csv(csv_file_path, index=False)
+            st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
+            st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
+    else:
+        st.error("Please provide the ticker symbol and select the exchange.")
