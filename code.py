@@ -319,7 +319,7 @@ def main():
                 st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
             
             if assessment > 50:  # increased threshold for investment recommendation
-                st.title(f"**We recommend strngly that you invest in this stock, since it has immense growth potential on the basis of our analysis**")
+                st.title(f"**We recommend strongly that you invest in this stock, since it has immense growth potential on the basis of our analysis**")
             elif assessment > 0:
                 st.title(f"**We recommend you buy this stock, but we cannot assess if this stock will fly or crash. We're expecting this to be a very slow growth.**")
             else:
