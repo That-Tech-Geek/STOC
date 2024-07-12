@@ -163,52 +163,6 @@ def plot_data(df):
     else:
         st.warning("DataFrame is empty. No data to plot.")
 
-# Function to plot correlation graphs
-def plot_correlations(df, cols):
-    try:
-        if len(cols) > 1:
-            corr = df[cols].corr()
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-            st.pyplot(fig)
-            
-            # Calculate and display correlation coefficients
-            corr_coefficients = corr.unstack().sort_values(ascending=False)
-            st.write("How the financial metrics are related:")
-            st.write(corr_coefficients)
-            
-            # Identify highly correlated columns
-            highly_correlated_cols = [(cols[i], cols[j]) for i in range(len(corr)) for j in range(i) if abs(corr.iloc[i, j]) > 0.8 and i!= j]
-            st.write("Financial metrics that are strongly linked:")
-            st.write(highly_correlated_cols)
-            
-            # Investment Recommendation
-            investment_recommendation = []
-            for col in cols:
-                corr_mean = corr[col].mean()
-                if corr_mean > 0.5:
-                    investment_recommendation.append((col, "Good investment opportunity", 0.7))  # 70% weighting for positive correlation
-                elif corr_mean < -0.5:
-                    investment_recommendation.append((col, "Not a good investment opportunity", 0.3))  # 30% weighting for negative correlation
-                else:
-                    investment_recommendation.append((col, "Neutral", 0.5))  # 50% weighting for neutral correlation
-            
-            st.write("Investment Recommendation:")
-            st.write(investment_recommendation)
-            
-            # Final Verdict
-            final_verdict = sum([x[2] for x in investment_recommendation]) / len(investment_recommendation)
-            if final_verdict > 0.5:
-                st.write("Final Verdict: This company is a good investment opportunity")
-            elif final_verdict < 0.5:
-                st.write("Final Verdict: This company is not a good investment opportunity")
-            else:
-                st.write("Final Verdict: Neutral")
-        else:
-            st.warning("Select at least two numeric columns to plot correlations.")
-    except KeyError as e:
-        st.error(f"Error: Column '{e.args[0]}' does not exist in the DataFrame.")
-
 # Custom CSS to set background to black
 st.markdown(
     """
@@ -225,9 +179,11 @@ st.title("Welcome to STOC, the Share Trading Optimisation Console!")
 
 # User input
 ticker = st.text_input("Enter the ticker symbol of the company (e.g., AAPL for Apple, RELIANCE for Reliance Industries):")
-exchange = st.selectbox("Select the exchange:", list(exchange_suffixes.keys()))
+exchange = st.selectbox("Select the exchange:", [""] + list(exchange_suffixes.keys()))
 start_date = st.date_input("Enter the start date:")
-end_date = st.date_input("Enter the end date (optional):")
+
+# Maximum possible end date
+end_date = st.date_input("Enter the end date (optional):", max_value=pd.Timestamp.today() + pd.DateOffset(years=10))
 
 submit_button = st.button("Submit")
 
@@ -248,14 +204,11 @@ if submit_button:
             # Plot data
             plot_data(df)
             
-            # Plot correlations if there are numeric columns
-            numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-            plot_correlations(df, numeric_cols)
-            
             # Save to CSV
             csv_file_path = f"{ticker}.csv"
             df.to_csv(csv_file_path, index=False)
             st.success(f"Data extracted and saved for {ticker} from exchange: {exchange}.")
+            st.download_button(label="Download CSV", data=df.to_csv().encode('utf-8'), file_name=csv_file_path, mime='text/csv')
         else:
             st.warning("No data available for the selected criteria.")
     else:
