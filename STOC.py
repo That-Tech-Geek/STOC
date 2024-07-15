@@ -1,15 +1,8 @@
 import streamlit as st
-import pandas as pd
 import yfinance as yf
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
+import pandas as pd
 
-def fetch_data(symbol, exchange, start_date, end_date):
-    ticker = symbol + exchange_suffixes[exchange]
-    data = yf.download(ticker, start=start_date, end=end_date, progress=False)
-    return data
-# Dictionary to map exchanges to suffixes
+# Dictionaries provided
 exchange_suffixes = {
     "NYSE": "",
     "NASDAQ": "",
@@ -106,7 +99,6 @@ exchange_suffixes = {
     "Caracas Stock Exchange": ".CR"
 }
 
-# Dictionary mapping exchanges to their major indices or benchmarks
 exchange_indices = {
     "NYSE": "^GSPC",  # S&P 500
     "NASDAQ": "^IXIC",  # NASDAQ Composite
@@ -153,203 +145,80 @@ exchange_indices = {
     "Munich Stock Exchange": "^GDAXI",  # DAX
     "Stuttgart Stock Exchange": "BREXIT",  # BREXIT (example, needs actual ticker)
     "Deutsche Boerse XETRA": "^GDAXI",  # DAX
-    "Collectable Indices": "COLLECT",  # COLLECT (example, needs actual ticker)
-    "Cryptocurrencies": "CRYPTO",  # CRYPTO (example, needs actual ticker)
-    "Currency Rates": "CURRENCY",  # CURRENCY (example, needs actual ticker)
-    "MSCI Indices": "MSCI",  # MSCI (example, needs actual ticker)
-    "Athens Stock Exchange (ATHEX)": "^ATG",  # ASE
-    "Hang Seng Indices": "^HSI",  # HANG SENG
-    "Hong Kong Stock Exchange (HKEX)*": "^HSI",  # HANG SENG
+    "Collectable Indices": "COLLECT",  # Collectable Indices (example, needs actual ticker)
+    "Cryptocurrencies": "BTC-USD",  # Bitcoin (example, needs actual ticker)
+    "Currency Rates": "EURUSD=X",  # EUR/USD
+    "MSCI Indices": "^MSCI",  # MSCI World (example, needs actual ticker)
+    "Athens Stock Exchange (ATHEX)": "^ASE",  # ATHEX Composite
+    "Hang Seng Indices": "^HSI",  # HSI
+    "Hong Kong Stock Exchange (HKEX)*": "^HSI",  # HSI
     "Budapest Stock Exchange": "^BUX",  # BUX
-    "Nasdaq OMX Iceland": "^OMXICELAND",  # OMX
-    "Bombay Stock Exchange": "^BSESN",  # BSE
-    "National Stock Exchange of India": "^NSEI",  # NSE
-    "Indonesia Stock Exchange (IDX)": "^JKSE",  # IDX
-    "Euronext Dublin": "^ISEQ",  # INDEX (example, needs actual ticker)
-    "Tel Aviv Stock Exchange": "^TA125.TA",  # TEL AVIV
-    "EuroTLX": "^TLX",  # EURO TLX (example, needs actual ticker)
-    "Italian Stock Exchange": "FTSEMIB.MI",  # ITALY (example, needs actual ticker)
-    "Nikkei Indices": "^N225",  # NIKKEI
-    "Tokyo Stock Exchange": "^TPX",  # TOKYO (example, needs actual ticker)
-    "Boursa Kuwait": "^KWSE",  # KW (example, needs actual ticker)
-    "Nasdaq OMX Riga": "^OMXRGI",  # RIGA
-    "Nasdaq OMX Vilnius": "^OMXVGI",  # VILNIUS
-    "Malaysian Stock Exchange": "^KLSE",  # MALAYSIA (example, needs actual ticker)
-    "Mexico Stock Exchange (BMV)": "^MXX",  # BMV (example, needs actual ticker)
-    "Euronext Amsterdam": "^AEX",  # EUROPE (example, needs actual ticker)
-    "New Zealand Stock Exchange (NZX)": "^NZ50",  # NZX (example, needs actual ticker)
-    "Oslo Stock Exchange": "^OSEAX",  # OSLO (example, needs actual ticker)
-    "Philippine Stock Exchange Indices": "^PSEi",  # PHILIPPINES (example, needs actual ticker)
-    "Warsaw Stock Exchange": "^WIG",  # WSE (example, needs actual ticker)
-    "Euronext Lisbon": "^PSI20",  # LISBON (example, needs actual ticker)
-    "Qatar Stock Exchange": "^QSI",  # QATAR (example, needs actual ticker)
-    "Bucharest Stock Exchange": "^BET",  # BUCHAREST (example, needs actual ticker)
-    "Singapore Stock Exchange (SGX)": "^STI",  # SGX (example, needs actual ticker)
-    "Johannesburg Stock Exchange": "^J203.JO",  # JOHANNESBURG (example, needs actual ticker)
-    "Korea Stock Exchange": "^KS11",  # KOREA (example, needs actual ticker)
-    "KOSDAQ": "^KQ11",  # KOSDAQ (example, needs actual ticker)
-    "Madrid SE C.A.T.S.": "^IBEX",  # MADRID (example, needs actual ticker)
-    "Saudi Stock Exchange (Tadawul)": "^TASI.SR",  # TADAWUL (example, needs actual ticker)
-    "Nasdaq OMX Stockholm": "^OMX",  # OMX (example, needs actual ticker)
-    "Swiss Exchange (SIX)": "^SSMI",  # SIX (example, needs actual ticker)
-    "Taiwan OTC Exchange": "^TWO",  # OTC (example, needs actual ticker)
-    "Taiwan Stock Exchange (TWSE)": "^TWII",  # TWSE (example, needs actual ticker)
-    "Stock Exchange of Thailand (SET)": "^SET.BK",  # SET (example, needs actual ticker)
-    "Borsa İstanbul": "^XU100",  # ISTANBUL (example, needs actual ticker)
-    "Dubai Financial Market": "^DFMGI",  # DFM (example, needs actual ticker)
-    "Cboe UK": "^UKX",  # UK (example, needs actual ticker)
-    "FTSE Indices": "^FTSE",  # FTSE (example, needs actual ticker)
-    "London Stock Exchange": "^FTSE",  # LSE (example, needs actual ticker)
-    "Caracas Stock Exchange": "^IBC"
+    "Nasdaq OMX Iceland": "^OMXI10",  # OMX Iceland 10
+    "Bombay Stock Exchange": "^BSESN",  # SENSEX
+    "National Stock Exchange of India": "^NSEI",  # NIFTY 50
+    "Indonesia Stock Exchange (IDX)": "^JKSE",  # Jakarta Composite
+    "Euronext Dublin": "^ISEQ",  # ISEQ Overall Index
+    "Tel Aviv Stock Exchange": "^TA125",  # TA-125
+    "EuroTLX": "EUROTLX",  # EuroTLX (example, needs actual ticker)
+    "Italian Stock Exchange": "^FTSEMIB",  # FTSE MIB
+    "Nikkei Indices": "^N225",  # Nikkei 225
+    "Tokyo Stock Exchange": "^N225",  # Nikkei 225
+    "Boursa Kuwait": "KUWAIT",  # Kuwait Index (example, needs actual ticker)
+    "Nasdaq OMX Riga": "^OMXRGI",  # OMX Riga
+    "Nasdaq OMX Vilnius": "^OMXVGI",  # OMX Vilnius
+    "Malaysian Stock Exchange": "^KLSE",  # FTSE Bursa Malaysia KLCI
+    "Mexico Stock Exchange (BMV)": "^MXX",  # IPC
+    "Euronext Amsterdam": "^AEX",  # AEX
+    "New Zealand Stock Exchange (NZX)": "^NZ50",  # S&P/NZX 50
+    "Oslo Stock Exchange": "^OBX",  # OBX
+    "Philippine Stock Exchange Indices": "^PSEI",  # PSEi
+    "Warsaw Stock Exchange": "^WIG20",  # WIG 20
+    "Euronext Lisbon": "^PSI20",  # PSI 20
+    "Qatar Stock Exchange": "^QE",  # QE Index
+    "Bucharest Stock Exchange": "^BETI",  # BET Index
+    "Singapore Stock Exchange (SGX)": "^STI",  # STI
+    "Johannesburg Stock Exchange": "^J203",  # JSE Top 40
+    "Korea Stock Exchange": "^KS11",  # KOSPI
+    "KOSDAQ": "^KQ11",  # KOSDAQ
+    "Madrid SE C.A.T.S.": "^IBEX",  # IBEX 35
+    "Saudi Stock Exchange (Tadawul)": "^TASI",  # TASI
+    "Nasdaq OMX Stockholm": "^OMXSPI",  # OMX Stockholm PI
+    "Swiss Exchange (SIX)": "^SSMI",  # SMI
+    "Taiwan OTC Exchange": "^TWOTCI",  # TAIEX
+    "Taiwan Stock Exchange (TWSE)": "^TWII",  # TAIEX
+    "Stock Exchange of Thailand (SET)": "^SET50",  # SET 50
+    "Borsa İstanbul": "XU100",  # BIST 100
+    "Dubai Financial Market": "^DFM",  # DFM Index
+    "Cboe UK": "^FTSE",  # FTSE 100
+    "FTSE Indices": "^FTSE",  # FTSE 100
+    "London Stock Exchange": "^FTSE",  # FTSE 100
+    "Caracas Stock Exchange": "IBC",  # IBC
 }
 
-market_cap_categories = {
-    "Mega-cap": 200e9,
-    "Large-cap": 10e9,
-    "Mid-cap": 2e9,
-    "Small-cap": 500e6,
-    "Micro-cap": 50e6,
-    "Nano-cap": 0
-}
+# Streamlit application
+st.title("Share Price Retrieval App")
+st.write("Retrieve share prices of any company within a selected date range from Yahoo Finance.")
 
-# Function to fetch data from Yahoo Finance
-def fetch_data(symbol, exchange, start_date, end_date):
-    """Fetches data from Yahoo Finance for the given symbol, exchange, start date, and end date."""
-    ticker = symbol + exchange_suffixes[exchange]
-    data = yf.download(ticker, start=start_date, end=end_date, progress=False)
-    return data
+# User inputs
+exchange = st.selectbox("Select Exchange", list(exchange_suffixes.keys()))
+company_ticker = st.text_input("Enter Company Ticker (e.g., AAPL)")
 
-# Function to fetch VIX data from Yahoo Finance
-def fetch_vix_data(start_date, end_date):
-    """Fetches VIX data from Yahoo Finance for the given start date and end date."""
-    vix_data = yf.download("^VIX", start=start_date, end=end_date, progress=False)
-    return vix_data
+start_date = st.date_input("Start Date")
+end_date = st.date_input("End Date")
 
-# Function to fetch market capitalization data
-def fetch_market_cap_data(symbol, exchange):
-    """Fetches market capitalization data for the given symbol and exchange."""
-    ticker = symbol + exchange_suffixes[exchange]
-    info = yf.Ticker(ticker).info
-    market_cap = info.get("marketCap", 0)
-    return market_cap
+# Check if ticker and dates are provided
+if company_ticker and start_date and end_date:
+    # Append exchange suffix
+    ticker = company_ticker + exchange_suffixes[exchange]
 
-# Main function to run the Streamlit app
-def main():
-    st.title("Welcome to STOC!")
-    st.write("STOC is your one-stop solution to all your investing questions!")
-
-    # Sidebar options
-    exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
-    symbol = st.sidebar.text_input("Enter Ticker Symbol (e.g., AAPL)")
-    start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime("2020-01-01"))
-    end_date = st.sidebar.date_input("End Date", value=pd.to_datetime("today"))
-
-    if st.sidebar.button("Get Data"):
-        st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
-        data = fetch_data(symbol, exchange, start_date, end_date)
-        vix_data = fetch_vix_data(start_date, end_date)
-        market_cap = fetch_market_cap_data(symbol, exchange)
-
-        if not data.empty:
-            st.write("Data Sample:")
-            st.write(data.head())
-
-            # Calculate daily returns
-            data['Return'] = data['Close'].pct_change()
-
-            # Calculate volatility
-            data['Volatility'] = data['Return'].rolling(window=20).std() * (252 ** 0.5)
-
-            # Calculate market capitalization
-            data['Market Capitalization'] = ((data['High'] + data['Low']) / 2) * data['Volume']
-
-            # Calculate compounded daily growth rate
-            data['Compounded Daily Growth Rate'] = (1 + data['Return']).cumprod()
-
-            # Fetch national average data
-            national_average_ticker = "^GSPC"  # S&P 500 index (USA)
-            if exchange == "Canada":
-                national_average_ticker = "^GSPTSE"  # S&P/TSX Composite index (Canada)
-            elif exchange == "UK":
-                national_average_ticker = "^FTSE"  # FTSE 100 index (UK)
-            national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
-            national_average_return = national_average_data['Close'].pct_change().mean() * 100
-
-        
-            # Calculate scores
-            data = ...  # assume data is a pandas dataframe with 'Return' and 'Volatility' columns
-            market_cap = ...  # assume market_cap is a value
-            national_average_return = ...  # assume national_average_return is a value
-            
-            scores = {}
-            scores['Return'] = data['Return'].mean() * 100
-            scores['Volatility'] = 100 - (data['Volatility'].mean() * 100)  # penalize high volatility
-            scores['Market Capitalization'] = market_cap / 1e9
-            scores['National Average Return'] = national_average_return
-            
-            # Calculate weighted scores
-            weights = {
-                'Return': 0.2,
-                'Volatility': 0.3,
-                'Market Capitalization': 0.2,
-                'National Average Return': 0.3
-            }
-            
-            weighted_scores = {}
-            for metric, score in scores.items():
-                weighted_scores[metric] = score * weights[metric]
-            
-            # Calculate overall score
-            overall_score = sum(weighted_scores.values()) / sum(weights.values())
-            
-            # Apply a scaling factor to make the scoring more rigorous
-            scaling_factor = 0.7
-            overall_score *= scaling_factor
-            
-            # Print results in a user-friendly format
-            import streamlit as st
-            st.write("Results:")
-            st.write(f"**Return:** {scores['Return']:.2f}%")
-            st.write(f"**Volatility:** {100 - scores['Volatility']:.2f}%")
-            st.write(f"**Market Capitalization:** {scores['Market Capitalization']:.2f} billion")
-            st.write(f"**National Average Return:** {scores['National Average Return']:.2f}%")
-            st.write(f"**Overall Score:** {overall_score:.2f}")
-            
-            # Print results in a user-friendly format
-            st.write("Results:")
-            st.write(f"**Return Index:** {index_scores['Return']:.2f}")
-            st.write(f"**Volatility Index:** {index_scores['Volatility']:.2f}")
-            st.write(f"**Market Capitalization Index:** {index_scores['Market Capitalization']:.2f}")
-            st.write(f"**Overall Score:** {overall_score:.2f}")
-            # Plotting parameters against time
-            st.write("Plotting parameters against time:")
-            columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
-
-            for column in columns:
-                fig, ax = plt.subplots(figsize=(10, 6))
-                ax.plot(data.index, data[column], color='blue')
-                ax.set_title(f"{column} over Time")
-                ax.set_xlabel("Date")
-                ax.set_ylabel(column)
-                ax.grid(True, color='white')
-                ax.patch.set_facecolor('black')
-                st.pyplot(fig)
-
-            # Correlation plot
-            st.write("Correlation Matrix:")
-            corr = data.corr()
-            fig, ax = plt.subplots(figsize=(12, 8))
-            sns.heatmap(pd.DataFrame(corr), annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax, cbar_kws={'shrink': 0.5})
-            ax.set_title("Correlation Matrix")
-            ax.patch.set_facecolor('black')
-            st.pyplot(fig)
-
-            # Download CSV button
-            st.write("Download CSV Output:")
-            csv = data.to_csv(index=False)
-            st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text/csv")
-        else:
-            st.write("No data found for the selected symbol and exchange.")
-
-if __name__ == "__main__":
-    main()
+    # Retrieve data from Yahoo Finance
+    data = yf.download(ticker, start=start_date, end=end_date)
+    
+    if not data.empty:
+        st.write(f"Showing data for {ticker}")
+        st.line_chart(data['Close'])
+        st.write(data)
+    else:
+        st.write(f"No data found for {ticker} within the selected date range.")
+else:
+    st.write("Please enter a company ticker and select a date range.")
