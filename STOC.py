@@ -366,4 +366,9 @@ def main():
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
-            st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text
+            st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text/csv")
+        else:
+            st.write("No data found for the selected symbol and exchange.")
+
+if __name__ == "__main__":
+    main()
