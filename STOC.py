@@ -275,6 +275,62 @@ def main():
             national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
             national_average_return = national_average_data['Close'].pct_change().mean() * 100
 
+            # Calculate weights for scoring
+            weights = {
+                'Return': 0.3,
+                'Volatility': 0.2,
+                'Market Capitalization': 0.3,
+                'National Average Return': 0.2
+            }
+
+            # Calculate scores
+            scores = {}
+            scores['Return'] = data['Return'].mean() * 100
+            scores['Volatility'] = data['Volatility'].mean() * 100
+            scores['Market Capitalization'] = market_cap / 1e9
+            scores['National Average Return'] = national_average_return
+
+            # Calculate weighted scores
+            weighted_scores = {}
+            for metric, score in scores.items():
+                weighted_scores[metric] = score * weights[metric]
+
+            # Calculate overall score
+            overall_score = sum(weighted_scores.values())
+
+            # Print every step like a math problem
+            st.write("Calculating scores:")
+            st.write("1. Calculate daily returns:")
+            st.write("Return = (Close - Close_prev) / Close_prev")
+            st.write("Return = " + str(data['Return'].mean() * 100) + "%")
+
+            st.write("2. Calculate volatility:")
+            st.write("Volatility = std(Return) * sqrt(252)")
+            st.write("Volatility = " + str(data['Volatility'].mean() * 100) + "%")
+
+            st.write("3. Calculate market capitalization:")
+            st.write("Market Capitalization = (High + Low) / 2 * Volume")
+            st.write("Market Capitalization = " + str(market_cap / 1e9) + " billion")
+
+            st.write("4. Calculate compounded daily growth rate:")
+            st.write("Compounded Daily Growth Rate = (1 + Return)^cumprod")
+            st.write("Compounded Daily Growth Rate = " + str(data['Compounded Daily Growth Rate'].iloc[-1]) + "x")
+
+            st.write("5. Calculate national average return:")
+            st.write("National Average Return = " + str(national_average_return) + "%")
+
+            st.write("6. Calculate weights for scoring:")
+            st.write("Weights = {'Return': 0.3, 'Volatility': 0.2, 'Market Capitalization': 0.3, 'National Average Return': 0.2}")
+
+            st.write("7. Calculate scores:")
+            st.write("Scores = {'Return': " + str(scores['Return']) + "%, 'Volatility': " + str(scores['Volatility']) + "%, 'Market Capitalization': " + str(scores['Market Capitalization']) + " billion, 'National Average Return': " + str(scores['National Average Return']) + "%}")
+
+            st.write("8. Calculate weighted scores:")
+            st.write("Weighted Scores = {'Return': " + str(weighted_scores['Return']) + ", 'Volatility': " + str(weighted_scores['Volatility']) + ", 'Market Capitalization': " + str(weighted_scores['Market Capitalization']) + ", 'National Average Return': " + str(weighted_scores['National Average Return']) + "}")
+
+            st.write("9. Calculate overall score:")
+            st.write("Overall Score = " + str(overall_score))
+
             # Plotting parameters against time
             st.write("Plotting parameters against time:")
             columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
@@ -310,9 +366,4 @@ def main():
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
-            st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text/csv")
-        else:
-            st.write("No data found for the selected symbol and exchange.")
-
-if __name__ == "__main__":
-    main()
+            st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text
