@@ -317,7 +317,7 @@ def main():
             
             for metric, value, weight in metrics:
                 assessment += value * weight
-                st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
+                st.write(f"{metric} score: {value:.2f} (awarded weightage of {weight*100:.0f}%)")
             
             print(f"The assessment score of the company is {assessment}")
             # Download CSV button
