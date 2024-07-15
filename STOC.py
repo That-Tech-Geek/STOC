@@ -208,24 +208,6 @@ market_cap_categories = {
     "Nano-cap": 0
 }
 
-# Function to fetch data from Yahoo Finance
-def fetch_data(symbol, exchange, start_date, end_date):
-    ticker = symbol + exchange_suffixes[exchange]
-    data = yf.download(ticker, start=start_date, end=end_date, progress=False)  # Suppress progress bar
-    return data
-
-# Function to fetch volatility index data from Yahoo Finance
-def fetch_vix_data(start_date, end_date):
-    vix_data = yf.download("^VIX", start=start_date, end=end_date, progress=False)  # Suppress progress bar
-    return vix_data
-
-# Function to fetch market capitalization data from Yahoo Finance
-def fetch_market_cap_data(symbol, exchange):
-    ticker = symbol + exchange_suffixes[exchange]
-    info = yf.Ticker(ticker).info
-    market_cap = info["marketCap"]
-    return market_cap
-
 # Main function to run the Streamlit app
 def main():
     st.title("Welcome to STOC!")
@@ -274,19 +256,31 @@ def main():
             
             for column in columns:
                 fig, ax = plt.subplots(figsize=(10, 6))
-                ax.plot(data.index, data[column])
+                ax.plot(data.index, data[column], color='blue')
                 ax.set_title(f"{column} over Time")
                 ax.set_xlabel("Date")
                 ax.set_ylabel(column)
+                ax.grid(True, color='white')
+                ax.patch.set_facecolor('black')
                 st.pyplot(fig)
             
             # Correlation plot
             st.write("Correlation Matrix:")
             corr = data.corr()
             fig, ax = plt.subplots(figsize=(12, 8))
-            sns.heatmap(pd.DataFrame(corr), annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax)
+            sns.heatmap(pd.DataFrame(corr), annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax, cbar_kws={'shrink': 0.5})
             ax.set_title("Correlation Matrix")
+            ax.patch.set_facecolor('black')
             st.pyplot(fig)
+            
+            # Assessment score and metrics
+            st.write("Assessment Score and Metrics:")
+            assessment_score = (data['Return'].mean() * 100) / (data['Volatility'].mean() * 100)
+            st.write(f"Assessment Score: {assessment_score:.2f}")
+            st.write(f"Return: {data['Return'].mean() * 100:.2f}%")
+            st.write(f"Volatility: {data['Volatility'].mean() * 100:.2f}%")
+            st.write(f"Market Capitalization: {market_cap:.2f} billion")
+            st.write(f"National Average Return: {national_average_return:.2f}%")
             
             # Download CSV button
             st.write("Download CSV Output:")
