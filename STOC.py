@@ -229,7 +229,7 @@ def fetch_market_cap_data(symbol, exchange):
 # Main function to run the Streamlit app
 def main():
     st.title("Welcome to STOC!")
-    st.write("STOC is your one-stop colution to all your investing questions!")
+    st.write("STOC is your one-stop solution to all your investing questions!")
     
     # Sidebar options
     exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
@@ -288,38 +288,6 @@ def main():
             ax.set_title("Correlation Matrix")
             st.pyplot(fig)
             
-            # Most correlated attributes
-            st.title("Most Correlated Attributes:")
-            corr_matrix = pd.DataFrame(corr.abs())
-            upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-            to_drop = [(column, other_column) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
-            most_correlated = [(column, other_column, upper.loc[column, other_column]) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
-            most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
-            for column, other_column, correlation in most_correlated:
-                if column!= other_column:
-                    st.write(f"{column} and {other_column} are correlated with a coefficient of {correlation:.2f}")
-            
-            # Investment assessment
-            st.title("Investment Assessment:")
-            assessment = 0
-            
-            # Weighted metrics (more emphasis on growth metrics)
-            metrics = [
-                ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.4),  # increased weightage
-                ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.3),  # increased weightage
-                ("Market Capitalization", market_cap / 1e9, 0.1),
-                ("Volatility", data['Volatility'].mean() * 100, 0.2),  # decreased weightage
-                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.3)  # decreased weightage
-            ]
-            
-            if 'Market' in corr.columns:
-                metrics.append(("Correlation with Market", corr.loc['Close', 'Market'], 0.05))  # decreased weightage
-            
-            for metric, value, weight in metrics:
-                assessment += value * weight
-                st.write(f"{metric}: {value:.2f} ({weight*100:.0f}%)")
-            
-            print(f"The assessment score of the company is {assessment}")
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
