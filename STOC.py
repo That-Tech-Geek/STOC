@@ -274,7 +274,8 @@ def main():
                 
                 # Plotting parameters against time
                 st.write("Plotting parameters against time:")
-                columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
+                columns = [col for col in data.columns if col not in ['Volume', 'Adj Close', 'Mode']]
+                columns.extend(['Return', 'Volatility', 'Compounded Daily Growth Rate'])  # Add the new columns
                 
                 for column in columns:
                     fig, ax = plt.subplots(figsize=(10, 6))
