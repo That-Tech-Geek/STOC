@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
+def fetch_data(symbol, exchange, start_date, end_date):
+    ticker = symbol + exchange_suffixes[exchange]
+    data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+    return data
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
     "NYSE": "",
