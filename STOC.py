@@ -1,6 +1,7 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
+import numpy as np
 
 # Dictionaries provided
 exchange_suffixes = {
@@ -195,30 +196,63 @@ exchange_indices = {
     "Caracas Stock Exchange": "IBC",  # IBC
 }
 
-# Streamlit application
-st.title("Share Price Retrieval App")
-st.write("Retrieve share prices of any company within a selected date range from Yahoo Finance.")
+def main():
+    st.title("Share Price Retrieval App")
+    st.write("Retrieve share prices of any company within a selected date range from Yahoo Finance.")
 
-# User inputs
-exchange = st.selectbox("Select Exchange", list(exchange_suffixes.keys()))
-company_ticker = st.text_input("Enter Company Ticker (e.g., AAPL)")
+    # User inputs
+    exchange = st.selectbox("Select Exchange", list(exchange_suffixes.keys()))
+    company_ticker = st.text_input("Enter Company Ticker (e.g., AAPL)")
 
-start_date = st.date_input("Start Date")
-end_date = st.date_input("End Date")
+    start_date = st.date_input("Start Date")
+    end_date = st.date_input("End Date")
 
-# Check if ticker and dates are provided
-if company_ticker and start_date and end_date:
-    # Append exchange suffix
-    ticker = company_ticker + exchange_suffixes[exchange]
+    # Debugging output
+    st.write(f"Selected exchange: {exchange}")
+    st.write(f"Entered ticker: {company_ticker}")
+    st.write(f"Date range: {start_date} to {end_date}")
 
-    # Retrieve data from Yahoo Finance
-    data = yf.download(ticker, start=start_date, end=end_date)
-    
-    if not data.empty:
-        st.write(f"Showing data for {ticker}")
-        st.line_chart(data['Close'])
-        st.write(data)
+    # Check if ticker and dates are provided
+    if company_ticker and start_date and end_date:
+        try:
+            # Append exchange suffix
+            ticker = company_ticker + exchange_suffixes[exchange]
+
+            # Retrieve data from Yahoo Finance
+            data = yf.download(ticker, start=start_date, end=end_date)
+            
+            if not data.empty:
+                st.write(f"Showing data for {ticker}")
+                
+                # Plot Opening Prices
+                st.subheader("Opening Stock Prices")
+                st.line_chart(data['Open'])
+                
+                # Plot Closing Prices
+                st.subheader("Closing Stock Prices")
+                st.line_chart(data['Close'])
+                
+                # Plot Adjusted Closing Prices
+                st.subheader("Adjusted Closing Prices")
+                st.line_chart(data['Adj Close'])
+
+                # Calculate and plot Variability Index (Standard Deviation of Close Prices)
+                st.subheader("Variability Index (Standard Deviation of Close Prices)")
+                variability_index = data['Close'].rolling(window=20).std()
+                st.line_chart(variability_index)
+                
+                # Adjusted Variability Index (Adjusted Standard Deviation)
+                st.subheader("Adjusted Variability Index (Standard Deviation of Adjusted Close Prices)")
+                adj_variability_index = data['Adj Close'].rolling(window=20).std()
+                st.line_chart(adj_variability_index)
+                
+                st.write(data)
+            else:
+                st.write(f"No data found for {ticker} within the selected date range.")
+        except Exception as e:
+            st.write(f"An error occurred: {e}")
     else:
-        st.write(f"No data found for {ticker} within the selected date range.")
-else:
-    st.write("Please enter a company ticker and select a date range.")
+        st.write("Please enter a company ticker and select a date range.")
+
+if __name__ == "__main__":
+    main()
