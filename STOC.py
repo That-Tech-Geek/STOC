@@ -212,39 +212,60 @@ market_cap_categories = {
     "Nano-cap": 0
 }
 
+# Function to fetch data from Yahoo Finance
+def fetch_data(symbol, exchange, start_date, end_date):
+    """Fetches data from Yahoo Finance for the given symbol, exchange, start date, and end date."""
+    ticker = symbol + exchange_suffixes[exchange]
+    data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+    return data
+
+# Function to fetch VIX data from Yahoo Finance
+def fetch_vix_data(start_date, end_date):
+    """Fetches VIX data from Yahoo Finance for the given start date and end date."""
+    vix_data = yf.download("^VIX", start=start_date, end=end_date, progress=False)
+    return vix_data
+
+# Function to fetch market capitalization data
+def fetch_market_cap_data(symbol, exchange):
+    """Fetches market capitalization data for the given symbol and exchange."""
+    ticker = symbol + exchange_suffixes[exchange]
+    info = yf.Ticker(ticker).info
+    market_cap = info.get("marketCap", 0)
+    return market_cap
+
 # Main function to run the Streamlit app
 def main():
     st.title("Welcome to STOC!")
     st.write("STOC is your one-stop solution to all your investing questions!")
-    
+
     # Sidebar options
     exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
     symbol = st.sidebar.text_input("Enter Ticker Symbol (e.g., AAPL)")
     start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime("2020-01-01"))
     end_date = st.sidebar.date_input("End Date", value=pd.to_datetime("today"))
-    
+
     if st.sidebar.button("Get Data"):
         st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
         data = fetch_data(symbol, exchange, start_date, end_date)
         vix_data = fetch_vix_data(start_date, end_date)
         market_cap = fetch_market_cap_data(symbol, exchange)
-        
+
         if not data.empty:
             st.write("Data Sample:")
             st.write(data.head())
-            
+
             # Calculate daily returns
             data['Return'] = data['Close'].pct_change()
-            
+
             # Calculate volatility
             data['Volatility'] = data['Return'].rolling(window=20).std() * (252 ** 0.5)
-            
+
             # Calculate market capitalization
             data['Market Capitalization'] = ((data['High'] + data['Low']) / 2) * data['Volume']
-            
+
             # Calculate compounded daily growth rate
             data['Compounded Daily Growth Rate'] = (1 + data['Return']).cumprod()
-            
+
             # Fetch national average data
             national_average_ticker = "^GSPC"  # S&P 500 index (USA)
             if exchange == "Canada":
@@ -253,11 +274,11 @@ def main():
                 national_average_ticker = "^FTSE"  # FTSE 100 index (UK)
             national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
             national_average_return = national_average_data['Close'].pct_change().mean() * 100
-            
+
             # Plotting parameters against time
             st.write("Plotting parameters against time:")
             columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
-            
+
             for column in columns:
                 fig, ax = plt.subplots(figsize=(10, 6))
                 ax.plot(data.index, data[column], color='blue')
@@ -267,7 +288,7 @@ def main():
                 ax.grid(True, color='white')
                 ax.patch.set_facecolor('black')
                 st.pyplot(fig)
-            
+
             # Correlation plot
             st.write("Correlation Matrix:")
             corr = data.corr()
@@ -276,7 +297,7 @@ def main():
             ax.set_title("Correlation Matrix")
             ax.patch.set_facecolor('black')
             st.pyplot(fig)
-            
+
             # Assessment score and metrics
             st.write("Assessment Score and Metrics:")
             assessment_score = (data['Return'].mean() * 100) / (data['Volatility'].mean() * 100)
@@ -285,7 +306,7 @@ def main():
             st.write(f"Volatility: {data['Volatility'].mean() * 100:.2f}%")
             st.write(f"Market Capitalization: {market_cap:.2f} billion")
             st.write(f"National Average Return: {national_average_return:.2f}%")
-            
+
             # Download CSV button
             st.write("Download CSV Output:")
             csv = data.to_csv(index=False)
