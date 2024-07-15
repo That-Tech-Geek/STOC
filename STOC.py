@@ -276,6 +276,11 @@ def main():
             national_average_return = national_average_data['Close'].pct_change().mean() * 100
 
         
+            # Calculate scores
+            data = ...  # assume data is a pandas dataframe with 'Return' and 'Volatility' columns
+            market_cap = ...  # assume market_cap is a value
+            national_average_return = ...  # assume national_average_return is a value
+            
             scores = {}
             scores['Return'] = data['Return'].mean() * 100
             scores['Volatility'] = 100 - (data['Volatility'].mean() * 100)  # penalize high volatility
@@ -284,7 +289,7 @@ def main():
             
             # Calculate weighted scores
             weights = {
-                'Return': 0.4,
+                'Return': 0.2,
                 'Volatility': 0.3,
                 'Market Capitalization': 0.2,
                 'National Average Return': 0.3
@@ -300,6 +305,15 @@ def main():
             # Apply a scaling factor to make the scoring more rigorous
             scaling_factor = 0.7
             overall_score *= scaling_factor
+            
+            # Print results in a user-friendly format
+            import streamlit as st
+            st.write("Results:")
+            st.write(f"**Return:** {scores['Return']:.2f}%")
+            st.write(f"**Volatility:** {100 - scores['Volatility']:.2f}%")
+            st.write(f"**Market Capitalization:** {scores['Market Capitalization']:.2f} billion")
+            st.write(f"**National Average Return:** {scores['National Average Return']:.2f}%")
+            st.write(f"**Overall Score:** {overall_score:.2f}")
             
             # Print results in a user-friendly format
             st.write("Results:")
