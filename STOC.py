@@ -246,6 +246,24 @@ def main():
                 adj_variability_index = data['Adj Close'].rolling(window=20).std()
                 st.line_chart(adj_variability_index)
                 
+                # Plot EPS
+                st.subheader("Earnings per Share (EPS)")
+                ticker_obj = yf.Ticker(ticker)
+                eps_data = ticker_obj.earnings
+                if not eps_data.empty:
+                    st.line_chart(eps_data['Earnings'])
+                else:
+                    st.write("EPS data is not available.")
+                
+                # Plot Dividend Yield
+                st.subheader("Dividend Yield")
+                dividends = ticker_obj.dividends
+                dividend_yield = (dividends / data['Close']).rolling(window=20).mean()
+                if not dividends.empty:
+                    st.line_chart(dividend_yield)
+                else:
+                    st.write("Dividend data is not available.")
+
                 st.write(data)
             else:
                 st.write(f"No data found for {ticker} within the selected date range.")
