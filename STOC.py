@@ -305,11 +305,11 @@ def main():
             
             # Weighted metrics (more emphasis on growth metrics)
             metrics = [
-                ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.4),  # increased weightage
-                ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.3),  # increased weightage
-                ("Market Capitalization", market_cap / 1e9, 0.1),
-                ("Volatility", data['Volatility'].mean() * 100, 0.2),  # decreased weightage
-                ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.3)  # decreased weightage
+                ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean()),  # increased weightage
+                ("Return on Investment (ROI)", data['Return'].mean() * 100),  # increased weightage
+                ("Market Capitalization", market_cap / 1e9),
+                ("Volatility", data['Volatility'].mean() * 100),  # decreased weightage
+                ("Volatility Index (VIX)", vix_data['Close'].mean())  # decreased weightage
             ]
             
             if 'Market' in corr.columns:
