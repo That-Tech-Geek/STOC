@@ -298,7 +298,7 @@ def main():
                 most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
                 for column, other_column, correlation in most_correlated:
                     if column!= other_column:
-                        st.write(f"{column} and {other_column} are correlated with a coefficient of {correlation:.2f}")
+                        st.write(f"{column}and {other_column} are correlated with a coefficient of {correlation:.2f}")
                 
                 # Investment assessment
                 st.title("Investment Assessment:")
