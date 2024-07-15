@@ -275,36 +275,31 @@ def main():
             national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
             national_average_return = national_average_data['Close'].pct_change().mean() * 100
 
-            # Calculate scores
+        
             scores = {}
             scores['Return'] = data['Return'].mean() * 100
-            scores['Volatility'] = data['Volatility'].mean() * 100
+            scores['Volatility'] = 100 - (data['Volatility'].mean() * 100)  # penalize high volatility
             scores['Market Capitalization'] = market_cap / 1e9
-            
-            # Calculate national average scores
-            national_averages = {}
-            national_averages['Return'] = national_average_return
-            national_averages['Volatility'] = national_average_volatility
-            national_averages['Market Capitalization'] = national_average_market_cap
-            
-            # Calculate index scores
-            index_scores = {}
-            for metric, score in scores.items():
-                index_scores[metric] = score / national_averages[metric]
+            scores['National Average Return'] = national_average_return
             
             # Calculate weighted scores
             weights = {
                 'Return': 0.4,
                 'Volatility': 0.3,
-                'Market Capitalization': 0.2
+                'Market Capitalization': 0.2,
+                'National Average Return': 0.3
             }
             
             weighted_scores = {}
-            for metric, score in index_scores.items():
+            for metric, score in scores.items():
                 weighted_scores[metric] = score * weights[metric]
             
             # Calculate overall score
-            overall_score = sum(weighted_scores.values())
+            overall_score = sum(weighted_scores.values()) / sum(weights.values())
+            
+            # Apply a scaling factor to make the scoring more rigorous
+            scaling_factor = 0.7
+            overall_score *= scaling_factor
             
             # Print results in a user-friendly format
             st.write("Results:")
