@@ -276,42 +276,42 @@ def main():
             national_average_return = national_average_data['Close'].pct_change().mean() * 100
 
             # Calculate scores
-scores = {}
-scores['Return'] = data['Return'].mean() * 100
-scores['Volatility'] = data['Volatility'].mean() * 100
-scores['Market Capitalization'] = market_cap / 1e9
-
-# Calculate national average scores
-national_averages = {}
-national_averages['Return'] = national_average_return
-national_averages['Volatility'] = national_average_volatility
-national_averages['Market Capitalization'] = national_average_market_cap
-
-# Calculate index scores
-index_scores = {}
-for metric, score in scores.items():
-    index_scores[metric] = score / national_averages[metric]
-
-# Calculate weighted scores
-weights = {
-    'Return': 0.4,
-    'Volatility': 0.3,
-    'Market Capitalization': 0.2
-}
-
-weighted_scores = {}
-for metric, score in index_scores.items():
-    weighted_scores[metric] = score * weights[metric]
-
-# Calculate overall score
-overall_score = sum(weighted_scores.values())
-
-# Print results in a user-friendly format
-st.write("Results:")
-st.write(f"**Return Index:** {index_scores['Return']:.2f}")
-st.write(f"**Volatility Index:** {index_scores['Volatility']:.2f}")
-st.write(f"**Market Capitalization Index:** {index_scores['Market Capitalization']:.2f}")
-st.write(f"**Overall Score:** {overall_score:.2f}")
+            scores = {}
+            scores['Return'] = data['Return'].mean() * 100
+            scores['Volatility'] = data['Volatility'].mean() * 100
+            scores['Market Capitalization'] = market_cap / 1e9
+            
+            # Calculate national average scores
+            national_averages = {}
+            national_averages['Return'] = national_average_return
+            national_averages['Volatility'] = national_average_volatility
+            national_averages['Market Capitalization'] = national_average_market_cap
+            
+            # Calculate index scores
+            index_scores = {}
+            for metric, score in scores.items():
+                index_scores[metric] = score / national_averages[metric]
+            
+            # Calculate weighted scores
+            weights = {
+                'Return': 0.4,
+                'Volatility': 0.3,
+                'Market Capitalization': 0.2
+            }
+            
+            weighted_scores = {}
+            for metric, score in index_scores.items():
+                weighted_scores[metric] = score * weights[metric]
+            
+            # Calculate overall score
+            overall_score = sum(weighted_scores.values())
+            
+            # Print results in a user-friendly format
+            st.write("Results:")
+            st.write(f"**Return Index:** {index_scores['Return']:.2f}")
+            st.write(f"**Volatility Index:** {index_scores['Volatility']:.2f}")
+            st.write(f"**Market Capitalization Index:** {index_scores['Market Capitalization']:.2f}")
+            st.write(f"**Overall Score:** {overall_score:.2f}")
             # Plotting parameters against time
             st.write("Plotting parameters against time:")
             columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
