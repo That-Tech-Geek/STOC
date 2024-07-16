@@ -221,25 +221,19 @@ def plot_time_series(data, excluded_columns):
     columns_to_plot = [col for col in data.columns if col not in excluded_columns]
     for col in columns_to_plot:
         st.subheader(f"{col} over time")
-        fig, ax = plt.subplots()
-        ax.plot(data.index, data[col])
+        plt.style.use('dark_background')  # Set plot background to black
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
         ax.set_xlabel('Time')
         ax.set_ylabel(col)
-        ax.grid(True)
+        ax.grid(color='white')  # Set gridline color to white
+        ax.set_facecolor('black')  # Set axis background to black
+        ax.spines['bottom'].set_color('black')  # Set axis spines to black
+        ax.spines['top'].set_color('black')
+        ax.spines['right'].set_color('black')
+        ax.spines['left'].set_color('black')
         st.pyplot(fig)
-
-# Plotting section
-plt.style.use('dark_background')  # Set plot background to black
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.plot(data['Close'], color='blue')  # Set plot color to blue
-ax.grid(color='white')  # Set gridline color to white
-ax.set_facecolor('black')  # Set axis background to black
-ax.spines['bottom'].set_color('black')  # Set axis spines to black
-ax.spines['top'].set_color('black')
-ax.spines['right'].set_color('black')
-ax.spines['left'].set_color('black')
-st.pyplot(fig)
-
+        
 # Function to plot correlation heatmap
 def plot_correlation_heatmap(data, excluded_columns):
     st.header("Correlation Heatmap")
@@ -272,7 +266,7 @@ def main():
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
     exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
-    start_date = st.date_input("Start date:", value=pd.to_datetime('1000-01-01'), min_value=pd.to_datetime('1924-01-01'))
+    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
     end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
