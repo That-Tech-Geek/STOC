@@ -4,6 +4,8 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from scipy.stats import pearsonr
+import plotly.express as px
 
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
@@ -208,246 +210,88 @@ market_cap_categories = {
     "Nano-cap": 0
 }
 
-# Function to fetch data from Yahoo Finance
-def fetch_data(symbol, exchange, start_date, end_date):
-    ticker = symbol + exchange_suffixes[exchange]
-    data = yf.download(ticker, start=start_date, end=end_date, progress=False)  # Suppress progress bar
+# Function to fetch data
+def fetch_data(ticker, start, end):
+    data = yf.download(ticker, start=start, end=end)
     return data
 
-# Function to fetch volatility index data from Yahoo Finance
-def fetch_vix_data(start_date, end_date):
-    vix_data = yf.download("^VIX", start=start_date, end=end_date, progress=False)  # Suppress progress bar
-    return vix_data
+# Function to plot time series data
+def plot_time_series(data, excluded_columns):
+    st.header("Time Series Data")
+    columns_to_plot = [col for col in data.columns if col not in excluded_columns]
+    for col in columns_to_plot:
+        st.subheader(f"{col} over time")
+        fig, ax = plt.subplots()
+        ax.plot(data.index, data[col])
+        ax.set_xlabel('Time')
+        ax.set_ylabel(col)
+        ax.grid(True)
+        st.pyplot(fig)
 
-# Function to fetch market capitalization data from Yahoo Finance
-def fetch_market_cap_data(symbol, exchange):
-    ticker = symbol + exchange_suffixes[exchange]
-    info = yf.Ticker(ticker).info
-    market_cap = info["marketCap"]
-    return market_cap
+# Function to plot correlation heatmap
+def plot_correlation_heatmap(data, excluded_columns):
+    st.header("Correlation Heatmap")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    corr = data[columns_to_include].corr()
+    fig, ax = plt.subplots()
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+    st.pyplot(fig)
 
-# Main function to run the Streamlit app
+# Function to display mean and median
+def display_mean_median(data, excluded_columns):
+    st.header("Mean and Median Values")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    mean_values = data[columns_to_include].mean()
+    median_values = data[columns_to_include].median()
+    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
+    st.dataframe(summary)
+
+# Function to display summary statistics
+def display_summary_statistics(data, excluded_columns):
+    st.header("Summary Statistics")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    summary_stats = data[columns_to_include].describe()
+    st.dataframe(summary_stats)
+
+# Streamlit app
 def main():
-    st.title("Welcome to STOC!")
-    st.write("STOC is your one-stop solution to all your investing questions!")
-    
-    # Sidebar options
-    exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
-    symbol = st.sidebar.text_input("Enter Ticker Symbol (e.g., AAPL)")
-    start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime("2020-01-01"))
-    end_date = st.sidebar.date_input("End Date", value=pd.to_datetime("today"))
-    
-    if symbol and exchange:
-        if st.sidebar.button("Get Data"):
-            st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
-            data = fetch_data(symbol, exchange, start_date, end_date)
-            vix_data = fetch_vix_data(start_date, end_date)
-            market_cap = fetch_market_cap_data(symbol, exchange)
-            
-            if not data.empty:
-                st.write("Data Sample:")
-                st.write(data.head())
-                
-                # Calculate daily returns
-                data['Return'] = data['Close'].pct_change()
-                
-                # Calculate volatility
-                data['Volatility'] = data['Return'].rolling(window=20).std() * (252 ** 0.5)
-                
-                # Calculate market capitalization
-                data['Market Capitalization'] = ((data['High'] + data['Low']) / 2) * data['Volume']
-                
-                # Calculate compounded daily growth rate
-                data['Compounded Daily Growth Rate'] = (1 + data['Return']).cumprod()
-                
-                # Calculate mode for each column
-                data['Mode'] = data.mode(axis=0).iloc[0]
-                
-                # Fetch national average data
-                national_average_ticker = "^GSPC"  # S&P 500 index (USA)
-                if exchange == "Canada":
-                    national_average_ticker = "^GSPTSE"  # S&P/TSX Composite index (Canada)
-                elif exchange == "UK":
-                    national_average_ticker = "^FTSE"  # FTSE 100 index (UK)
-                national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
-                national_average_return = national_average_data['Close'].pct_change().mean() * 100
-                
-                # Plotting parameters against time
-                st.write("Plotting parameters against time:")
-                columns = [col for col in data.columns if col not in ['Volume', 'Adj Close', 'Mode']]
-                columns.extend(['Return', 'Volatility', 'Compounded Daily Growth Rate'])  # Add the new columns
-                
-                for column in columns:
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.plot(data.index, data[column])
-                    ax.set_title(f"{column} over Time")
-                    ax.set_xlabel("Date")
-                    ax.set_ylabel(column)
-                    st.pyplot(fig)
-                
-                # Correlation plot
-                st.write("Correlation Matrix:")
-                corr = data.corr()
-                fig, ax = plt.subplots(figsize=(12, 8))
-                sns.heatmap(pd.DataFrame(corr), annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax)
-                ax.set_title("Correlation Matrix")
-                st.pyplot(fig)
-                
-                # Most correlated attributes
-                st.title("Most Correlated Attributes:")
-                corr_matrix = pd.DataFrame(corr.abs())
-                upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-                to_drop = [(column, other_column) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
-                most_correlated = [(column, other_column, upper.loc[column, other_column]) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
-                most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
-                for column, other_column, correlation in most_correlated:
-                    if column!= other_column:
-                        st.write(f"{column}and {other_column} are correlated with a coefficient of {correlation:.2f}")
-                
-                # Investment assessment
-                st.title("Investment Assessment:")
-                assessment = 0
-                
-                # Weighted metrics (more emphasis on growth metrics)
-                metrics = [
-                    ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.4),  # increased weightage
-                    ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.35),  # increased weightage
-                    ("Market Capitalization", market_cap / 1e9, 0.2),
-                    ("Volatility", data['Volatility'].mean() * 100, 0.1),  # decreased weightage
-                    ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.2)  # decreased weightage
-                ]
-                
-                if'Market' in corr.columns:
-                    metrics.append(("Correlation with Market", corr.loc['Close', 'Market'], 0.05))  # decreased weightage
-                
-                for metric, value, weight in metrics:
-                    assessment += value * weight
-                    st.write(f"{metric} score: {value:.2f} (awarded weightage of {weight*100:.0f}%)")
-                
-                print(f"The assessment score of the company is {assessment}")
-                # Download CSV button
-                st.write("Download CSV Output:")
-                csv = data.to_csv(index=False)
-                st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text/csv")
-            else:
-                st.write("No data found for the selected symbol and exchange.")
-        else:
-            st.write("Please enter a valid ticker symbol and exchange.")
-    else:
-        st.write("Please enter a valid ticker symbol and exchange.")
+    st.title("Stock Data Analysis")
 
-if __name__ == "__main__":
-    main()ata(symbol, exchange):
-    ticker = symbol + exchange_suffixes[exchange]
-    info = yf.Ticker(ticker).info
-    market_cap = info["marketCap"]
-    return market_cap
+    # Input fields
+    ticker = st.text_input("Enter stock ticker:")
+    exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
+    start_date = st.date_input("Start date:")
+    end_date = st.date_input("End date:")
 
-# Main function to run the Streamlit app
-def main():
-    st.title("Welcome to STOC!")
-    st.write("STOC is your one-stop solution to all your investing questions!")
-    
-    # Sidebar options
-    exchange = st.sidebar.selectbox("Select Exchange", list(exchange_suffixes.keys()))
-    symbol = st.sidebar.text_input("Enter Ticker Symbol (e.g., AAPL)")
-    start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime("2020-01-01"))
-    end_date = st.sidebar.date_input("End Date", value=pd.to_datetime("today"))
-    
-    if symbol and exchange:
-        if st.sidebar.button("Get Data"):
-            st.write(f"Fetching data for {symbol} from {exchange} between {start_date} and {end_date}")
-            data = fetch_data(symbol, exchange, start_date, end_date)
-            vix_data = fetch_vix_data(start_date, end_date)
-            market_cap = fetch_market_cap_data(symbol, exchange)
-            
-            if not data.empty:
-                st.write("Data Sample:")
-                st.write(data.head())
-                
-                # Calculate daily returns
-                data['Return'] = data['Close'].pct_change()
-                
-                # Calculate volatility
-                data['Volatility'] = data['Return'].rolling(window=20).std() * (252 ** 0.5)
-                
-                # Calculate market capitalization
-                data['Market Capitalization'] = ((data['High'] + data['Low']) / 2) * data['Volume']
-                
-                # Calculate compounded daily growth rate
-                data['Compounded Daily Growth Rate'] = (1 + data['Return']).cumprod()
-                
-                # Fetch national average data
-                national_average_ticker = "^GSPC"  # S&P 500 index (USA)
-                if exchange == "Canada":
-                    national_average_ticker = "^GSPTSE"  # S&P/TSX Composite index (Canada)
-                elif exchange == "UK":
-                    national_average_ticker = "^FTSE"  # FTSE 100 index (UK)
-                national_average_data = yf.download(national_average_ticker, start=start_date, end=end_date, progress=False)
-                national_average_return = national_average_data['Close'].pct_change().mean() * 100
-                
-                # Plotting parameters against time
-                st.write("Plotting parameters against time:")
-                columns = [col for col in data.columns if col not in ['Volume', 'Adj Close']]
-                
-                for column in columns:
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.plot(data.index, data[column])
-                    ax.set_title(f"{column} over Time")
-                    ax.set_xlabel("Date")
-                    ax.set_ylabel(column)
-                    st.pyplot(fig)
-                
-                # Correlation plot
-                st.write("Correlation Matrix:")
-                corr = data.corr()
-                fig, ax = plt.subplots(figsize=(12, 8))
-                sns.heatmap(pd.DataFrame(corr), annot=True, cmap='coolwarm', fmt=".2f", vmin=-1, vmax=1, ax=ax)
-                ax.set_title("Correlation Matrix")
-                st.pyplot(fig)
-                
-                # Most correlated attributes
-                st.title("Most Correlated Attributes:")
-                corr_matrix = pd.DataFrame(corr.abs())
-                upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-                to_drop = [(column, other_column) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
-                most_correlated = [(column, other_column, upper.loc[column, other_column]) for column in upper.columns for other_column in upper.columns if upper.loc[column, other_column] > 0.8]
-                most_correlated = sorted(most_correlated, key=lambda x: x[2], reverse=True)
-                for column, other_column, correlation in most_correlated:
-                    if column!= other_column:
-                        st.write(f"{column}and {other_column} are correlated with a coefficient of {correlation:.2f}")
-                
-                # Investment assessment
-                st.title("Investment Assessment:")
-                assessment = 0
-                
-                # Weighted metrics (more emphasis on growth metrics)
-                metrics = [
-                    ("CompoundedDaily Growth Rate", data['Compounded Daily Growth Rate'].mean(), 0.4),  # increased weightage
-                    ("Return on Investment (ROI)", data['Return'].mean() * 100, 0.35),  # increased weightage
-                    ("Market Capitalization", market_cap / 1e9, 0.2),
-                    ("Volatility", data['Volatility'].mean() * 100, 0.1),  # decreased weightage
-                    ("Volatility Index (VIX)", vix_data['Close'].mean(), 0.2)  # decreased weightage
-                ]
-                
-                if'Market' in corr.columns:
-                    metrics.append(("Correlation with Market", corr.loc['Close', 'Market'], 0.05))  # decreased weightage
-                
-                for metric, value, weight in metrics:
-                    assessment += value * weight
-                    st.write(f"{metric} score: {value:.2f} (awarded weightage of {weight*100:.0f}%)")
-                
-                print(f"The assessment score of the company is {assessment}")
-                # Download CSV button
-                st.write("Download CSV Output:")
-                csv = data.to_csv(index=False)
-                st.download_button("Download CSV", csv, f"{symbol}_{start_date}_{end_date}.csv", "text/csv")
-            else:
-                st.write("No data found for the selected symbol and exchange.")
+    if ticker and exchange and start_date and end_date:
+        ticker_with_suffix = ticker + exchange_suffixes[exchange]
+        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+
+        if not data.empty:
+            # Plot time series data
+            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio']
+            plot_time_series(data, excluded_columns)
+
+            # Plot correlation heatmap
+            plot_correlation_heatmap(data, excluded_columns)
+
+            # Display mean and median values
+            display_mean_median(data, excluded_columns)
+
+            # Display summary statistics
+            display_summary_statistics(data, excluded_columns)
+
+            # Option to download data
+            st.header("Download Data")
+            csv = data.to_csv(index=True)
+            st.download_button(
+                label="Download data as CSV",
+                data=csv,
+                file_name='stock_data.csv',
+                mime='text/csv',
+            )
         else:
-            st.write("Please enter a valid ticker symbol and exchange.")
-    else:
-        st.write("Please enter a valid ticker symbol and exchange.")
+            st.write("No data available for the given ticker and date range.")
 
 if __name__ == "__main__":
     main()
