@@ -278,7 +278,8 @@ def plot_vix(start_date, end_date):
 
 # Streamlit app
 def main():
-    st.title("Stock Data Analysis")
+    st.title("Welcome to STOC!")
+    st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
 
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
