@@ -259,6 +259,23 @@ def display_summary_statistics(data, excluded_columns):
     summary_stats = data[columns_to_include].describe()
     st.dataframe(summary_stats)
 
+# Function to plot Volatility Index (VIX)
+def plot_vix():
+    st.header("Volatility Index (VIX)")
+    vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel('VIX')
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
 # Streamlit app
 def main():
     st.title("Stock Data Analysis")
@@ -286,17 +303,9 @@ def main():
             # Display summary statistics
             display_summary_statistics(data, excluded_columns)
 
+            # Plot Volatility Index (VIX)
+            plot_vix()
+
             # Option to download data
             st.header("Download Data")
-            csv = data.to_csv(index=True)
-            st.download_button(
-                label="Download data as CSV",
-                data=csv,
-                file_name='stock_data.csv',
-                mime='text/csv',
-            )
-        else:
-            st.write("No data available for the given ticker and date range.")
-
-if __name__ == "__main__":
-    main()
+            csv =
