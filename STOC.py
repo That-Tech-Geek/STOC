@@ -306,6 +306,17 @@ def main():
             # Plot Volatility Index (VIX)
             plot_vix()
 
-            # Option to download data
-            st.header("Download Data")
-            csv =
+    # Option to download data
+    st.header("Download Data")
+    csv = data.to_csv(index=True)
+    st.download_button(
+        label="Download data as CSV",
+        data=csv,
+        file_name='stock_data.csv',
+        mime='text/csv',
+    )
+        else:
+            st.write("No data available for the given ticker and date range.")
+
+if __name__ == "__main__":
+    main()
