@@ -260,7 +260,7 @@ def display_summary_statistics(data, excluded_columns):
     st.dataframe(summary_stats)
 
 # Function to plot Volatility Index (VIX)
-def plot_vix():
+def plot_vix(start_date, end_date):
     st.header("Volatility Index (VIX)")
     vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
     plt.style.use('dark_background')  # Set plot background to black
@@ -285,6 +285,7 @@ def main():
     exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
     start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
     end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
+    
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
@@ -304,19 +305,19 @@ def main():
             display_summary_statistics(data, excluded_columns)
 
             # Plot Volatility Index (VIX)
-            plot_vix()
+            plot_vix(start_date, end_date)
 
-    # Option to download data
-    st.header("Download Data")
-    csv = data.to_csv(index=True)
-    st.download_button(
-        label="Download data as CSV",
-        data=csv,
-        file_name='stock_data.csv',
-        mime='text/csv',
-        )
-else:
-    st.write("No data available for the given ticker and date range.")
+            # Option to download data
+            st.header("Download Data")
+            csv = data.to_csv(index=True)
+            st.download_button(
+                label="Download data as CSV",
+                data=csv,
+                file_name='stock_data.csv',
+                mime='text/csv',
+                )
+        else:
+            st.write("No data available for the given ticker and date range.")
 
 if __name__ == "__main__":
     main()
