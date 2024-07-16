@@ -1,6 +1,8 @@
-streamlit 
-yfinance 
-pandas 
-numpy
-seaborn
+streamlit
+pandas
+yfinance
 matplotlib
+seaborn
+numpy
+scipy
+plotly
