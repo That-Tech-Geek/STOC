@@ -315,8 +315,8 @@ def main():
         file_name='stock_data.csv',
         mime='text/csv',
     )
-        else:
-            st.write("No data available for the given ticker and date range.")
+    else:
+        st.write("No data available for the given ticker and date range.")
 
 if __name__ == "__main__":
     main()
