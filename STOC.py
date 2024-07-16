@@ -212,7 +212,7 @@ market_cap_categories = {
 
 # Function to fetch data
 def fetch_data(ticker, start, end):
-    data = yf.download(ticker, start=start, end=end)
+    data = yf.download(ticker, start=start, end=end, progress=False)
     return data
 
 # Function to plot time series data
