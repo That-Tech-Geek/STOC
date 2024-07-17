@@ -309,11 +309,30 @@ def main():
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
 
         if not data.empty:
-            # Plot time series data
-            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio']
-            plot_time_series(data, excluded_columns)
+            # Dropdown to select parameter to plot
+            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume']
+            parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
+
+            # Plot selected parameter
+            plt.style.use('dark_background')  # Set plot background to black
+            fig, ax = plt.subplots(figsize=(12, 6))
+            if parameter_to_plot == 'Estimated Debt Volume':
+                data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+                ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
+            else:
+                ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
+            ax.set_xlabel('Time')
+            ax.set_ylabel(parameter_to_plot)
+            ax.grid(color='white')  # Set gridline color to white
+            ax.set_facecolor('black')  # Set axis background to black
+            ax.spines['bottom'].set_color('black')  # Set axis spines to black
+            ax.spines['top'].set_color('black')
+            ax.spines['right'].set_color('black')
+            ax.spines['left'].set_color('black')
+            st.pyplot(fig)
 
             # Plot correlation heatmap
+            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio']
             plot_correlation_heatmap(data, excluded_columns)
 
             # Display mean and median values
@@ -324,9 +343,6 @@ def main():
 
             # Plot Volatility Index (VIX)
             plot_vix(start_date, end_date)
-
-            # Plot estimated debt volume
-            plot_estimated_debt_volume(data)
 
             # Option to download data
             st.header("Download Data")
