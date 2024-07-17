@@ -297,6 +297,7 @@ def plot_estimated_debt_volume(data):
 def main():
     st.title("Welcome to STOC!")
     st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
+    st.write("NOTE TO USER: This is a project built for educational purposes, and may not be considered as financial advice, although best efforts by the developer to prevent any such inadvertent instances.")
 
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
@@ -369,7 +370,7 @@ def main():
                 ax.spines['right'].set_color('black')
                 ax.spines['left'].set_color('black')
                 st.pyplot(fig)
-
+            st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consder this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. Sit tight!")
             # Plot correlation heatmap
             excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             plot_correlation_heatmap(data, excluded_columns)
