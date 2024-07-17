@@ -294,6 +294,90 @@ def plot_estimated_debt_volume(data):
     st.pyplot(fig)
 
 # Streamlit app
+# Function to fetch data
+def fetch_data(ticker, start, end):
+    data = yf.download(ticker, start=start, end=end, progress=False)
+    return data
+
+# Function to plot time series data
+def plot_time_series(data, excluded_columns):
+    st.header("Time Series Data")
+    columns_to_plot = [col for col in data.columns if col not in excluded_columns]
+    for col in columns_to_plot:
+        st.subheader(f"{col} over time")
+        plt.style.use('dark_background')  # Set plot background to black
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
+        ax.set_xlabel('Time')
+        ax.set_ylabel(col)
+        ax.grid(color='white')  # Set gridline color to white
+        ax.set_facecolor('black')  # Set axis background to black
+        ax.spines['bottom'].set_color('black')  # Set axis spines to black
+        ax.spines['top'].set_color('black')
+        ax.spines['right'].set_color('black')
+        ax.spines['left'].set_color('black')
+        st.pyplot(fig)
+        
+# Function to plot correlation heatmap
+def plot_correlation_heatmap(data, excluded_columns):
+    st.header("Correlation Heatmap")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    corr = data[columns_to_include].corr()
+    fig, ax = plt.subplots()
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+    st.pyplot(fig)
+
+# Function to display mean and median
+def display_mean_median(data, excluded_columns):
+    st.header("Mean and Median Values")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    mean_values = data[columns_to_include].mean()
+    median_values = data[columns_to_include].median()
+    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
+    st.dataframe(summary)
+
+# Function to display summary statistics
+def display_summary_statistics(data, excluded_columns):
+    st.header("Summary Statistics")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    summary_stats = data[columns_to_include].describe()
+    st.dataframe(summary_stats)
+
+# Function to plot Volatility Index (VIX)
+def plot_vix(start_date, end_date):
+    st.header("Volatility Index (VIX)")
+    vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel('VIX')
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
+# Function to calculate and plot estimated debt volume
+def plot_estimated_debt_volume(data):
+    st.header("Estimated Debt Volume")
+    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Estimated Debt Volume')
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
+# Streamlit app
 def main():
     start_date = st.date_input("Start date:")
     end_date = st.date_input("End date:")
