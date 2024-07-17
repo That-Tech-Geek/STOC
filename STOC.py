@@ -309,8 +309,17 @@ def main():
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
 
         if not data.empty:
+            # Calculate estimated debt volume
+            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+
+            # Calculate various ratios
+            data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
+            data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
+            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+            data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
+
             # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX']
+            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
 
             if parameter_to_plot == 'VIX':
@@ -330,11 +339,7 @@ def main():
             else:
                 plt.style.use('dark_background')  # Set plot background to black
                 fig, ax = plt.subplots(figsize=(12, 6))
-                if parameter_to_plot == 'Estimated Debt Volume':
-                    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-                    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
-                else:
-                    ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
+                ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
                 ax.set_xlabel('Time')
                 ax.set_ylabel(parameter_to_plot)
                 ax.grid(color='white')  # Set gridline color to white
@@ -346,7 +351,7 @@ def main():
                 st.pyplot(fig)
 
             # Plot correlation heatmap
-            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio']
+            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio']
             plot_correlation_heatmap(data, excluded_columns)
 
             # Display mean and median values
