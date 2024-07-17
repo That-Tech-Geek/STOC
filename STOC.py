@@ -317,9 +317,29 @@ def main():
             data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
             data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
             data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
+            data['Price-to-Earnings Ratio'] = data['Close'] / data['Adj Close']
+            data['Price-to-Book Ratio'] = data['Close'] / data['Adj Close']
+            data['Return on Equity (ROE)'] = (data['Close'] - data['Open']) / data['Adj Close']
+            data['Return on Assets (ROA)'] = (data['Close'] - data['Open']) / data['Volume']
+            data['Earnings Yield'] = data['Adj Close'] / data['Close']
+            data['Dividend Yield'] = data['Adj Close'] / data['Close']
+            data['Price-to-Sales Ratio'] = data['Close'] / data['Volume']
+            data['Enterprise Value-to-EBITDA Ratio'] = (data['Close'] * data['Volume']) / (data['Adj Close'] * 0.05)
+            data['Asset Turnover Ratio'] = data['Volume'] / data['Adj Close']
+            data['Inventory Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
+            data['Receivables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
+            data['Payables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
+            data['Cash Conversion Cycle'] = (data['Close'] - data['Open']) / data['Volume']
+            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+            data['Debt Service Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+            data['Return on Invested Capital (ROIC)'] = (data['Close'] - data['Open']) / (data['Adj Close'] + data['Estimated Debt Volume'])
+            data['Return on Common Equity (ROCE)'] = (data['Close'] - data['Open']) / data['Adj Close']
+            data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
+            data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
+            data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
 
             # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio']
+            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
 
             if parameter_to_plot == 'VIX':
@@ -351,7 +371,7 @@ def main():
                 st.pyplot(fig)
 
             # Plot correlation heatmap
-            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio']
+            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             plot_correlation_heatmap(data, excluded_columns)
 
             # Display mean and median values
@@ -372,5 +392,5 @@ def main():
         else:
             st.write("No data available for the given ticker and date range.")
 
-if __name__ == "__main__":
+if __name__ =="__main__":
     main()
