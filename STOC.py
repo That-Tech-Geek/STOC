@@ -342,7 +342,56 @@ def main():
             # Dropdown to select parameter to plot
             parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
-
+            if parameter_to_plot == 'Debt-to-Equity Ratio':
+                st.write("The Debt-to-Equity Ratio is a measure of a company's leverage. It is calculated by dividing the estimated debt volume by the adjusted closing price. A higher ratio indicates higher leverage and potentially higher risk.")
+            elif parameter_to_plot == 'Current Ratio':
+                st.write("The Current Ratio is a measure of a company's liquidity. It is calculated by dividing the adjusted closing price by the estimated debt volume. A higher ratio indicates higher liquidity and ability to pay short-term debts.")
+            elif parameter_to_plot == 'Interest Coverage Ratio':
+                st.write("The Interest Coverage Ratio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
+            elif parameter_to_plot == 'Debt-to-Capital Ratio':
+                st.write("The Debt-to-Capital Ratio is a measure of a company's leverage. It is calculated by dividing the estimated debt volume by the sum of the adjusted closing price and estimated debt volume. A higher ratio indicates higher leverage and potentially higher risk.")
+            elif parameter_to_plot == 'Price-to-Earnings Ratio':
+                st.write("The Price-to-Earnings Ratio is a measure of a company's valuation. It is calculated by dividing the closing price by the adjusted closing price. A higher ratio indicates higher valuation and potentially higher growth expectations.")
+            elif parameter_to_plot == 'Price-to-Book Ratio':
+                st.write("The Price-to-Book Ratio is a measure of a company's valuation. It is calculated by dividing the closing price by the adjusted closing price. A higher ratio indicates higher valuation and potentially higher growth expectations.")
+            elif parameter_to_plot == 'Return on Equity (ROE)':
+                st.write("The Return on Equity (ROE) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the adjusted closing price. A higher ratio indicates higher profitability.")
+            elif parameter_to_plot == 'Return on Assets (ROA)':
+                st.write("The Return on Assets (ROA) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
+            elif parameter_to_plot == 'Earnings Yield':
+                st.write("The Earnings Yield is a measure of a company's valuation. It is calculated by dividing the adjusted closing price by the closing price. A higher ratio indicates higher valuation and potentially higher growth expectations.")
+            elif parameter_to_plot == 'Dividend Yield':
+                st.write("The Dividend Yield is a measure of a company's dividend payments. It is calculated by dividing the adjusted closing price by the closing price. A higher ratio indicates higher dividend payments.")
+            elif parameter_to_plot == 'Price-to-Sales Ratio':
+                st.write("The Price-to-Sales Ratio is a measure of a company's valuation. It is calculated by dividing the closing price by the volume. A higher ratio indicates higher valuation and potentially higher growth expectations.")
+            elif parameter_to_plot == 'Enterprise Value-to-EBITDA Ratio':
+                st.write("The Enterprise Value-to-EBITDA Ratio is a measure of a company's valuation. It is calculated by dividing the product of the closing price and volume by the adjusted closing price multiplied by 0.05. A higher ratio indicates higher valuation and potentially higher growth expectations.")
+            elif parameter_to_plot == 'Asset Turnover Ratio':
+                st.write("The Asset Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the adjusted closing price. A higher ratio indicates higher efficiency.")
+            elif parameter_to_plot == 'Inventory Turnover Ratio':
+                st.write("The Inventory Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
+            elif parameter_to_plot == 'Receivables Turnover Ratio':
+                st.write("The Receivables Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
+            elif parameter_to_plot == 'Payables Turnover Ratio':
+                st.write("The Payables Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
+            elif parameter_to_plot == 'Cash Conversion Cycle':
+                st.write("The Cash Conversion Cycle is a measure of a company's efficiency. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher efficiency.")
+            elif parameter_to_plot == 'Interest Coverage Ratio':
+                st.write("The Interest CoverageRatio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
+            elif parameter_to_plot == 'Debt Service Coverage Ratio':
+                st.write("The Debt Service Coverage Ratio is a measure of a company's ability to pay its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay debt.")
+            elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
+                st.write("The Return on Invested Capital (ROIC) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the sum of the adjusted closing price and estimated debt volume. A higher ratio indicates higher profitability.")
+            elif parameter_to_plot == 'Return on Common Equity (ROCE)':
+                st.write("The Return on Common Equity (ROCE) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the adjusted closing price. A higher ratio indicates higher profitability.")
+            elif parameter_to_plot == 'Gross Margin Ratio':
+                st.write("The Gross Margin Ratio is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
+            elif parameter_to_plot == 'Operating Margin Ratio':
+                st.write("The Operating Margin Ratio is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
+            elif parameter_to_plot == 'Net Profit Margin Ratio':
+                st.write("The Net Profit Margin Ratio is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
+            else:
+                st.write("Please select a parameter to plot.")
             if parameter_to_plot == 'VIX':
                 vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
                 plt.style.use('dark_background')  # Set plot background to black
