@@ -294,90 +294,6 @@ def plot_estimated_debt_volume(data):
     st.pyplot(fig)
 
 # Streamlit app
-# Function to fetch data
-def fetch_data(ticker, start, end):
-    data = yf.download(ticker, start=start, end=end, progress=False)
-    return data
-
-# Function to plot time series data
-def plot_time_series(data, excluded_columns):
-    st.header("Time Series Data")
-    columns_to_plot = [col for col in data.columns if col not in excluded_columns]
-    for col in columns_to_plot:
-        st.subheader(f"{col} over time")
-        plt.style.use('dark_background')  # Set plot background to black
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
-        ax.set_xlabel('Time')
-        ax.set_ylabel(col)
-        ax.grid(color='white')  # Set gridline color to white
-        ax.set_facecolor('black')  # Set axis background to black
-        ax.spines['bottom'].set_color('black')  # Set axis spines to black
-        ax.spines['top'].set_color('black')
-        ax.spines['right'].set_color('black')
-        ax.spines['left'].set_color('black')
-        st.pyplot(fig)
-        
-# Function to plot correlation heatmap
-def plot_correlation_heatmap(data, excluded_columns):
-    st.header("Correlation Heatmap")
-    columns_to_include = [col for col in data.columns if col not in excluded_columns]
-    corr = data[columns_to_include].corr()
-    fig, ax = plt.subplots()
-    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-    st.pyplot(fig)
-
-# Function to display mean and median
-def display_mean_median(data, excluded_columns):
-    st.header("Mean and Median Values")
-    columns_to_include = [col for col in data.columns if col not in excluded_columns]
-    mean_values = data[columns_to_include].mean()
-    median_values = data[columns_to_include].median()
-    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
-    st.dataframe(summary)
-
-# Function to display summary statistics
-def display_summary_statistics(data, excluded_columns):
-    st.header("Summary Statistics")
-    columns_to_include = [col for col in data.columns if col not in excluded_columns]
-    summary_stats = data[columns_to_include].describe()
-    st.dataframe(summary_stats)
-
-# Function to plot Volatility Index (VIX)
-def plot_vix(start_date, end_date):
-    st.header("Volatility Index (VIX)")
-    vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
-    ax.set_xlabel('Time')
-    ax.set_ylabel('VIX')
-    ax.grid(color='white')  # Set gridline color to white
-    ax.set_facecolor('black')  # Set axis background to black
-    ax.spines['bottom'].set_color('black')  # Set axis spines to black
-    ax.spines['top'].set_color('black')
-    ax.spines['right'].set_color('black')
-    ax.spines['left'].set_color('black')
-    st.pyplot(fig)
-
-# Function to calculate and plot estimated debt volume
-def plot_estimated_debt_volume(data):
-    st.header("Estimated Debt Volume")
-    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Estimated Debt Volume')
-    ax.grid(color='white')  # Set gridline color to white
-    ax.set_facecolor('black')  # Set axis background to black
-    ax.spines['bottom'].set_color('black')  # Set axis spines to black
-    ax.spines['top'].set_color('black')
-    ax.spines['right'].set_color('black')
-    ax.spines['left'].set_color('black')
-    st.pyplot(fig)
-
-# Streamlit app
 def main():
     start_date = st.date_input("Start date:")
     end_date = st.date_input("End date:")
@@ -445,6 +361,7 @@ def main():
             st.pyplot(fig)
 
         st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. Sit tight!")
+
         if parameter_to_plot == 'Debt-to-Equity Ratio':
             st.write("The Debt-to-Equity Ratio measures a company's leverage by comparing its total debt to its total shareholders' equity. A higher ratio indicates higher leverage and potentially greater financial risk.")
         elif parameter_to_plot == 'Current Ratio':
@@ -484,15 +401,7 @@ def main():
         elif parameter_to_plot == 'Debt Service Coverage Ratio':
             st.write("The Debt Service Coverage Ratio measures a company's ability to pay its debt obligations by comparing its earnings before interest and taxes (EBIT) to its debt service costs. A higher ratio indicates greater ability to meet debt obligations.")
         elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
-            st.write("The Return on Invested Capital (ROIC) measures a company's profitability bycomparing its net operating profit to its invested capital. A higher ratio indicates greater profitability.")
-        elif parameter_to_plot == 'Return on Common Equity (ROCE)':
-            st.write("The Return on Common Equity (ROCE) measures a company's profitability by comparing its net income to its common shareholders' equity. A higher ratio indicates greater profitability.")
-        elif parameter_to_plot == 'Gross Margin Ratio':
-            st.write("The Gross Margin Ratio measures a company's profitability by comparing its gross profit to its revenue. A higher ratio indicates greater profitability.")
-        elif parameter_to_plot == 'Operating Margin Ratio':
-            st.write("The Operating Margin Ratio measures a company's profitability by comparing its operating income to its revenue. A higher ratio indicates greater profitability.")
-        elif parameter_to_plot == 'Net Profit Margin Ratio':
-            st.write("The Net Profit Margin Ratio measures a company's profitability by comparing its net income to its revenue. A higher ratio indicates greater profitability.")
+            st.write("The Return on Invested Capital (ROIC) measures a company's profitability by comparing
 
         # Plot correlation heatmap
         excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
