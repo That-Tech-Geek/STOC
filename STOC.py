@@ -310,7 +310,7 @@ def main():
 
         if not data.empty:
             # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume']
+            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'Volatility Index']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
 
             # Plot selected parameter
@@ -340,9 +340,6 @@ def main():
 
             # Display summary statistics
             display_summary_statistics(data, excluded_columns)
-
-            # Plot Volatility Index (VIX)
-            plot_vix(start_date, end_date)
 
             # Option to download data
             st.header("Download Data")
