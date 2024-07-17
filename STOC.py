@@ -276,6 +276,23 @@ def plot_vix(start_date, end_date):
     ax.spines['left'].set_color('black')
     st.pyplot(fig)
 
+# Function to calculate and plot estimated debt volume
+def plot_estimated_debt_volume(data):
+    st.header("Estimated Debt Volume")
+    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Estimated Debt Volume')
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
 # Streamlit app
 def main():
     st.title("Welcome to STOC!")
@@ -307,6 +324,9 @@ def main():
 
             # Plot Volatility Index (VIX)
             plot_vix(start_date, end_date)
+
+            # Plot estimated debt volume
+            plot_estimated_debt_volume(data)
 
             # Option to download data
             st.header("Download Data")
