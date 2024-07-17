@@ -342,7 +342,23 @@ def main():
             # Dropdown to select parameter to plot
             parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
-            if parameter_to_plot == 'Debt-to-Equity Ratio':
+            if parameter_to_plot == 'Open':
+                st.write("The Open price is the price at which the stock opens for trading on a given day.")
+            elif parameter_to_plot == 'High':
+                st.write("The High price is the highest price at which the stock trades on a given day.")
+            elif parameter_to_plot == 'Low':
+                st.write("The Low price is the lowest price at which the stock trades on a given day.")
+            elif parameter_to_plot == 'Close':
+                st.write("The Close price is the price at which the stock closes for trading on a given day.")
+            elif parameter_to_plot == 'Adj Close':
+                st.write("The Adjusted Close price is the closing price of the stock adjusted for dividends and splits.")
+            elif parameter_to_plot == 'Volume':
+                st.write("The Volume is the number of shares traded on a given day.")
+            elif parameter_to_plot == 'Estimated Debt Volume':
+                st.write("The Estimated Debt Volume is an estimate of the company's debt.")
+            elif parameter_to_plot == 'VIX':
+                st.write("The VIX is a measure of the market's expected volatility.")
+            elif parameter_to_plot == 'Debt-to-Equity Ratio':
                 st.write("The Debt-to-Equity Ratio is a measure of a company's leverage. It is calculated by dividing the estimated debt volume by the adjusted closing price. A higher ratio indicates higher leverage and potentially higher risk.")
             elif parameter_to_plot == 'Current Ratio':
                 st.write("The Current Ratio is a measure of a company's liquidity. It is calculated by dividing the adjusted closing price by the estimated debt volume. A higher ratio indicates higher liquidity and ability to pay short-term debts.")
@@ -369,7 +385,7 @@ def main():
             elif parameter_to_plot == 'Asset Turnover Ratio':
                 st.write("The Asset Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the adjusted closing price. A higher ratio indicates higher efficiency.")
             elif parameter_to_plot == 'Inventory Turnover Ratio':
-                st.write("The Inventory Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
+                st.write("The Inventory Turnover Ratio is a measureof a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
             elif parameter_to_plot == 'Receivables Turnover Ratio':
                 st.write("The Receivables Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
             elif parameter_to_plot == 'Payables Turnover Ratio':
@@ -377,7 +393,7 @@ def main():
             elif parameter_to_plot == 'Cash Conversion Cycle':
                 st.write("The Cash Conversion Cycle is a measure of a company's efficiency. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher efficiency.")
             elif parameter_to_plot == 'Interest Coverage Ratio':
-                st.write("The Interest CoverageRatio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
+                st.write("The Interest Coverage Ratio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
             elif parameter_to_plot == 'Debt Service Coverage Ratio':
                 st.write("The Debt Service Coverage Ratio is a measure of a company's ability to pay its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay debt.")
             elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
