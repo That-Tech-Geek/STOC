@@ -361,7 +361,6 @@ def main():
             st.pyplot(fig)
 
         st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. Sit tight!")
-
         if parameter_to_plot == 'Debt-to-Equity Ratio':
             st.write("The Debt-to-Equity Ratio measures a company's leverage by comparing its total debt to its total shareholders' equity. A higher ratio indicates higher leverage and potentially greater financial risk.")
         elif parameter_to_plot == 'Current Ratio':
@@ -401,7 +400,15 @@ def main():
         elif parameter_to_plot == 'Debt Service Coverage Ratio':
             st.write("The Debt Service Coverage Ratio measures a company's ability to pay its debt obligations by comparing its earnings before interest and taxes (EBIT) to its debt service costs. A higher ratio indicates greater ability to meet debt obligations.")
         elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
-            st.write("The Return on Invested Capital (ROIC) measures a company's profitability by comparing
+            st.write("The Return on Invested Capital (ROIC) measures a company's profitability bycomparing its net operating profit to its invested capital. A higher ratio indicates greater profitability.")
+        elif parameter_to_plot == 'Return on Common Equity (ROCE)':
+            st.write("The Return on Common Equity (ROCE) measures a company's profitability by comparing its net income to its common shareholders' equity. A higher ratio indicates greater profitability.")
+        elif parameter_to_plot == 'Gross Margin Ratio':
+            st.write("The Gross Margin Ratio measures a company's profitability by comparing its gross profit to its revenue. A higher ratio indicates greater profitability.")
+        elif parameter_to_plot == 'Operating Margin Ratio':
+            st.write("The Operating Margin Ratio measures a company's profitability by comparing its operating income to its revenue. A higher ratio indicates greater profitability.")
+        elif parameter_to_plot == 'Net Profit Margin Ratio':
+            st.write("The Net Profit Margin Ratio measures a company's profitability by comparing its net income to its revenue. A higher ratio indicates greater profitability.")
 
         # Plot correlation heatmap
         excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
