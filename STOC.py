@@ -295,103 +295,136 @@ def plot_estimated_debt_volume(data):
 
 # Streamlit app
 def main():
-    st.title("Welcome to STOC!")
-    st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
-    st.write("NOTE TO USER: This is a project built for educational purposes, and may not be considered as financial advice, although best efforts by the developer to prevent any such inadvertent instances.")
+    start_date = st.date_input("Start date:")
+    end_date = st.date_input("End date:")
+    ticker = st.text_input("Enter ticker symbol:")
 
-    # Input fields
-    ticker = st.text_input("Enter stock ticker:")
-    exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
-    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
-    end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
-    
-    if ticker and exchange and start_date and end_date:
-        ticker_with_suffix = ticker + exchange_suffixes[exchange]
-        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+    if ticker:
+        data = yf.download(ticker, start=start_date, end=end_date, progress=False)
 
-        if not data.empty:
-            # Calculate estimated debt volume
-            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+        # Calculate financial ratios
+        data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
+        data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
+        data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+        data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
+        data['Price-to-Earnings Ratio'] = data['Close'] / data['Adj Close']
+        data['Price-to-Book Ratio'] = data['Close'] / data['Adj Close']
+        data['Return on Equity (ROE)'] = (data['Close'] - data['Open']) / data['Adj Close']
+        data['Return on Assets (ROA)'] = (data['Close'] - data['Open']) / data['Volume']
+        data['Earnings Yield'] = data['Adj Close'] / data['Close']
+        data['Dividend Yield'] = data['Adj Close'] / data['Close']
+        data['Price-to-Sales Ratio'] = data['Close'] / data['Volume']
+        data['Enterprise Value-to-EBITDA Ratio'] = (data['Close'] * data['Volume']) / (data['Adj Close'] * 0.05)
+        data['Asset Turnover Ratio'] = data['Volume'] / data['Adj Close']
+        data['Inventory Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
+        data['Receivables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
+        data['Payables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
+        data['Cash Conversion Cycle'] = (data['Close'] - data['Open']) / data['Volume']
+        data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+        data['Debt Service Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+        data['Return on Invested Capital (ROIC)'] = (data['Close'] - data['Open']) / (data['Adj Close'] + data['Estimated Debt Volume'])
+        data['Return on Common Equity (ROCE)'] = (data['Close'] - data['Open']) / data['Adj Close']
+        data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
+        data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
+        data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
 
-            # Calculate various ratios
-            data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
-            data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
-            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
-            data['Price-to-Earnings Ratio'] = data['Close'] / data['Adj Close']
-            data['Price-to-Book Ratio'] = data['Close'] / data['Adj Close']
-            data['Return on Equity (ROE)'] = (data['Close'] - data['Open']) / data['Adj Close']
-            data['Return on Assets (ROA)'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Earnings Yield'] = data['Adj Close'] / data['Close']
-            data['Dividend Yield'] = data['Adj Close'] / data['Close']
-            data['Price-to-Sales Ratio'] = data['Close'] / data['Volume']
-            data['Enterprise Value-to-EBITDA Ratio'] = (data['Close'] * data['Volume']) / (data['Adj Close'] * 0.05)
-            data['Asset Turnover Ratio'] = data['Volume'] / data['Adj Close']
-            data['Inventory Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Receivables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Payables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Cash Conversion Cycle'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Debt Service Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Return on Invested Capital (ROIC)'] = (data['Close'] - data['Open']) / (data['Adj Close'] + data['Estimated Debt Volume'])
-            data['Return on Common Equity (ROCE)'] = (data['Close'] - data['Open']) / data['Adj Close']
-            data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
+        # Dropdown to select parameter to plot
+        parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+        parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
 
-            # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
-            parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
-
-            if parameter_to_plot == 'VIX':
-                vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
-                plt.style.use('dark_background')  # Set plot background to black
-                fig, ax = plt.subplots(figsize=(12, 6))
-                ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
-                ax.set_xlabel('Time')
-                ax.set_ylabel('VIX')
-                ax.grid(color='white')  # Set gridline color to white
-                ax.set_facecolor('black')  # Set axis background to black
-                ax.spines['bottom'].set_color('black')  # Set axis spines to black
-                ax.spines['top'].set_color('black')
-                ax.spines['right'].set_color('black')
-                ax.spines['left'].set_color('black')
-                st.pyplot(fig)
-            else:
-                plt.style.use('dark_background')  # Set plot background to black
-                fig, ax = plt.subplots(figsize=(12, 6))
-                ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
-                ax.set_xlabel('Time')
-                ax.set_ylabel(parameter_to_plot)
-                ax.grid(color='white')  # Set gridline color to white
-                ax.set_facecolor('black')  # Set axis background to black
-                ax.spines['bottom'].set_color('black')  # Set axis spines to black
-                ax.spines['top'].set_color('black')
-                ax.spines['right'].set_color('black')
-                ax.spines['left'].set_color('black')
-                st.pyplot(fig)
-            st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. Sit tight!")
-            # Plot correlation heatmap
-            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
-            plot_correlation_heatmap(data, excluded_columns)
-
-            # Display mean and median values
-            display_mean_median(data, excluded_columns)
-
-            # Display summary statistics
-            display_summary_statistics(data, excluded_columns)
-
-            # Option to download data
-            st.header("Download Data")
-            csv = data.to_csv(index=True)
-            st.download_button(
-                label="Download data as CSV",
-                data=csv,
-                file_name='stock_data.csv',
-                mime='text/csv',
-                )
+        if parameter_to_plot == 'VIX':
+            vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
+            plt.style.use('dark_background')  # Set plot background to black
+            fig, ax = plt.subplots(figsize=(12, 6))
+            ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
+            ax.set_xlabel('Time')
+            ax.set_ylabel('VIX')
+            ax.grid(color='white')  # Set gridline color to white
+            ax.set_facecolor('black')  # Set axis background to black
+            ax.spines['bottom'].set_color('black')  # Set axis spines to black
+            ax.spines['top'].set_color('black')
+            ax.spines['right'].set_color('black')
+            ax.spines['left'].set_color('black')
+            st.pyplot(fig)
         else:
-            st.write("No data available for the given ticker and date range.")
+            plt.style.use('dark_background')  # Set plot background to black
+            fig, ax = plt.subplots(figsize=(12, 6))
+            ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
+            ax.set_xlabel('Time')
+            ax.set_ylabel(parameter_to_plot)
+            ax.grid(color='white')  # Set gridline color to white
+            ax.set_facecolor('black')  # Set axis background to black
+            ax.spines['bottom'].set_color('black')  # Set axis spines to black
+            ax.spines['top'].set_color('black')
+            ax.spines['right'].set_color('black')
+            ax.spines['left'].set_color('black')
+            st.pyplot(fig)
+
+        st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. Sit tight!")
+
+        if parameter_to_plot == 'Debt-to-Equity Ratio':
+            st.write("The Debt-to-Equity Ratio measures a company's leverage by comparing its total debt to its total shareholders' equity. A higher ratio indicates higher leverage and potentially greater financial risk.")
+        elif parameter_to_plot == 'Current Ratio':
+            st.write("The Current Ratio measures a company's ability to pay its short-term debts by comparing its current assets to its current liabilities. A higher ratio indicates greater liquidity and ability to meet short-term obligations.")
+        elif parameter_to_plot == 'Interest Coverage Ratio':
+            st.write("The Interest Coverage Ratio measures a company's ability to pay its interest expenses by comparing its earnings before interest and taxes (EBIT) to its interest expenses. A higher ratio indicates greater ability to meet interest payments.")
+        elif parameter_to_plot == 'Debt-to-Capital Ratio':
+            st.write("The Debt-to-Capital Ratio measures a company's leverage by comparing its total debt to its total capital. A higher ratio indicates higher leverage and potentially greater financial risk.")
+        elif parameter_to_plot == 'Price-to-Earnings Ratio':
+            st.write("The Price-to-Earnings Ratio measures a company's stock price relative to its earnings per share. A higher ratio indicates that investors are willing to pay more for each dollar of earnings.")
+        elif parameter_to_plot == 'Price-to-Book Ratio':
+            st.write("The Price-to-Book Ratio measures a company's stock price relative to its book value per share. A higher ratio indicates that investors are willing to pay more for each dollar of book value.")
+        elif parameter_to_plot == 'Return on Equity (ROE)':
+            st.write("The Return on Equity (ROE) measures a company's profitability by comparing its net income to its shareholders' equity. A higher ratio indicates greater profitability.")
+        elif parameter_to_plot == 'Return on Assets (ROA)':
+            st.write("The Return on Assets (ROA) measures a company's profitability by comparing its net income to its total assets. A higher ratio indicates greater profitability.")
+        elif parameter_to_plot == 'Earnings Yield':
+            st.write("The Earnings Yield measures a company's earnings per share relative to its stock price. A higher ratio indicates greater earnings per share.")
+        elif parameter_to_plot == 'Dividend Yield':
+            st.write("The Dividend Yield measures a company's dividend per share relative to its stock price. A higher ratio indicates greater dividend payments.")
+        elif parameter_to_plot == 'Price-to-Sales Ratio':
+            st.write("The Price-to-Sales Ratio measures a company's stock price relative to its sales per share. A higher ratio indicates that investors are willing to pay more for each dollar of sales.")
+        elif parameter_to_plot == 'Enterprise Value-to-EBITDA Ratio':
+            st.write("The Enterprise Value-to-EBITDA Ratio measures a company's enterprise value relative to its earnings before interest, taxes, depreciation, and amortization (EBITDA). A higher ratio indicates that investors are willing to pay more for each dollar of EBITDA.")
+        elif parameter_to_plot == 'Asset Turnover Ratio':
+            st.write("The Asset Turnover Ratio measures a company's ability to generate sales from its assets. A higher ratio indicates greater efficiency in using assets to generate sales.")
+        elif parameter_to_plot == 'Inventory Turnover Ratio':
+            st.write("The Inventory Turnover Ratio measures a company's ability to sell and replace its inventory. A higher ratio indicates greater efficiency in managing inventory.")
+        elif parameter_to_plot == 'Receivables Turnover Ratio':
+            st.write("The Receivables Turnover Ratio measures a company's ability to collect its accounts receivable. A higher ratio indicates greater efficiency in collecting receivables.")
+        elif parameter_to_plot == 'Payables Turnover Ratio':
+            st.write("The Payables Turnover Ratio measures a company's ability to pay its accounts payable. A higher ratio indicates greater efficiency in paying payables.")
+        elif parameter_to_plot == 'Cash Conversion Cycle':
+            st.write("The Cash Conversion Cycle measures a company's ability to convert its inventory and accounts receivable into cash. A shorter cycle indicates greater efficiency in managing working capital.")
+        elif parameter_to_plot == 'Interest Coverage Ratio':
+            st.write("The Interest Coverage Ratio measures a company's ability to pay its interest expenses by comparing its earnings before interest and taxes (EBIT) to its interest expenses. A higher ratio indicates greater ability to meet interest payments.")
+        elif parameter_to_plot == 'Debt Service Coverage Ratio':
+            st.write("The Debt Service Coverage Ratio measures a company's ability to pay its debt obligations by comparing its earnings before interest and taxes (EBIT) to its debt service costs. A higher ratio indicates greater ability to meet debt obligations.")
+        elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
+            st.write("The Return on Invested Capital (ROIC) measures a company's profitability by comparing
+
+        # Plot correlation heatmap
+        excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+        plot_correlation_heatmap(data, excluded_columns)
+
+        # Display mean and median values
+        display_mean_median(data, excluded_columns)
+
+        # Display summary statistics
+        display_summary_statistics(data, excluded_columns)
+
+        # Option to download data
+        st.header("Download Data")
+        csv = data.to_csv(index=True)
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name='stock_data.csv',
+            mime='text/csv',
+            )
+
+    else:
+        st.write("No data available for the given ticker and date range.")
 
 if __name__ =="__main__":
     main()
