@@ -219,20 +219,23 @@ def fetch_data(ticker, start, end):
 def plot_time_series(data, excluded_columns):
     st.header("Time Series Data")
     columns_to_plot = [col for col in data.columns if col not in excluded_columns]
-    for col in columns_to_plot:
-        st.subheader(f"{col} over time")
-        plt.style.use('dark_background')  # Set plot background to black
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
-        ax.set_xlabel('Time')
-        ax.set_ylabel(col)
-        ax.grid(color='white')  # Set gridline color to white
-        ax.set_facecolor('black')  # Set axis background to black
-        ax.spines['bottom'].set_color('black')  # Set axis spines to black
-        ax.spines['top'].set_color('black')
-        ax.spines['right'].set_color('black')
-        ax.spines['left'].set_color('black')
-        st.pyplot(fig)
+    if columns_to_plot:  # Add this line to check if there are any columns to plot
+        for col in columns_to_plot:
+            st.subheader(f"{col} over time")
+            fig, ax = plt.subplots(figsize=(12, 6))
+            ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
+            ax.set_xlabel('Time')
+            ax.set_ylabel(col)
+            ax.grid(color='white')  # Set gridline color to white
+            ax.set_facecolor('black')  # Set axis background to black
+            ax.spines['bottom'].set_color('black')  # Set axis spines to black
+            ax.spines['top'].set_color('black')
+            ax.spines['right'].set_color('black')
+            ax.spines['left'].set_color('black')
+            st.write(fig)  # Render the figure using Streamlit
+            st.line_chart(data[col])  # Plot the time series using Streamlit's built-in function
+    else:
+        st.write("No columns to plot.")
         
 # Function to plot correlation heatmap
 def plot_correlation_heatmap(data, excluded_columns):
@@ -241,7 +244,7 @@ def plot_correlation_heatmap(data, excluded_columns):
     corr = data[columns_to_include].corr()
     fig, ax = plt.subplots()
     sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-    st.pyplot(fig)
+    st.write(fig)
 
 # Function to display mean and median
 def display_mean_median(data, excluded_columns):
