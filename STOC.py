@@ -384,10 +384,10 @@ def main():
             data['Financial Leverage Ratio'] = data['Asset Turnover Ratio'] / data['Volume']
             data['Proprietary Ratio'] = data['Volume'] / data['Asset Turnover Ratio']
             data['Capital Gearing Ratio'] = data['Estimated Debt Volume'] / data['Volume']
-            data['Interest Coverage Ratio'] = data['EBIT'] / data['Interest Expense']
+            data['Interest Coverage Ratio'] = data['EBIT'] / (data['Estimated Debt Volume'] * data['Interest Rate'])
             data['DSCR'] = data['Net Operating Income'] / data['Debt Service']
             data['Preference Dividend Ratio'] = data['Preference Dividend'] / data['Net Profit After Tax']
-            data['Fixed Charge Ratio'] = (data['EBIT'] + data['Lease Payments']) / (data['Interest Expense'] + data['Lease Payments'])
+            data['Fixed Charge Ratio'] = (data['EBIT'] + data['Lease Payments']) / ((data['Estimated Debt Volume'] * data['Interest Rate']) + data['Lease Payments'])
             data['Gross Profit Ratio'] = data['Gross Profit'] / (data['Adj Close'] * data['Volume'])
             data['Net Profit Ratio'] = data['Net Profit After Tax'] / (data['Adj Close'] * data['Volume'])
             data['ROI'] = data['Net Profit After Tax'] / data['Investment Cost']
