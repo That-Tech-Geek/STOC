@@ -341,8 +341,6 @@ def main():
             plot_correlation_heatmap(data, excluded_columns)
             display_mean_median(data, excluded_columns)
             display_summary_statistics(data, excluded_columns)
-            plot_vix(start_date, end_date)
-            plot_estimated_debt_volume(data)
 
 if __name__ == "__main__":
     main()
