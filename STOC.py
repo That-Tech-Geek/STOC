@@ -378,10 +378,10 @@ def main():
             data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Debt to Assets Ratio'] = data['Estimated Debt Volume'] / data['Adjusted Asset Turnover Ratio']
-            data['Equity Ratio'] = data['Total Equity'] / data['Adjusted Asset Turnover Ratio']
-            data['Financial Leverage Ratio'] = data['Adjusted Asset Turnover Ratio'] / data['Total Equity']
-            data['Proprietary Ratio'] = data['Volume'] / data['Adjusted Asset Turnover Ratio']
+            data['Debt to Assets Ratio'] = data['Estimated Debt Volume'] / data['Asset Turnover Ratio']
+            data['Equity Ratio'] = data['Total Equity'] / data['Asset Turnover Ratio']
+            data['Financial Leverage Ratio'] = data['Asset Turnover Ratio'] / data['Total Equity']
+            data['Proprietary Ratio'] = data['Volume'] / data['Asset Turnover Ratio']
             data['Capital Gearing Ratio'] = data['Estimated Debt Volume'] / data['Volume']
             data['Interest Coverage Ratio'] = data['EBIT'] / data['Interest Expense']
             data['DSCR'] = data['Net Operating Income'] / data['Debt Service']
@@ -391,7 +391,7 @@ def main():
             data['Net Profit Ratio'] = data['Net Profit After Tax'] / (data['Adj Close'] * data['Volume'])
             data['ROI'] = data['Net Profit After Tax'] / data['Investment Cost']
             data['EBITDA Margin'] = data['EBITDA'] / (data['Adj Close'] * data['Volume'])
-            data['Adjusted Asset Turnover Ratio Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Adjusted Asset Turnover Ratio']
+            data['Asset Turnover Ratio Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
             data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Net Fixed Assets']
             data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
 
