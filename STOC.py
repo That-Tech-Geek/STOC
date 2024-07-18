@@ -304,7 +304,7 @@ def main():
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
     exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
-    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
+    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01')
     end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
     
     if ticker and exchange and start_date and end_date:
