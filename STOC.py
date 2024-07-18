@@ -443,9 +443,9 @@ def main():
             
             # Calculate the correlation matrix
             corr_matrix = data.corr()
+            
             # Display the correlation matrix as a table
-            html = corr_matrix.to_html()
-            print(html)
+            st.write(corr_matrix)
 
             # Display mean and median values
             display_mean_median(data, excluded_columns)
