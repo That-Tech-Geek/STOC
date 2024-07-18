@@ -307,7 +307,7 @@ def main():
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
     exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
-    date_range = st.selectbox("Select date range:", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"])
+    date_range = st.selectbox("Select date range:", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "max"])
 
     if date_range == "1d":
         start_date = pd.to_datetime('today') - pd.Timedelta(days=1)
@@ -353,7 +353,8 @@ def main():
             data['Average Total Assets'] = data['Adj Close'] * data['Volume']
             data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
             data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * (data['Close'] - data['Open']) / data['Volume'])
-            data['Interest Rate'] = ticker.info.get("trailingAnnualDividendRate")
+            info = ticker.info
+            data['Interest Rate'] = info.get("trailingAnnualDividendRate")
             # Calculate various ratios
             data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
             data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
@@ -392,12 +393,12 @@ def main():
             data['Net Profit Ratio'] = data['Net Profit After Tax'] / (data['Adj Close'] * data['Volume'])
             data['ROI'] = data['Net Profit After Tax'] / data['Investment Cost']
             data['EBITDA Margin'] = data['EBITDA'] / (data['Adj Close'] * data['Volume'])
-            data['Asset Turnover Ratio Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
+            data['Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
             data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Net Fixed Assets']
             data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
 
             # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Capital Turnover Ratio', 'Fixed Asset Turnover Ratio', 'ROI', 'EBITDA Margin, 'Asset Turnover Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
             if parameter_to_plot == 'Open':
                 st.write("The Open price is the price at which the stock opens for trading on a given day.")
