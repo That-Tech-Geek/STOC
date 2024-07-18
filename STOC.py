@@ -470,7 +470,7 @@ if parameter_to_plot == 'VIX':
                 ax.spines['right'].set_color('black')
                 ax.spines['left'].set_color('black')
                 st.pyplot(fig)
-elif:
+else:
                 plt.style.use('dark_background')  # Set plot background to black
                 fig, ax = plt.subplots(figsize=(12, 6))
                 ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
