@@ -311,7 +311,8 @@ def main():
 
         if not data.empty:
             # Calculate estimated debt volume
-            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) - data['Dividend per Share'] * data['Volume']
+        
 
             # Calculate various ratios
             data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
