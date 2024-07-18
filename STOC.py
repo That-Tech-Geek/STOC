@@ -308,6 +308,9 @@ def main():
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+    if ticker and exchange and start_date and end_date:
+        ticker_with_suffix = ticker + exchange_suffixes[exchange]
+        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
 
         if not data.empty:
             # Calculate estimated debt volume
