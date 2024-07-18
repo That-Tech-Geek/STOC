@@ -463,6 +463,8 @@ def main():
             # Display summary statistics
             display_summary_statistics(data, excluded_columns)
 
+            # Display correlation heatmap
+            display_correlation_heatmap(data, excluded_columns)
             # Option to download data
             st.header("Download Data")
             csv = data.to_csv(index=True)
