@@ -356,7 +356,7 @@ def main():
             elif parameter_to_plot == 'Volume':
                 st.write("The Volume is the number of shares traded on a given day.")
             elif parameter_to_plot == 'Estimated Debt Volume':
-                st.write("The Estimated Debt Volume is an estimate of the company's debt.")
+                st.write("The Estimated Debt Volume is an estimate of the company's debt. It is the product of Share Trade Volume and the difference of adjusted closing and closing prices. It is the replacement quantity for the debt quantity, for more info, refer to below the plot.")
             elif parameter_to_plot == 'VIX':
                 st.write("The VIX is a measure of the market's expected volatility.")
             elif parameter_to_plot == 'Debt-to-Equity Ratio':
