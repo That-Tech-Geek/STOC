@@ -469,7 +469,7 @@ def main():
             display_summary_statistics(data, excluded_columns)
 
             # Display Correlation Heatmap
-            display_corrrelation_table(data, excluded_columns)
+            display_correlation_table(data, excluded_columns)
             # Option to download data
             st.header("Download Data")
             csv = data.to_csv(index=True)
