@@ -303,7 +303,7 @@ def main():
     st.write("NOTE TO USER: This is a project built for educational purposes, and may not be considered as financial advice, although best efforts by the developer to prevent any such inadvertent instances.")
 
     # Input fields
-    ticker = st.text_input("Enter stock ticker:")
+    ticker = st.text_input("Enter ticker symbol:")
     exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
     start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
     end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
