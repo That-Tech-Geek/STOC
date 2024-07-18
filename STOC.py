@@ -442,6 +442,11 @@ def main():
                 st.write(f"Latest {parameter_to_plot}: {latest_value:.2f}, rounded off to two decimal places.")
             st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. This replacement quantity is **Estimated Debt Volume**. Sit tight!")
             excluded_columns = []
+            def display_correlation_table(data, excluded_columns):
+                st.header("Correlation Table")
+                columns_to_include = [col for col in data.columns if col not in excluded_columns]
+                corr = data[columns_to_include].corr()
+                st.dataframe(corr.style.format("{:.2f}"))  # Display correlation matrix as a table
             def display_mean_median(data, excluded_cols):
                 # Drop the excluded columns
                 data = data.drop(excluded_cols, axis=1)
@@ -463,8 +468,6 @@ def main():
             # Display summary statistics
             display_summary_statistics(data, excluded_columns)
 
-            # Display correlation heatmap
-            display_correlation_heatmap(data, excluded_columns)
             # Option to download data
             st.header("Download Data")
             csv = data.to_csv(index=True)
