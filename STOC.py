@@ -377,6 +377,27 @@ def main():
             data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
+            data['Current Ratio'] = data['Current Assets'] / data['Current Liabilities']
+            data['Quick Ratio'] = (data['Current Assets'] - data['Inventory']) / data['Current Liabilities']
+            data['Cash Ratio'] = data['Cash and Cash Equivalents'] / data['Current Liabilities']
+            data['Debt to Assets Ratio'] = data['Estimated Debt Volume'] / data['Total Assets']
+            data['Equity Ratio'] = data['Total Equity'] / data['Total Assets']
+            data['Financial Leverage Ratio'] = data['Total Assets'] / data['Total Equity']
+            data['Proprietary Ratio'] = data['Volume'] / data['Total Assets']
+            data['Capital Gearing Ratio'] = data['Estimated Debt Volume'] / data['Volume']
+            data['Interest Coverage Ratio'] = data['EBIT'] / data['Interest Expense']
+            data['DSCR'] = data['Net Operating Income'] / data['Debt Service']
+            data['Preference Dividend Ratio'] = data['Preference Dividend'] / data['Net Profit After Tax']
+            data['Fixed Charge Ratio'] = (data['EBIT'] + data['Lease Payments']) / (data['Interest Expense'] + data['Lease Payments'])
+            data['Gross Profit Ratio'] = data['Gross Profit'] / (data['Adj Close'] * data['Volume'])
+            data['Net Profit Ratio'] = data['Net Profit After Tax'] / (data['Adj Close'] * data['Volume'])
+            data['ROI'] = data['Net Profit After Tax'] / data['Investment Cost']
+            data['EBITDA Margin'] = data['EBITDA'] / (data['Adj Close'] * data['Volume'])
+            data['Total Assets Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Total Assets']
+            data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Net Fixed Assets']
+            data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
+            data['Current Assets Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Current Assets']
+            data['Working Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Working Capital']
 
             # Dropdown to select parameter to plot
             parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
