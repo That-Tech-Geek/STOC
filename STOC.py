@@ -295,7 +295,21 @@ def plot_estimated_debt_volume(data):
     st.pyplot(fig)
 
 # Streamlit app
-start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'), max_value=datetime.today() - timedelta(days=1))
+def main():
+    st.title("Welcome to STOC!")
+    st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
+    st.write("NOTE TO USER: This is a project built for educational purposes, and may not be considered as financial advice, although best efforts by the developer to prevent any such inadvertent instances.")
+
+    # Input fields
+    ticker = st.text_input("Enter stock ticker:")
+    exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
+    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
+    end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
+    
+    if ticker and exchange and start_date and end_date:
+        ticker_with_suffix = ticker + exchange_suffixes[exchange]
+        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+        start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'), max_value=datetime.today() - timedelta(days=1))
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
