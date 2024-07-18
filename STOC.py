@@ -456,9 +456,13 @@ if not data.empty:
         st.write("The Tax Burden Ratio is a measure of a company's tax burden. It is calculated by dividing the difference between the closing and opening prices by the adjusted closing price. A higher ratio indicates higher tax burden.")
     else:
         st.write("Please select a parameter to plot.")
-data = yf.download(ticker, start=start_date, end=end_date, progress=False) if parameter_to_plot != 'VIX' else yf.download('^VIX', start=start_date, end=end_date, progress=False)
+try:
+    data = yf.download(ticker, start=start_date, end=end_date, progress=False) if parameter_to_plot != 'VIX' else yf.download('^VIX', start=start_date, end=end_date, progress=False)
+except Exception as e:
+    st.write(f"Error downloading data: {e}")
+    data = None
 
-if not data.empty:
+if data is not None and not data.empty:
     plt.style.use('dark_background')  # Set plot background to black
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
