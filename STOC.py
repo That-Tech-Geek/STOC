@@ -494,14 +494,14 @@ if data is not None and not data.empty:
             st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. This replacement quantity is **Estimated Debt Volume**. Sit tight!")
             # Function to plot correlation heatmap
             def plot_correlation_heatmap(data, excluded_columns):
-            excluded_columns = []
-            st.header("Correlation Heatmap")
-            columns_to_include = [col for col in data.columns if col not in excluded_columns]
-            corr = data[columns_to_include].corr()
-            fig, ax = plt.subplots(figsize=(12, 10))
-            sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-            st.write(fig)  # Render the figure using Streamlit
-            st.pyplot(fig)  # Plot the heatmap using Streamlit's built-in function
+                excluded_columns = []
+                st.header("Correlation Heatmap")
+                columns_to_include = [col for col in data.columns if col not in excluded_columns]
+                corr = data[columns_to_include].corr()
+                fig, ax = plt.subplots(figsize=(12, 10))
+                sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+                st.write(fig)  # Render the figure using Streamlit
+                st.pyplot(fig)  # Plot the heatmap using Streamlit's built-in function
             
             # Display mean and median values
             display_mean_median(data, excluded_columns)
