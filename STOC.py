@@ -354,6 +354,7 @@ def main():
             data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
             data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * (data['Close'] - data['Open']) / data['Volume'])
             data['Interest Rate'] = 0.08
+            data['Corporate Tax'] = 0.235
             # Calculate various ratios
             data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
             data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
@@ -387,8 +388,8 @@ def main():
             data['Interest Coverage Ratio'] = data['EBIT'] / (data['Estimated Debt Volume'] * data['Interest Rate'])
             data['DSCR'] = (data['Adj Close'] * data['Volume']) / (data['Estimated Debt Volume'])
             data['Gross Profit Ratio'] = (data['Adj Close'] * data['Volume']) - (data['Close'] * data['Volume']) / (data['Adj Close'] * data['Volume'])
-            data['Net Profit Ratio'] = data['Net Profit After Tax'] / (data['Adj Close'] * data['Volume'])
-            data['ROI'] = data['Net Profit After Tax'] / data['Investment Cost']
+            data['Net Profit Ratio'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / (data['Adj Close'] * data['Volume'])
+            data['ROI'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / data['Investment Cost']
             data['EBITDA Margin'] = data['EBITDA'] / (data['Adj Close'] * data['Volume'])
             data['Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
             data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Net Fixed Assets']
