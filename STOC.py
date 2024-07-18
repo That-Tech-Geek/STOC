@@ -440,7 +440,7 @@ def main():
                 latest_value = data[parameter_to_plot].iloc[-1]
                 st.write(f"Latest {parameter_to_plot}: {latest_value:.2f}, rounded off to two decimal places.")
             st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. This replacement quantity is **Estimated Debt Volume**. Sit tight!")
-            
+            excluded_solumns = []
             def display_mean_median(data, excluded_columns):
                 # Drop the excluded columns
                 data = data.drop(excluded_columns, axis=1)
