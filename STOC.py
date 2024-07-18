@@ -353,8 +353,7 @@ def main():
             data['Average Total Assets'] = data['Adj Close'] * data['Volume']
             data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
             data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * (data['Close'] - data['Open']) / data['Volume'])
-            info = ticker.info
-            data['Interest Rate'] = info.get("trailingAnnualDividendRate")
+            data['Interest Rate'] = 0.08
             # Calculate various ratios
             data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
             data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
