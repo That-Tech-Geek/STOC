@@ -352,7 +352,7 @@ def main():
             data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
             data['Average Total Assets'] = data['Adj Close'] * data['Volume']
             data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
-            data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * data['Gross Margin Ratio'])
+            data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * (data['Close'] - data['Open']) / data['Volume'])
 
             # Calculate various ratios
             data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
