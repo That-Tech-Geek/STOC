@@ -430,8 +430,8 @@ if not data.empty:
         st.write("The Payables Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
     elif parameter_to_plot == 'Cash Conversion Cycle':
         st.write("The Cash Conversion Cycle is a measure of a company's efficiency. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher efficiency.")
-    elif parameter_to_plot == 'Interest Coverage Ratio':
-        st.write("The Interest Coverage Ratio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
+    elif parameter_to_plot == 'Interest Expense Ratio':
+        st.write("The Interest Expense Ratio is a measure of a company's interest expenses. It is calculated by dividing the estimated debt volume multiplied by 0.05 by the adjusted closing price. A higher ratio indicates higher interest expenses.")
     elif parameter_to_plot == 'Debt Service Coverage Ratio':
         st.write("The Debt Service Coverage Ratio is a measure of a company's ability to pay its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay debt.")
     elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
