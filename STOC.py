@@ -350,7 +350,8 @@ def main():
         if not data.empty:
             # Calculate estimated debt volume
             data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-            data['Adjusted Asset Turnover Ratio'] = data['Asset Turnover Ratio'] / (1 + data['Debt-to-Equity Ratio'] + data['Return on Equity (ROE)'])
+            data['Average Total Assets'] = data['Adj Close'] * data['Volume']
+            data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
 
             # Calculate various ratios
             data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
