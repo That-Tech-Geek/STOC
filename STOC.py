@@ -377,7 +377,6 @@ def main():
             data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Cash Ratio'] = data['Cash and Cash Equivalents'] / data['Estimated Debt Volume']
             data['Debt to Assets Ratio'] = data['Estimated Debt Volume'] / data['Total Assets']
             data['Equity Ratio'] = data['Total Equity'] / data['Total Assets']
             data['Financial Leverage Ratio'] = data['Total Assets'] / data['Total Equity']
