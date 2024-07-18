@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
-import matplotlib.pyplot as plt
+import pyplot as pyplot
 import seaborn as sns
 import numpy as np
 from scipy.stats import pearsonr
@@ -221,8 +221,8 @@ def plot_time_series(data, excluded_columns):
     columns_to_plot = [col for col in data.columns if col not in excluded_columns]
     for col in columns_to_plot:
         st.subheader(f"{col} over time")
-        plt.style.use('dark_background')  # Set plot background to black
-        fig, ax = plt.subplots(figsize=(12, 6))
+        pyplot.style.use('dark_background')  # Set plot background to black
+        fig, ax = pyplot.subplots(figsize=(12, 6))
         ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
         ax.set_xlabel('Time')
         ax.set_ylabel(col)
@@ -239,7 +239,7 @@ def plot_correlation_heatmap(data, excluded_columns):
     st.header("Correlation Heatmap")
     columns_to_include = [col for col in data.columns if col not in excluded_columns]
     corr = data[columns_to_include].corr()
-    fig, ax = plt.subplots()
+    fig, ax = pyplot.subplots()
     sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
     st.pyplot(fig)
 
@@ -263,8 +263,8 @@ def display_summary_statistics(data, excluded_columns):
 def plot_vix(start_date, end_date):
     st.header("Volatility Index (VIX)")
     vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
+    pyplot.style.use('dark_background')  # Set plot background to black
+    fig, ax = pyplot.subplots(figsize=(12, 6))
     ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
     ax.set_xlabel('Time')
     ax.set_ylabel('VIX')
@@ -280,8 +280,8 @@ def plot_vix(start_date, end_date):
 def plot_estimated_debt_volume(data):
     st.header("Estimated Debt Volume")
     data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
+    pyplot.style.use('dark_background')  # Set plot background to black
+    fig, ax = pyplot.subplots(figsize=(12, 6))
     ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
     ax.set_xlabel('Time')
     ax.set_ylabel('Estimated Debt Volume')
@@ -410,8 +410,8 @@ def main():
                 st.write("Please select a parameter to plot.")
             if parameter_to_plot == 'VIX':
                 vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
-                plt.style.use('dark_background')  # Set plot background to black
-                fig, ax = plt.subplots(figsize=(12, 6))
+                pyplot.style.use('dark_background')  # Set plot background to black
+                fig, ax = pyplot.subplots(figsize=(12, 6))
                 ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
                 ax.set_xlabel('Time')
                 ax.set_ylabel('VIX')
@@ -425,8 +425,8 @@ def main():
                 latest_value = vix_data['Close'].iloc[-1]
                 st.write(f"Latest VIX: {latest_value:.2f}, rounded off to two decimal placecs.")
             else:
-                plt.style.use('dark_background')  # Set plot background to black
-                fig, ax = plt.subplots(figsize=(12, 6))
+                pyplot.style.use('dark_background')  # Set plot background to black
+                fig, ax = pyplot.subplots(figsize=(12, 6))
                 ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
                 ax.set_xlabel('Time')
                 ax.set_ylabel(parameter_to_plot)
