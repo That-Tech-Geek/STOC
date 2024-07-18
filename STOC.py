@@ -441,7 +441,7 @@ def main():
                 st.write(f"Latest {parameter_to_plot}: {latest_value:.2f}, rounded off to two decimal places.")
             st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. This replacement quantity is **Estimated Debt Volume**. Sit tight!")
             # Plot correlation heatmap
-            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+            excluded_columns = []
             plot_correlation_heatmap(data, excluded_columns)
 
             # Display mean and median values
