@@ -390,7 +390,7 @@ def main():
             data['Gross Profit Ratio'] = (data['Adj Close'] * data['Volume']) - (data['Close'] * data['Volume']) / (data['Adj Close'] * data['Volume'])
             data['Net Profit Ratio'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / (data['Adj Close'] * data['Volume'])
             data['ROI'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / data['High']
-            data['EBITDA Margin'] = data['EBITDA'] / (data['Adj Close'] * data['Volume'])
+            data['EBITDA Margin'] = data['EBIT'] / (data['Adj Close'] * data['Volume'])
             data['Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
             data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Net Fixed Assets']
             data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
