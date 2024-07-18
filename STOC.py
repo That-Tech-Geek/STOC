@@ -504,7 +504,7 @@ else:
                     mime='text/csv',
                     )
 else:
-            st.write("No data available for the given ticker and date range.")
+    st.write("No data available for the given ticker and date range.")
 
 if __name__ =="__main__":
     main()
