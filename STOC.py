@@ -210,4 +210,139 @@ market_cap_categories = {
     "Nano-cap": 0
 }
 
-import matplotlib.pyplot as plt
+# Function to fetch data
+def fetch_data(ticker, start, end):
+    data = yf.download(ticker, start=start, end=end, progress=False)
+    return data
+
+# Function to plot time series data
+def plot_time_series(data, parameter):
+    st.header(f"{parameter} over time")
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(data.index, data[parameter], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel(parameter)
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
+# Function to plot correlation heatmap
+def plot_correlation_heatmap(data, excluded_columns):
+    st.header("Correlation Heatmap")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    corr = data[columns_to_include].corr()
+    fig, ax = plt.subplots(figsize=(20, 10))  # Increase figure size
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+    st.pyplot(fig)
+
+# Function to display mean and median
+def display_mean_median(data, excluded_columns):
+    st.header("Mean and Median Values")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    mean_values = data[columns_to_include].mean()
+    median_values = data[columns_to_include].median()
+    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
+    st.dataframe(summary)
+
+# Function to display summary statistics
+def display_summary_statistics(data, excluded_columns):
+    st.header("Summary Statistics")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    summary_stats = data[columns_to_include].describe()
+    st.dataframe(summary_stats)
+
+# Function to plot Volatility Index (VIX)
+def plot_vix(start_date, end_date):
+    st.header("Volatility Index (VIX)")
+    vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel('VIX')
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
+# Function to calculate and plot estimated debt volume
+def plot_estimated_debt_volume(data):
+    st.header("Estimated Debt Volume")
+    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+    plt.style.use('dark_background')  # Set plot background to black
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Estimated Debt Volume')
+    ax.grid(color='white')  # Set gridline color to white
+    ax.set_facecolor('black')  # Set axis background to black
+    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    st.pyplot(fig)
+
+# Streamlit app
+def main():
+    st.title("Welcome to STOC!")
+    st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
+    st.write("NOTE TO USER: This is a project built for educational purposes, and may not be considered as financial advice, although best efforts by the developer to prevent any such inadvertent instances.")
+
+    # Input fields
+    ticker = st.text_input("Enter stock ticker:")
+    exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
+    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
+    end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
+    
+    if ticker and exchange and start_date and end_date:
+        ticker_with_suffix = ticker + exchange_suffixes[exchange]
+        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+
+        if not data.empty:
+            # Calculate estimated debt volume
+            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+
+            # Calculate various ratios
+            data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
+            data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
+            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
+            data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
+            data['Price-to-Earnings Ratio'] = data['Close'] / data['Adj Close']
+            data['Price-to-Book Ratio'] = data['Close'] / data['Adj Close']
+            data['Return on Equity (ROE)'] = (data['Close'] - data['Open']) / data['Adj Close']
+            data['Return on Assets (ROA)'] = (data['Close'] - data['Open']) / data['Volume']
+            data['Earnings Yield'] = data['Adj Close'] / data['Close']
+            data['Dividend Yield'] = data['Dividends'] / data['Close'] if 'Dividends' in data.columns else 0
+
+            # Display options for the user
+            st.write("## Select a parameter to plot:")
+            parameters = [
+                'Close', 'Open', 'High', 'Low', 'Volume', 'Adj Close', 'Estimated Debt Volume',
+                'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio',
+                'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)',
+                'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield'
+            ]
+            parameter = st.selectbox("Select parameter:", parameters)
+            excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio']
+
+            # Plot the selected parameter
+            if parameter:
+                plot_time_series(data, parameter)
+
+            # Additional plots and statistics
+            plot_correlation_heatmap(data, excluded_columns)
+            display_mean_median(data, excluded_columns)
+            display_summary_statistics(data, excluded_columns)
+            plot_vix(start_date, end_date)
+            plot_estimated_debt_volume(data)
+
+if __name__ == "__main__":
+    main()
