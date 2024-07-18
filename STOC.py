@@ -342,6 +342,13 @@ def main():
             # Dropdown to select parameter to plot
             parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
+
+try:
+    data = yf.download(ticker, start=start_date, end=end_date, progress=False) if parameter_to_plot != 'VIX' else yf.download('^VIX', start=start_date, end=end_date, progress=False)
+except Exception as e:
+    st.write(f"Error downloading data: {e}")
+    data = pd.DataFrame()  # Create an empty DataFrame
+
 if not data.empty:
     # Calculate estimated debt volume
     data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
