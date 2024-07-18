@@ -342,9 +342,36 @@ def main():
             data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
             data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
 
-            # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
-            parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
+# Dropdown to select parameter to plot
+parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
+
+if parameter_to_plot:
+    # Function to plot time series data
+    def plot_time_series(data, excluded_columns):
+        try:
+            st.header("Time Series Data")
+            columns_to_plot = [col for col in data.columns if col not in excluded_columns]
+            if parameter_to_plot in columns_to_plot:
+                st.subheader(f"{parameter_to_plot} over time")
+                fig, ax = plt.subplots(figsize=(12, 6))
+                ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
+                ax.set_xlabel('Time')
+                ax.set_ylabel(parameter_to_plot)
+                ax.grid(color='white')  # Set gridline color to white
+                ax.set_facecolor('black')  # Set axis background to black
+                ax.spines['bottom'].set_color('black')  # Set axis spines to black
+                ax.spines['top'].set_color('black')
+                ax.spines['right'].set_color('black')
+                ax.spines['left'].set_color('black')
+                st.write(fig)  # Render the figure using Streamlit
+                st.line_chart(data[parameter_to_plot])  # Plot the time series using Streamlit's built-in function
+                plt.show()  # Display the plot
+            else:
+                st.write("The parameter to plot is not in the data.")
+        except Exception as e:
+            st.write("An error occurred: ", e)
+            
 
 try:
     data = yf.download(ticker, start=start_date, end=end_date, progress=False) if parameter_to_plot != 'VIX' else yf.download('^VIX', start=start_date, end=end_date, progress=False)
