@@ -470,22 +470,35 @@ except Exception as e:
     data = None
 
 if data is not None and not data.empty:
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
-    ax.set_xlabel('Time')
-    ax.set_ylabel(parameter_to_plot)
-    ax.grid(color='white')  # Set gridline color to white
-    ax.set_facecolor('black')  # Set axis background to black
-    ax.spines['bottom'].set_color('black')  # Set axis spines to black
-    ax.spines['top'].set_color('black')
-    ax.spines['right'].set_color('black')
-    ax.spines['left'].set_color('black')
-    st.pyplot(fig)
+# Function to plot time series data
+    def plot_time_series(data, excluded_columns):
+        st.header("Time Series Data")
+        columns_to_plot = [col for col in data.columns if col not in excluded_columns]
+        for col in columns_to_plot:
+            st.subheader(f"{col} over time")
+            fig, ax = plt.subplots(figsize=(12, 6))
+            ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
+            ax.set_xlabel('Time')
+            ax.set_ylabel(col)
+            ax.grid(color='white')  # Set gridline color to white
+            ax.set_facecolor('black')  # Set axis background to black
+            ax.spines['bottom'].set_color('black')  # Set axis spines to black
+            ax.spines['top'].set_color('black')
+            ax.spines['right'].set_color('black')
+            ax.spines['left'].set_color('black')
+            st.write(fig)  # Render the figure using Streamlit
+            st.line_chart(data[col])  # Plot the time series using Streamlit's built-in function
     st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. This replacement quantity is **Estimated Debt Volume**. Sit tight!")
-    # Plot correlation heatmap
-    excluded_columns = ['Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
-    plot_correlation_heatmap(data, excluded_columns)
+   # Function to plot correlation heatmap
+def plot_correlation_heatmap(data, excluded_columns):
+    excluded_columns = []
+    st.header("Correlation Heatmap")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    corr = data[columns_to_include].corr()
+    fig, ax = plt.subplots(figsize=(12, 10))
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+    st.write(fig)  # Render the figure using Streamlit
+    st.pyplot(fig)  # Plot the heatmap using Streamlit's built-in function
     
     # Display mean and median values
     display_mean_median(data, excluded_columns)
