@@ -456,7 +456,6 @@ if not data.empty:
         st.write("The Tax Burden Ratio is a measure of a company's tax burden. It is calculated by dividing the difference between the closing and opening prices by the adjusted closing price. A higher ratio indicates higher tax burden.")
     else:
         st.write("Please select a parameter to plot.")
-        st.write("The Interest Expense Ratio is a measure of a company's interest
             if parameter_to_plot == 'VIX':
                 vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
                 plt.style.use('dark_background')  # Set plot background to black
