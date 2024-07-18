@@ -471,7 +471,7 @@ if parameter_to_plot == 'VIX':
     ax.spines['left'].set_color('black')
     st.pyplot(fig)
 else:
-    data = yf.download(ticker, start=start_date, end=end_date, progress=False)  # Define data here
+    data = yf.download(ticker, start=start_date, end=end_date, progress=False)  # Assign a value to data
     if not data.empty:  # Check if data is not empty
         plt.style.use('dark_background')  # Set plot background to black
         fig, ax = plt.subplots(figsize=(12, 6))
