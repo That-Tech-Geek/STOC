@@ -471,7 +471,7 @@ if parameter_to_plot == 'VIX':
     ax.spines['left'].set_color('black')
     st.pyplot(fig)
 else:
-    if:
+    if data is not None:  # Check if data is not None
         plt.style.use('dark_background')  # Set plot background to black
         fig, ax = plt.subplots(figsize=(12, 6))
         ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
