@@ -295,7 +295,10 @@ def plot_estimated_debt_volume(data):
     ax.spines['left'].set_color('black')
     st.pyplot(fig)
 
-# Streamlit app
+def fetch_data(ticker, start, end):
+    data = yf.download(ticker, start=start, end=end, progress=False)
+    return data
+
 def main():
     st.title("Welcome to STOC!")
     st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
@@ -304,16 +307,42 @@ def main():
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
     exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
-    start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'))
-    end_date = st.date_input("End date:", value=pd.to_datetime('today'), min_value=start_date)
-    
-    if ticker and exchange and start_date and end_date:
-        ticker_with_suffix = ticker + exchange_suffixes[exchange]
-        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-        start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'), max_value=pd.to_datetime('2024-07-18') - timedelta(days=1))
-        ticker_with_suffix = ticker + exchange_suffixes[exchange]
-        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-    
+    date_range = st.selectbox("Select date range:", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"])
+
+    if date_range == "1d":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=1)
+        end_date = pd.to_datetime('today')
+    elif date_range == "5d":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=5)
+        end_date = pd.to_datetime('today')
+    elif date_range == "1mo":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=30)
+        end_date = pd.to_datetime('today')
+    elif date_range == "3mo":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=90)
+        end_date = pd.to_datetime('today')
+    elif date_range == "6mo":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=180)
+        end_date = pd.to_datetime('today')
+    elif date_range == "1y":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=365)
+        end_date = pd.to_datetime('today')
+    elif date_range == "2y":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=730)
+        end_date = pd.to_datetime('today')
+    elif date_range == "5y":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=1825)
+        end_date = pd.to_datetime('today')
+    elif date_range == "10y":
+        start_date = pd.to_datetime('today') - pd.Timedelta(days=3650)
+        end_date = pd.to_datetime('today')
+    elif date_range == "ytd":
+        start_date = pd.to_datetime(f'{pd.to_datetime("today").year}-01-01')
+        end_date = pd.to_datetime('today')
+    elif date_range == "max":
+        start_date = pd.to_datetime('1924-01-01')
+        end_date = pd.to_datetime('today')
+
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
