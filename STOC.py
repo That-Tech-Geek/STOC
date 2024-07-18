@@ -386,7 +386,7 @@ def main():
             data['Capital Gearing Ratio'] = data['Estimated Debt Volume'] / data['Volume']
             data['Interest Coverage Ratio'] = data['EBIT'] / (data['Estimated Debt Volume'] * data['Interest Rate'])
             data['DSCR'] = (data['Adj Close'] * data['Volume']) / (data['Estimated Debt Volume'])
-            data['Gross Profit Ratio'] = data['Gross Profit'] / (data['Adj Close'] * data['Volume'])
+            data['Gross Profit Ratio'] = (data['Adj Close'] * data['Volume']) - (data['Close'] * data['Volume']) / (data['Adj Close'] * data['Volume'])
             data['Net Profit Ratio'] = data['Net Profit After Tax'] / (data['Adj Close'] * data['Volume'])
             data['ROI'] = data['Net Profit After Tax'] / data['Investment Cost']
             data['EBITDA Margin'] = data['EBITDA'] / (data['Adj Close'] * data['Volume'])
