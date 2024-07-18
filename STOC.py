@@ -210,21 +210,6 @@ market_cap_categories = {
     "Nano-cap": 0
 }
 
-import streamlit as st
-import yfinance as yf
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# Define the exchange suffixes dictionary
-exchange_suffixes = {
-    "NSE": ".NS",
-    "BSE": ".BO",
-    "NASDAQ": "",
-    "NYSE": "",
-    # Add more exchanges as needed
-}
-
 # Function to fetch data
 def fetch_data(ticker, start, end):
     data = yf.download(ticker, start=start, end=end, progress=False)
