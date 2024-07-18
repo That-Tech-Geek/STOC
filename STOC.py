@@ -310,8 +310,7 @@ def main():
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-        start_date = st.date_input("Start date:", value=pd.to_datetime('1924-01-01'), min_value=pd.to_datetime('1924-01-01'), max_value=datetime.today() - timedelta(days=1))
-    if ticker and exchange and start_date and end_date:
+        start_date = st.date_input("Start date:", value=date(1924, 1, 1), min_value=date(1924, 1, 1), max_value=date.today() - timedelta(days=1))
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
     
