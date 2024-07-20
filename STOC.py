@@ -473,7 +473,11 @@ def main():
     ticker_final = ticker + exchange
     if st.button("Analyze"):
         data = fetch_data(ticker, start_date, end_date)
-        parameters = data.columns.tolist()  # Define parameters here
+        
+        # Remove rows with NaN or inf values
+        data = data.replace([np.inf, -np.inf], np.nan).dropna(how='any', axis=0)
+        
+        parameters = data.columns.tolist()  
         plot_time_series(data, parameters)
         plot_correlation_heatmap(data, parameters)
         display_mean_median(data, parameters)
@@ -481,5 +485,6 @@ def main():
         plot_vix(start_date, end_date)
         plot_estimated_debt_volume(data)
         generate_pros_cons_table(data, ticker)
+        
 if __name__ == "__main__":
     main()
