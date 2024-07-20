@@ -8,6 +8,7 @@ from scipy.stats import pearsonr
 import plotly.express as px
 import timedelta
 from datetime import date, timedelta
+from email.message import EmailMessage as em
 
 # Dictionary to map exchanges to suffixes
 exchange_suffixes = {
