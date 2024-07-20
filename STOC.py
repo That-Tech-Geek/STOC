@@ -347,13 +347,14 @@ def main():
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
 
-# Add a section to collect user's first name and email ID
+## Add a section to collect user's first name and email ID
 st.header("Get in touch!")
 first_name = st.text_input("Enter your first name:")
 email_id = st.text_input("Enter your email ID:")
-submit_button = st.button("Submit")
 
-if submit_button:
+submit_email_button = st.button("Submit Email")
+
+if submit_email_button:
     # Send an email with a thank you message and an invitation to contribute to Patreon
     msg = EmailMessage()
     msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
@@ -366,6 +367,13 @@ if submit_button:
     server.send_message(msg)
     server.quit()
 
+# Add a section to collect company name for stock data
+st.header("Get stock data!")
+company_name = st.text_input("Enter the company name (e.g. AAPL for Apple):")
+
+submit_stock_button = st.button("Get Stock Data")
+
+if submit_stock_button:
     # Get stock data from Yahoo Finance
     import yfinance as yf
     ticker = yf.Ticker(company_name)
