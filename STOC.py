@@ -366,11 +366,6 @@ if submit_button:
     server.send_message(msg)
     server.quit()
 
-# Add a section to collect company name for stock data
-st.header("Get stock data!")
-company_name = st.text_input("Enter the company name (e.g. AAPL for Apple):")
-stock_button = st.button("Get stock data")
-
 if stock_button:
     # Get stock data from Yahoo Finance
     import yfinance as yf
