@@ -410,21 +410,31 @@ def plot_vix(start_date, end_date):
     ax.spines['left'].set_color('black')
     st.pyplot(fig)
 
-# Function to calculate and plot estimated debt volume
-def plot_estimated_debt_volume(data):
-    st.header("Estimated Debt Volume")
-    debt_volume = data['Close'] * data['Volume']
-    plt.style.use('dark_background')  # Set plot background to black
+def plot_financial_metrics(data):
+    st.header("Financial Metrics Over Time")
+    
+    metrics = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'Average Total Assets', 'Asset Turnover Ratio', 'EBIT', 'Interest Rate', 'Corporate Tax', 'Debt-to-Equity Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio','Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDA Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio','Payables Turnover Ratio', 'Cash Conversion Cycle', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio','Debt to Assets Ratio', 'Equity Ratio', 'Financial Leverage Ratio', 'Proprietary Ratio', 'Capital Gearing Ratio', 'DSCR', 'Gross Profit Ratio', 'Net Profit Ratio', 'ROI', 'EBITDA Margin', 'Fixed Asset Turnover Ratio','Capital Turnover Ratio']
+    
+    fig, axs = plt.subplots(len(metrics), figsize=(12, 60))
+    
+    selected_metric = st.selectbox("Select a metric to plot", metrics)
+    
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data.index, debt_volume, color='blue')  # Set plot color to blue
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Estimated Debt Volume')
-    ax.grid(color='white')  # Set gridline color to white
-    ax.set_facecolor('black')  # Set axis background to black
-    ax.spines['bottom'].set_color('black')  # Set axis spines to black
+    
+    if selected_metric == 'Estimated Debt Volume':
+        ax.plot(data.index, data['Close'] * data['Volume'], color='blue')
+    else:
+        ax.plot(data.index, data[selected_metric], color='blue')
+    ax.set_title(selected_metric)
+    ax.set_xlabel('Date')
+    ax.set_ylabel(selected_metric)
+    ax.grid(color='white')
+    ax.set_facecolor('black')
+    ax.spines['bottom'].set_color('black')
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
+    
     st.pyplot(fig)
 
 # Function to generate pros and cons table
@@ -457,15 +467,16 @@ def generate_pros_cons_table(data, ticker):
 def main():
     st.title("Stock Analysis App")
     ticker = st.text_input("Enter stock ticker symbol: ")
+    exchange = st.selectbox("Select exchange", list(exchange_suffixes.keys()))
     start_date = st.date_input("Enter start date: ")
     end_date = st.date_input("Enter end date: ")
-    
+    ticker_final = ticker + exchange
     if st.button("Analyze"):
         data = fetch_data(ticker, start_date, end_date)
-        plot_time_series(data, ['Adj Close'])
-        plot_correlation_heatmap(data, ['Adj Close'])
-        display_mean_median(data, ['Adj Close'])
-        display_summary_statistics(data, ['Adj Close'])
+        plot_time_series(data, [parameters])
+        plot_correlation_heatmap(data, [parameters])
+        display_mean_median(data, [parameters])
+        display_summary_statistics(data, [parameters])
         plot_vix(start_date, end_date)
         plot_estimated_debt_volume(data)
         generate_pros_cons_table(data, ticker)
