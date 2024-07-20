@@ -247,12 +247,16 @@ def plot_correlation_heatmap(data, excluded_columns):
 
 # Function to display mean and median
 def display_mean_median(data, excluded_columns):
-    st.header("Mean and Median Values")
-    columns_to_include = [col for col in data.columns if col not in excluded_columns]
-    mean_values = data[columns_to_include].mean()
-    median_values = data[columns_to_include].median()
-    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
-    st.dataframe(summary)
+    data_copy = data.copy()
+    for column in excluded_columns:
+        if column in data_copy.columns:
+            data_copy = data_copy.drop(column, axis=1)
+    mean = data_copy.mean()
+    median = data_copy.median()
+    st.write("Mean:")
+    st.write(mean)
+    st.write("Median:")
+    st.write(median)
 
 # Function to display summary statistics
 def display_summary_statistics(data, excluded_columns):
