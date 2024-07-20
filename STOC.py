@@ -550,18 +550,6 @@ def main():
                 yag = yagmail.SMTP(email_id, email_password)
                 yag.send(to=email_address, subject=subject, contents=body)
                 st.success("Email sent successfully!")
-            except KeyError as e:
-                st.error(f"Key error: {e}. Check if the secrets are correctly set up.")
-            except yagmail.error.YagInvalidEmailAddress as e:
-                st.error(f"Invalid email address: {e}")
-            except yagmail.error.YagAddressError as e:
-                st.error(f"Address error: {e}")
-            except yagmail.error.YagConnectionClosed as e:
-                st.error(f"Connection closed: {e}")
-            except yagmail.error.YagSMTPError as e:
-                st.error(f"SMTP error: {e}")
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
         else:
             st.write("No data available for the given ticker and date range.")
 
