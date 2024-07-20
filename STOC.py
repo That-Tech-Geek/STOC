@@ -512,17 +512,17 @@ def main():
                 columns_to_include = [col for col in data.columns if col not in excluded_columns]
                 corr = data[columns_to_include].corr()
                 st.dataframe(corr.style.format("{:.2f}"))  # Display correlation matrix as a table
-            def display_mean_median(data, excluded_cols):
-                # Drop the excluded columns
-                data = data.drop(excluded_cols, axis=1)
-                
-                # Calculate and display the mean
+            def display_mean_median(data, excluded_columns):
+                data_copy = data.copy()
+                for column in excluded_columns:
+                    if column in data_copy.columns:
+                        data_copy = data_copy.drop(column, axis=1)
+                mean = data_copy.mean()
+                median = data_copy.median()
                 st.write("Mean:")
-                st.write(data.mean())
-                
-                # Calculate and display the median
-                st.write("\nMedian:")
-                st.write(data.median())
+                st.write(mean)
+                st.write("Median:")
+                st.write(median)
             
             # Now you can call the function
             display_mean_median(data, excluded_columns)
