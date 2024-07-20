@@ -369,11 +369,10 @@ def plot_time_series(data, excluded_columns):
                 st.write(f"Latest {parameter_to_plot}: {latest_value:.2f}, rounded off to two decimal places.")
 
 # Function to plot correlation heatmap
-def plot_correlation_heatmap(data, excluded_columns):
-    st.header("Correlation Heatmap")
-    columns_to_include = [col for col in data.columns if col not in excluded_columns]
-    corr = data[columns_to_include].corr()
-    fig, ax = plt.subplots()
+def plot_correlation_heatmap(data, parameters):
+    data = data.replace([np.inf, -np.inf], np.nan).dropna(how='any', axis=0)
+    corr = data.corr()
+    fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
     st.pyplot(fig)
 
