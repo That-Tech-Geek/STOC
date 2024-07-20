@@ -543,7 +543,7 @@ def main():
             email_password = st.secrets["email"]["EMAIL_PASSWORD"]
         
             try:
-                yag = yagmail.SMTP(email_id, email_password)
+                yag = yagmail.SMTP(email, password)
                 yag.send(to=email_address, subject=subject, contents=body)
                 st.success("Email sent successfully!")
             except yagmail.error.YagInvalidEmailAddress as e:
