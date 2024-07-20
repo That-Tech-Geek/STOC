@@ -538,22 +538,16 @@ def main():
                 )
             st.title("Get in Touch!")
             st.write("After you submit this data which we assure is confidential, we will send you an email. You can list any suggestions or revies to us from that email. We're looking forward to what you have to say!")
-            st.write("Please enter your first name and email address:")
-
-            first_name = st.text_input("First Name")
-            email_address = st.text_input("Email Address")
+            with st.form("my_form"):
+                first_name = st.text_input("First Name")
+                email_address = st.text_input("Email Address")
+                submitted = st.form_submit_button("Submit")
             
-            if st.button("Submit"):
-                msg = EmailMessage()
-                msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
-                msg["Subject"] = "Thank you for using STOC!"
-                msg["From"] = "YOUR_EMAIL_ID"
-                msg["To"] = email_address
-            
-                server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-                server.login("YOUR_EMAIL_ID", "YOUR_PASSWORD")
-                server.send_message(msg)
-                server.quit()
+            if submitted:
+                yag = yagmail.SMTP("your_email_address@example.com", "your_email_password")
+                subject = "Thank you for using STOC!"
+                body = f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta."
+                yag.send(to=email_address, subject=subject, contents=body)
             
                 st.write("Email sent successfully!")
         else:
