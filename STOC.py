@@ -539,13 +539,19 @@ def main():
             st.title("Get in Touch!")
             st.write("After you submit this data which we assure is confidential, we will send you an email. You can list any suggestions or revies to us from that email. We're looking forward to what you have to say!")
            # Get email credentials from Streamlit secrets
-            email_id = st.secrets["email"]["EMAIL_ID"]
-            email_password = st.secrets["email"]["EMAIL_PASSWORD"]
+            email_address = "recipient@example.com"  # Define recipient email
+            subject = "Test Email"  # Define email subject
+            body = "This is a test email."  # Define email body
+                    try:
+                # Get email credentials from Streamlit secrets
+                email_id = st.secrets["email"]["email_id"]
+                email_password = st.secrets["email"]["email_password"]
         
-            try:
-                yag = yagmail.SMTP(email, password)
+                yag = yagmail.SMTP(email_id, email_password)
                 yag.send(to=email_address, subject=subject, contents=body)
                 st.success("Email sent successfully!")
+            except KeyError as e:
+                st.error(f"Key error: {e}. Check if the secrets are correctly set up.")
             except yagmail.error.YagInvalidEmailAddress as e:
                 st.error(f"Invalid email address: {e}")
             except yagmail.error.YagAddressError as e:
