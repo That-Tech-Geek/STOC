@@ -538,27 +538,24 @@ def main():
                 )
             st.title("Get in Touch!")
             st.write("After you submit this data which we assure is confidential, we will send you an email. You can list any suggestions or revies to us from that email. We're looking forward to what you have to say!")
-            # Get email credentials from environment variables
-            email_id = os.getenv('EMAIL_ID')
-            email_password = os.getenv('EMAIL_PASSWORD')
+           # Get email credentials from Streamlit secrets
+            email_id = st.secrets["email"]["EMAIL_ID"]
+            email_password = st.secrets["email"]["EMAIL_PASSWORD"]
         
-            if email_id is None or email_password is None:
-                raise ValueError("Email ID or password not set in environment variables")
-            
             try:
                 yag = yagmail.SMTP(email_id, email_password)
                 yag.send(to=email_address, subject=subject, contents=body)
-                print("Email sent successfully!")
+                st.success("Email sent successfully!")
             except yagmail.error.YagInvalidEmailAddress as e:
-                print(f"Invalid email address: {e}")
+                st.error(f"Invalid email address: {e}")
             except yagmail.error.YagAddressError as e:
-                print(f"Address error: {e}")
+                st.error(f"Address error: {e}")
             except yagmail.error.YagConnectionClosed as e:
-                print(f"Connection closed: {e}")
+                st.error(f"Connection closed: {e}")
             except yagmail.error.YagSMTPError as e:
-                print(f"SMTP error: {e}")
+                st.error(f"SMTP error: {e}")
             except Exception as e:
-                print(f"An error occurred: {e}")
+                st.error(f"An error occurred: {e}")
         else:
             st.write("No data available for the given ticker and date range.")
 
