@@ -268,8 +268,8 @@ def plot_time_series(data, excluded_columns):
             data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
 
             # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Capital Turnover Ratio', 'Fixed Asset Turnover Ratio', 'ROI', 'EBITDA Margin', 'Asset Turnover Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
-            parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
+            metrics = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Capital Turnover Ratio', 'Fixed Asset Turnover Ratio', 'ROI', 'EBITDA Margin', 'Asset Turnover Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+            parameter_to_plot = st.selectbox("Select parameter to plot:", metrics)
             if parameter_to_plot == 'Open':
                 st.write("The Open price is the price at which the stock opens for trading on a given day.")
             elif parameter_to_plot == 'High':
@@ -473,10 +473,10 @@ def main():
     ticker_final = ticker + exchange
     if st.button("Analyze"):
         data = fetch_data(ticker, start_date, end_date)
-        plot_time_series(data, [parameters])
-        plot_correlation_heatmap(data, [parameters])
-        display_mean_median(data, [parameters])
-        display_summary_statistics(data, [parameters])
+        plot_time_series(data, [metrics])
+        plot_correlation_heatmap(data, [metrics])
+        display_mean_median(data, [metrics])
+        display_summary_statistics(data, [metrics])
         plot_vix(start_date, end_date)
         plot_estimated_debt_volume(data)
         generate_pros_cons_table(data, ticker)
