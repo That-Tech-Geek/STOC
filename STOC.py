@@ -343,9 +343,17 @@ def main():
         start_date = pd.to_datetime('1924-01-01')
         end_date = pd.to_datetime('today')
 
-    if ticker and exchange and start_date and end_date:
-        ticker_with_suffix = ticker + exchange_suffixes[exchange]
-        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+    if st.button("Fetch Data"):
+        if ticker and exchange and start_date and end_date:
+            ticker_with_suffix = ticker + exchange_suffixes[exchange]
+            data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+            excluded_columns = ['Adj Close', 'Volume']
+            plot_time_series(data, excluded_columns)
+            plot_correlation_heatmap(data, excluded_columns)
+            display_mean_median(data, excluded_columns)
+            display_summary_statistics(data, excluded_columns)
+            plot_vix(start_date, end_date)
+            plot_estimated_debt_volume(data)
 
      
         if not data.empty:
