@@ -550,6 +550,8 @@ def main():
                 yag = yagmail.SMTP(email_id, email_password)
                 yag.send(to=email_address, subject=subject, contents=body)
                 st.success("Email sent successfully!")
+            except:
+                st.write("ERROR")
         else:
             st.write("No data available for the given ticker and date range.")
 
