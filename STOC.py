@@ -535,6 +535,24 @@ def main():
                 file_name='stock_data.csv',
                 mime='text/csv',
                 )
+            st.write("Please enter your first name and email address:")
+
+            first_name = st.text_input("First Name")
+            email_address = st.text_input("Email Address")
+            
+            if st.button("Submit"):
+                msg = EmailMessage()
+                msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
+                msg["Subject"] = "Thank you for using STOC!"
+                msg["From"] = "YOUR_EMAIL_ID"
+                msg["To"] = email_address
+            
+                server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+                server.login("YOUR_EMAIL_ID", "YOUR_PASSWORD")
+                server.send_message(msg)
+                server.quit()
+            
+                st.write("Email sent successfully!")
         else:
             st.write("No data available for the given ticker and date range.")
 
