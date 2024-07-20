@@ -368,9 +368,10 @@ if submit_email_button:
     server.quit()
 
 # Add a section to collect company name for stock data
-st.header("Get stock data!")
-company_name = st.text_input("Enter the company name (e.g. AAPL for Apple):")
 
+ticker = st.text_input("Enter stock ticker:")
+exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
+date_range = st.selectbox("Select date range:", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "max"])
 submit_stock_button = st.button("Get Stock Data")
 
 if submit_stock_button:
