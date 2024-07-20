@@ -473,6 +473,7 @@ def main():
     start_date = st.date_input("Enter start date: ")
     end_date = st.date_input("Enter end date: ")
     ticker_final = ticker + exchange
+    excluded columns = []
     if st.button("Analyze"):
         data = fetch_data(ticker, start_date, end_date)
         
@@ -484,8 +485,7 @@ def main():
         plot_correlation_heatmap(data, parameters)
         display_mean_median(data, parameters)
         display_summary_statistics(data, parameters)
-        plot_vix(start_date, end_date)
-        plot_estimated_debt_volume(data)
+        plot_time_series(data, excluded_columns)
         generate_pros_cons_table(data, ticker)
         
 if __name__ == "__main__":
