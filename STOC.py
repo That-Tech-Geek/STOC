@@ -542,7 +542,7 @@ def main():
             email_address = "recipient@example.com"  # Define recipient email
             subject = "Test Email"  # Define email subject
             body = "This is a test email."  # Define email body
-                    try:
+            try:
                 # Get email credentials from Streamlit secrets
                 email_id = st.secrets["email"]["email_id"]
                 email_password = st.secrets["email"]["email_password"]
