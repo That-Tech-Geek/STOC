@@ -351,6 +351,8 @@ def main():
 st.header("Get in touch!")
 first_name = st.text_input("Enter your first name:")
 email_id = st.text_input("Enter your email ID:")
+company_name = st.text_input("Enter the company name (e.g. AAPL for Apple):")
+
 submit_button = st.button("Submit")
 
 if submit_button:
@@ -366,7 +368,6 @@ if submit_button:
     server.send_message(msg)
     server.quit()
 
-if stock_button:
     # Get stock data from Yahoo Finance
     import yfinance as yf
     ticker = yf.Ticker(company_name)
