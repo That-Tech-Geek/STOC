@@ -346,10 +346,6 @@ def main():
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-import streamlit as st
-import smtplib
-from email.message import EmailMessage
-import webbrowser
 
 # Add a section to collect user's first name and email ID
 st.header("Get in touch!")
@@ -370,14 +366,27 @@ if submit_button:
     server.send_message(msg)
     server.quit()
 
+# Add a section to collect company name for stock data
+st.header("Get stock data!")
+company_name = st.text_input("Enter the company name (e.g. AAPL for Apple):")
+stock_button = st.button("Get stock data")
+
+if stock_button:
+    # Get stock data from Yahoo Finance
+    import yfinance as yf
+    ticker = yf.Ticker(company_name)
+    stock_data = ticker.info
+    st.write("Stock data:")
+    st.write(stock_data)
+
     # Redirect user to YouTube
-    company_name = st.text_input("Enter the company name:")
     youtube_url = f"https://www.youtube.com/results?search_query={company_name}"
     st.write(f"Watch informative videos about {company_name} on YouTube:")
     st.markdown(f"[Click here to watch]({youtube_url})")
 
     # Open YouTube URL in default browser
     if st.button("Open YouTube"):
+        import webbrowser
         webbrowser.open(youtube_url)
         
         if not data.empty:
