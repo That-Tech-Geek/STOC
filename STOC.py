@@ -535,6 +535,7 @@ def main():
                 file_name='stock_data.csv',
                 mime='text/csv',
                 )
+            st.title("Get in Touch!")
             st.write("Please enter your first name and email address:")
 
             first_name = st.text_input("First Name")
