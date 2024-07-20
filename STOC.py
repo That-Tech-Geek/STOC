@@ -538,18 +538,27 @@ def main():
                 )
             st.title("Get in Touch!")
             st.write("After you submit this data which we assure is confidential, we will send you an email. You can list any suggestions or revies to us from that email. We're looking forward to what you have to say!")
-            with st.form("my_form"):
-                first_name = st.text_input("First Name")
-                email_address = st.text_input("Email Address")
-                submitted = st.form_submit_button("Submit")
+            # Get email credentials from environment variables
+            email_id = os.getenv('EMAIL_ID')
+            email_password = os.getenv('EMAIL_PASSWORD')
+        
+            if email_id is None or email_password is None:
+                raise ValueError("Email ID or password not set in environment variables")
             
-            if submitted:
-                yag = yagmail.SMTP("YOUR_EMAIL_ID", "YOUR_PASSWORD")
-                subject = "Thank you for using STOC!"
-                body = f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta."
+            try:
+                yag = yagmail.SMTP(email_id, email_password)
                 yag.send(to=email_address, subject=subject, contents=body)
-            
-                st.write("Email sent successfully!")
+                print("Email sent successfully!")
+            except yagmail.error.YagInvalidEmailAddress as e:
+                print(f"Invalid email address: {e}")
+            except yagmail.error.YagAddressError as e:
+                print(f"Address error: {e}")
+            except yagmail.error.YagConnectionClosed as e:
+                print(f"Connection closed: {e}")
+            except yagmail.error.YagSMTPError as e:
+                print(f"SMTP error: {e}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
         else:
             st.write("No data available for the given ticker and date range.")
 
