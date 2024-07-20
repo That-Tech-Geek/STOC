@@ -354,6 +354,9 @@ def main():
 
         if submit_button:
             # Send an email with a thank you message and an invitation to contribute to Patreon
+            import smtplib
+            from email.message import EmailMessage
+
             msg = EmailMessage()
             msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
             msg["Subject"] = "Thank you for using STOC!"
