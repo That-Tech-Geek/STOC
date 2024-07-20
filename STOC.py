@@ -473,7 +473,7 @@ def main():
     start_date = st.date_input("Enter start date: ")
     end_date = st.date_input("Enter end date: ")
     ticker_final = ticker + exchange
-    excluded columns = []
+    excluded_columns = []
     if st.button("Analyze"):
         data = fetch_data(ticker, start_date, end_date)
         
