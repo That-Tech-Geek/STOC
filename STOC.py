@@ -351,8 +351,6 @@ def main():
 st.header("Get in touch!")
 first_name = st.text_input("Enter your first name:")
 email_id = st.text_input("Enter your email ID:")
-company_name = st.text_input("Enter the company name (e.g. AAPL for Apple):")
-
 submit_button = st.button("Submit")
 
 if submit_button:
