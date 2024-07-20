@@ -441,29 +441,46 @@ def plot_financial_metrics(data):
 
 # Function to generate pros and cons table
 def generate_pros_cons_table(data, ticker):
-    st.header("Pros and Cons Table")
-    pros = []
-    cons = []
-    
-    # Calculate simple moving averages
-    short_term_sma = data['Close'].rolling(window=20).mean()
-    long_term_sma = data['Close'].rolling(window=50).mean()
-    
-    # Check if short-term SMA is above long-term SMA
-    if short_term_sma.iloc[-1] > long_term_sma.iloc[-1]:
-        pros.append(f"Short-term SMA ({short_term_sma.iloc[-1]}) is above long-term SMA ({long_term_sma.iloc[-1]}) for {ticker}, indicating a bullish trend.")
-    else:
-        cons.append(f"Short-term SMA ({short_term_sma.iloc[-1]}) is below long-term SMA ({long_term_sma.iloc[-1]}) for {ticker}, indicating a bearish trend.")
-    
-    # Check if stock price is above its 200-day moving average
-    if data['Close'].iloc[-1] > data['Close'].rolling(window=200).mean().iloc[-1]:
-        pros.append(f"Stock price ({data['Close'].iloc[-1]}) is above its 200-day moving average ({data['Close'].rolling(window=200).mean().iloc[-1]}) for {ticker}, indicating a bullish trend.")
-    else:
-        cons.append(f"Stock price ({data['Close'].iloc[-1]}) is below its 200-day moving average ({data['Close'].rolling(window=200).mean().iloc[-1]}) for {ticker}, indicating a bearish trend.")
-    
-    # Create pros and cons table
-    pros_cons_table = pd.DataFrame({'Pros': pros, 'Cons': cons})
-    st.dataframe(pros_cons_table)
+    """
+    Generate a pros and cons table based on the data and ticker.
+
+    Args:
+        data (pandas.DataFrame): The data to analyze.
+        ticker (str): The ticker symbol.
+
+    Returns:
+        None
+    """
+    try:
+        # Calculate short-term and long-term SMAs
+        short_term_sma = data['Close'].rolling(window=50).mean()
+        long_term_sma = data['Close'].rolling(window=200).mean()
+
+        # Check if both SMAs have at least one element
+        if short_term_sma.size > 0 and long_term_sma.size > 0:
+            # Determine the pros and cons based on the SMAs
+            if short_term_sma.iloc[-1] > long_term_sma.iloc[-1]:
+                pros = "The short-term SMA is above the long-term SMA, indicating a potential buy signal."
+                cons = "The stock may be overbought, and a correction could occur."
+            else:
+                pros = "The short-term SMA is below the long-term SMA, indicating a potential sell signal."
+                cons = "The stock may be oversold, and a rebound could occur."
+        else:
+            pros = "Insufficient data to determine pros and cons."
+            cons = "Please check the data and try again."
+
+        # Create a pros and cons table
+        pros_cons_table = {
+            "Pros": [pros],
+            "Cons": [cons]
+        }
+
+        # Display the pros and cons table
+        st.write("Pros and Cons Table:")
+        st.table(pros_cons_table)
+
+    except Exception as e:
+        st.write(f"Error generating pros and cons table: {e}")
 
 # Main function
 def main():
