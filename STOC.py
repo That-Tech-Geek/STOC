@@ -346,27 +346,40 @@ def main():
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-        # Add a section to collect user's first name and email ID
-        st.header("Get in touch!")
-        first_name = st.text_input("Enter your first name:")
-        email_id = st.text_input("Enter your email ID:")
-        submit_button = st.button("Submit")
+import streamlit as st
+import smtplib
+from email.message import EmailMessage
+import webbrowser
 
-        if submit_button:
-            # Send an email with a thank you message and an invitation to contribute to Patreon
-            import smtplib
-            from email.message import EmailMessage
+# Add a section to collect user's first name and email ID
+st.header("Get in touch!")
+first_name = st.text_input("Enter your first name:")
+email_id = st.text_input("Enter your email ID:")
+submit_button = st.button("Submit")
 
-            msg = EmailMessage()
-            msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
-            msg["Subject"] = "Thank you for using STOC!"
-            msg["From"] = "your_email_id"
-            msg["To"] = email_id
+if submit_button:
+    # Send an email with a thank you message and an invitation to contribute to Patreon
+    msg = EmailMessage()
+    msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
+    msg["Subject"] = "Thank you for using STOC!"
+    msg["From"] = "your_email_id"
+    msg["To"] = email_id
 
-            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-            server.login("your_email_id", "your_password")
-            server.send_message(msg)
-            server.quit()
+    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+    server.login("your_email_id", "your_app_password")
+    server.send_message(msg)
+    server.quit()
+
+    # Redirect user to YouTube
+    company_name = st.text_input("Enter the company name:")
+    youtube_url = f"https://www.youtube.com/results?search_query={company_name}"
+    st.write(f"Watch informative videos about {company_name} on YouTube:")
+    st.markdown(f"[Click here to watch]({youtube_url})")
+
+    # Open YouTube URL in default browser
+    if st.button("Open YouTube"):
+        webbrowser.open(youtube_url)
+        
         if not data.empty:
             # Calculate estimated debt volume
             data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
