@@ -544,7 +544,7 @@ def main():
                 submitted = st.form_submit_button("Submit")
             
             if submitted:
-                yag = yagmail.SMTP("your_email_address@example.com", "your_email_password")
+                yag = yagmail.SMTP("YOUR_EMAIL_ID", "YOUR_PASSWORD")
                 subject = "Thank you for using STOC!"
                 body = f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta."
                 yag.send(to=email_address, subject=subject, contents=body)
