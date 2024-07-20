@@ -544,8 +544,8 @@ def main():
             body = "This is a test email."  # Define email body
             try:
                 # Get email credentials from Streamlit secrets
-                email_id = st.secrets["EMAIL_ID "]["email_id"]
-                email_password = st.secrets["EMAIL_PASSWORD "]["email_password"]
+                email_id = "sambit1912@gail.com"
+                email_password = "nuxe ncid jxrd pelu"
         
                 yag = yagmail.SMTP(email_id, email_password)
                 yag.send(to=email_address, subject=subject, contents=body)
