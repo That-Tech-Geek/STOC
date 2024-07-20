@@ -235,7 +235,7 @@ def plot_time_series(data, excluded_columns):
         ax.spines['right'].set_color('black')
         ax.spines['left'].set_color('black')
         st.pyplot(fig)
-        
+
 # Function to plot correlation heatmap
 def plot_correlation_heatmap(data, excluded_columns):
     st.header("Correlation Heatmap")
@@ -281,10 +281,10 @@ def plot_vix(start_date, end_date):
 # Function to calculate and plot estimated debt volume
 def plot_estimated_debt_volume(data):
     st.header("Estimated Debt Volume")
-    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
+    debt_volume = data['Close'] * data['Volume']
     plt.style.use('dark_background')  # Set plot background to black
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
+    ax.plot(data.index, debt_volume, color='blue')  # Set plot color to blue
     ax.set_xlabel('Time')
     ax.set_ylabel('Estimated Debt Volume')
     ax.grid(color='white')  # Set gridline color to white
@@ -295,265 +295,48 @@ def plot_estimated_debt_volume(data):
     ax.spines['left'].set_color('black')
     st.pyplot(fig)
 
-def fetch_data(ticker, start, end):
-    data = yf.download(ticker, start=start, end=end, progress=False)
-    return data
+# Function to generate pros and cons table
+def generate_pros_cons_table(data, ticker):
+    st.header("Pros and Cons Table")
+    pros = []
+    cons = []
+    
+    # Calculate simple moving averages
+    short_term_sma = data['Close'].rolling(window=20).mean()
+    long_term_sma = data['Close'].rolling(window=50).mean()
+    
+    # Check if short-term SMA is above long-term SMA
+    if short_term_sma.iloc[-1] > long_term_sma.iloc[-1]:
+        pros.append(f"Short-term SMA ({short_term_sma.iloc[-1]}) is above long-term SMA ({long_term_sma.iloc[-1]}) for {ticker}, indicating a bullish trend.")
+    else:
+        cons.append(f"Short-term SMA ({short_term_sma.iloc[-1]}) is below long-term SMA ({long_term_sma.iloc[-1]}) for {ticker}, indicating a bearish trend.")
+    
+    # Check if stock price is above its 200-day moving average
+    if data['Close'].iloc[-1] > data['Close'].rolling(window=200).mean().iloc[-1]:
+        pros.append(f"Stock price ({data['Close'].iloc[-1]}) is above its 200-day moving average ({data['Close'].rolling(window=200).mean().iloc[-1]}) for {ticker}, indicating a bullish trend.")
+    else:
+        cons.append(f"Stock price ({data['Close'].iloc[-1]}) is below its 200-day moving average ({data['Close'].rolling(window=200).mean().iloc[-1]}) for {ticker}, indicating a bearish trend.")
+    
+    # Create pros and cons table
+    pros_cons_table = pd.DataFrame({'Pros': pros, 'Cons': cons})
+    st.dataframe(pros_cons_table)
 
+# Main function
 def main():
-    st.title("Welcome to STOC!")
-    st.write("STOC is your one-stop solution to everything you need to know about a company, so go out there and do your best as an investor!")
-    st.write("NOTE TO USER: This is a project built for educational purposes, and may not be considered as financial advice, although best efforts by the developer to prevent any such inadvertent instances.")
+    st.title("Stock Analysis App")
+    ticker = st.text_input("Enter stock ticker symbol: ")
+    start_date = st.date_input("Enter start date: ")
+    end_date = st.date_input("Enter end date: ")
+    
+    if st.button("Analyze"):
+        data = fetch_data(ticker, start_date, end_date)
+        plot_time_series(data, ['Adj Close'])
+        plot_correlation_heatmap(data, ['Adj Close'])
+        display_mean_median(data, ['Adj Close'])
+        display_summary_statistics(data, ['Adj Close'])
+        plot_vix(start_date, end_date)
+        plot_estimated_debt_volume(data)
+        generate_pros_cons_table(data, ticker)
 
-    # Input fields
-    ticker = st.text_input("Enter stock ticker:")
-    exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
-    date_range = st.selectbox("Select date range:", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "max"])
-
-    if date_range == "1d":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=1)
-        end_date = pd.to_datetime('today')
-    elif date_range == "5d":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=5)
-        end_date = pd.to_datetime('today')
-    elif date_range == "1mo":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=30)
-        end_date = pd.to_datetime('today')
-    elif date_range == "3mo":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=90)
-        end_date = pd.to_datetime('today')
-    elif date_range == "6mo":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=180)
-        end_date = pd.to_datetime('today')
-    elif date_range == "1y":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=365)
-        end_date = pd.to_datetime('today')
-    elif date_range == "2y":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=730)
-        end_date = pd.to_datetime('today')
-    elif date_range == "5y":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=1825)
-        end_date = pd.to_datetime('today')
-    elif date_range == "10y":
-        start_date = pd.to_datetime('today') - pd.Timedelta(days=3650)
-        end_date = pd.to_datetime('today')
-    elif date_range == "ytd":
-        start_date = pd.to_datetime(f'{pd.to_datetime("today").year}-01-01')
-        end_date = pd.to_datetime('today')
-    elif date_range == "max":
-        start_date = pd.to_datetime('1924-01-01')
-        end_date = pd.to_datetime('today')
-
-    if ticker and exchange and start_date and end_date:
-        ticker_with_suffix = ticker + exchange_suffixes[exchange]
-        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-        # Add a section to collect user's first name and email ID
-        st.header("Get in touch!")
-        first_name = st.text_input("Enter your first name:")
-        email_id = st.text_input("Enter your email ID:")
-        submit_button = st.button("Submit")
-
-        if submit_button:
-            # Send an email with a thank you message and an invitation to contribute to Patreon
-            msg = EmailMessage()
-            msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
-            msg["Subject"] = "Thank you for using STOC!"
-            msg["From"] = "your_email_id"
-            msg["To"] = email_id
-
-            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-            server.login("your_email_id", "your_password")
-            server.send_message(msg)
-            server.quit()
-        if not data.empty:
-            # Calculate estimated debt volume
-            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-            data['Average Total Assets'] = data['Adj Close'] * data['Volume']
-            data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
-            data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * (data['Close'] - data['Open']) / data['Volume'])
-            data['Interest Rate'] = 0.08
-            data['Corporate Tax'] = 0.235
-            # Calculate various ratios
-            data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
-            data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
-            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
-            data['Price-to-Earnings Ratio'] = data['Close'] / data['Adj Close']
-            data['Price-to-Book Ratio'] = data['Close'] / data['Adj Close']
-            data['Return on Equity (ROE)'] = (data['Close'] - data['Open']) / data['Adj Close']
-            data['Return on Assets (ROA)'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Earnings Yield'] = data['Adj Close'] / data['Close']
-            data['Dividend Yield'] = data['Adj Close'] / data['Close']
-            data['Price-to-Sales Ratio'] = data['Close'] / data['Volume']
-            data['Enterprise Value-to-EBITDA Ratio'] = (data['Close'] * data['Volume']) / (data['Adj Close'] * 0.05)
-            data['Asset Turnover Ratio'] = data['Volume'] / data['Adj Close']
-            data['Inventory Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Receivables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Payables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Cash Conversion Cycle'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Debt Service Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Return on Invested Capital (ROIC)'] = (data['Close'] - data['Open']) / (data['Adj Close'] + data['Estimated Debt Volume'])
-            data['Return on Common Equity (ROCE)'] = (data['Close'] - data['Open']) / data['Adj Close']
-            data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Debt to Assets Ratio'] = data['Estimated Debt Volume'] / data['Asset Turnover Ratio']
-            data['Equity Ratio'] = data['Volume'] / data['Asset Turnover Ratio']
-            data['Financial Leverage Ratio'] = data['Asset Turnover Ratio'] / data['Volume']
-            data['Proprietary Ratio'] = data['Volume'] / data['Asset Turnover Ratio']
-            data['Capital Gearing Ratio'] = data['Estimated Debt Volume'] / data['Volume']
-            data['Interest Coverage Ratio'] = data['EBIT'] / (data['Estimated Debt Volume'] * data['Interest Rate'])
-            data['DSCR'] = (data['Adj Close'] * data['Volume']) / (data['Estimated Debt Volume'])
-            data['Gross Profit Ratio'] = (data['Adj Close'] * data['Volume']) - (data['Close'] * data['Volume']) / (data['Adj Close'] * data['Volume'])
-            data['Net Profit Ratio'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / (data['Adj Close'] * data['Volume'])
-            data['ROI'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / data['High']
-            data['EBITDA Margin'] = data['EBIT'] / (data['Adj Close'] * data['Volume'])
-            data['Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
-            data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Volume'] * (data['Open'] + data['Close']) / 2
-            data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
-
-            # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Capital Turnover Ratio', 'Fixed Asset Turnover Ratio', 'ROI', 'EBITDA Margin', 'Asset Turnover Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
-            parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
-            if parameter_to_plot == 'Open':
-                st.write("The Open price is the price at which the stock opens for trading on a given day.")
-            elif parameter_to_plot == 'High':
-                st.write("The High price is the highest price at which the stock trades on a given day.")
-            elif parameter_to_plot == 'Low':
-                st.write("The Low price is the lowest price at which the stock trades on a given day.")
-            elif parameter_to_plot == 'Close':
-                st.write("The Close price is the price at which the stock closes for trading on a given day.")
-            elif parameter_to_plot == 'Adj Close':
-                st.write("The Adjusted Close price is the closing price of the stock adjusted for dividends and splits.")
-            elif parameter_to_plot == 'Volume':
-                st.write("The Volume is the number of shares traded on a given day.")
-            elif parameter_to_plot == 'Estimated Debt Volume':
-                st.write("The Estimated Debt Volume is an estimate of the company's debt. It is the product of Share Trade Volume and the difference of adjusted closing and closing prices. It is the replacement quantity for the debt quantity, for more info, refer to below the plot.")
-            elif parameter_to_plot == 'VIX':
-                st.write("The VIX is a measure of the market's expected volatility.")
-            elif parameter_to_plot == 'Debt-to-Equity Ratio':
-                st.write("The Debt-to-Equity Ratio is a measure of a company's leverage. It is calculated by dividing the estimated debt volume by the adjusted closing price. A higher ratio indicates higher leverage and potentially higher risk.")
-            elif parameter_to_plot == 'Current Ratio':
-                st.write("The Current Ratio is a measure of a company's liquidity. It is calculated by dividing the adjusted closing price by the estimated debt volume. A higher ratio indicates higher liquidity and ability to pay short-term debts.")
-            elif parameter_to_plot == 'Interest Coverage Ratio':
-                st.write("The Interest Coverage Ratio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
-            elif parameter_to_plot == 'Debt-to-Capital Ratio':
-                st.write("The Debt-to-Capital Ratio is a measure of a company's leverage. It is calculated by dividing the estimated debt volume by the sum of the adjusted closing price and estimated debt volume. A higher ratio indicates higher leverage and potentially higher risk.")
-            elif parameter_to_plot == 'Price-to-Earnings Ratio':
-                st.write("The Price-to-Earnings Ratio is a measure of a company's valuation. It is calculated by dividing the closing price by the adjusted closing price. A higher ratio indicates higher valuation and potentially higher growth expectations.")
-            elif parameter_to_plot == 'Price-to-Book Ratio':
-                st.write("The Price-to-Book Ratio is a measure of a company's valuation. It is calculated by dividing the closing price by the adjusted closing price. A higher ratio indicates higher valuation and potentially higher growth expectations.")
-            elif parameter_to_plot == 'Return on Equity (ROE)':
-                st.write("The Return on Equity (ROE) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the adjusted closing price. A higher ratio indicates higher profitability.")
-            elif parameter_to_plot == 'Return on Assets (ROA)':
-                st.write("The Return on Assets (ROA) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
-            elif parameter_to_plot == 'Earnings Yield':
-                st.write("The Earnings Yield is a measure of a company's valuation. It is calculated by dividing the adjusted closing price by the closing price. A higher ratio indicates higher valuation and potentially higher growth expectations.")
-            elif parameter_to_plot == 'Dividend Yield':
-                st.write("The Dividend Yield is a measure of a company's dividend payments. It is calculated by dividing the adjusted closing price by the closing price. A higher ratio indicates higher dividend payments.")
-            elif parameter_to_plot == 'Price-to-Sales Ratio':
-                st.write("The Price-to-Sales Ratio is a measure of a company's valuation. It is calculated by dividing the closing price by the volume. A higher ratio indicates higher valuation and potentially higher growth expectations.")
-            elif parameter_to_plot == 'Enterprise Value-to-EBITDA Ratio':
-                st.write("The Enterprise Value-to-EBITDA Ratio is a measure of a company's valuation. It is calculated by dividing the product of the closing price and volume by the adjusted closing price multiplied by 0.05. A higher ratio indicates higher valuation and potentially higher growth expectations.")
-            elif parameter_to_plot == 'Asset Turnover Ratio':
-                st.write("The Asset Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the adjusted closing price. A higher ratio indicates higher efficiency.")
-            elif parameter_to_plot == 'Inventory Turnover Ratio':
-                st.write("The Inventory Turnover Ratio is a measureof a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
-            elif parameter_to_plot == 'Receivables Turnover Ratio':
-                st.write("The Receivables Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
-            elif parameter_to_plot == 'Payables Turnover Ratio':
-                st.write("The Payables Turnover Ratio is a measure of a company's efficiency. It is calculated by dividing the volume by the difference between the closing and opening prices. A higher ratio indicates higher efficiency.")
-            elif parameter_to_plot == 'Cash Conversion Cycle':
-                st.write("The Cash Conversion Cycle is a measure of a company's efficiency. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher efficiency.")
-            elif parameter_to_plot == 'Interest Coverage Ratio':
-                st.write("The Interest Coverage Ratio is a measure of a company's ability to pay interest on its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay interest.")
-            elif parameter_to_plot == 'Debt Service Coverage Ratio':
-                st.write("The Debt Service Coverage Ratio is a measure of a company's ability to pay its debt. It is calculated by dividing the adjusted closing price by the estimated debt volume multiplied by 0.05. A higher ratio indicates higher ability to pay debt.")
-            elif parameter_to_plot == 'Return on Invested Capital (ROIC)':
-                st.write("The Return on Invested Capital (ROIC) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the sum of the adjusted closing price and estimated debt volume. A higher ratio indicates higher profitability.")
-            elif parameter_to_plot == 'Return on Common Equity (ROCE)':
-                st.write("The Return on Common Equity (ROCE) is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the adjusted closing price. A higher ratio indicates higher profitability.")
-            elif parameter_to_plot == 'Gross Margin Ratio':
-                st.write("The Gross Margin Ratio is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
-            elif parameter_to_plot == 'Operating Margin Ratio':
-                st.write("The Operating Margin Ratio is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
-            elif parameter_to_plot == 'Net Profit Margin Ratio':
-                st.write("The Net Profit Margin Ratio is a measure of a company's profitability. It is calculated by dividing the difference between the closing and opening prices by the volume. A higher ratio indicates higher profitability.")
-            else:
-                st.write("Please select a parameter to plot.")
-            if parameter_to_plot == 'VIX':
-                vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
-                plt.style.use('dark_background')  # Set plot background to black
-                fig, ax = plt.subplots(figsize=(12, 6))
-                ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
-                ax.set_xlabel('Time')
-                ax.set_ylabel('VIX')
-                ax.grid(color='white')  # Set gridline color to white
-                ax.set_facecolor('black')  # Set axis background to black
-                ax.spines['bottom'].set_color('black')  # Set axis spines to black
-                ax.spines['top'].set_color('black')
-                ax.spines['right'].set_color('black')
-                ax.spines['left'].set_color('black')
-                st.pyplot(fig)
-                latest_value = vix_data['Close'].iloc[-1]
-                st.write(f"Latest VIX: {latest_value:.2f}, rounded off to two decimal placecs.")
-            else:
-                plt.style.use('dark_background')  # Set plot background to black
-                fig, ax = plt.subplots(figsize=(12, 6))
-                ax.plot(data.index, data[parameter_to_plot], color='blue')  # Set plot color to blue
-                ax.set_xlabel('Time')
-                ax.set_ylabel(parameter_to_plot)
-                ax.grid(color='white')  # Set gridline color to white
-                ax.set_facecolor('black')  # Set axis background to black
-                ax.spines['bottom'].set_color('black')  # Set axis spines to black
-                ax.spines['top'].set_color('black')
-                ax.spines['right'].set_color('black')
-                ax.spines['left'].set_color('black')
-                st.pyplot(fig)
-                latest_value = data[parameter_to_plot].iloc[-1]
-                st.write(f"Latest {parameter_to_plot}: {latest_value:.2f}, rounded off to two decimal places.")
-            st.write("This plot may be reliant on the parameter of debt. Due to inability to source debt data reliably, it has been assumed, globally through all analyses, that the company does not pay dividends, and uses all that money to repay debt obligations. This is why we urge you not to consider this as financial advice. We are working hard to find a way to get more reliable and workabe data for you. This replacement quantity is **Estimated Debt Volume**. Sit tight!")
-            st.write("This program also assumes that any income made by the company is from the stock market and the stock market only, since this code has not yet been developed enough to access data from Financial Statements of companies. While we are sure we have the capability, we're working hard to make it happen, and further expand the horizons of STOC to give you a lot more insight into a company, all in a single place. Thanks for waiting around!")
-            excluded_columns = []
-            def display_correlation_table(data, excluded_columns):
-                st.header("Correlation Table")
-                columns_to_include = [col for col in data.columns if col not in excluded_columns]
-                corr = data[columns_to_include].corr()
-                st.dataframe(corr.style.format("{:.2f}"))  # Display correlation matrix as a table
-            def display_mean_median(data, excluded_cols):
-                # Drop the excluded columns
-                data = data.drop(excluded_cols, axis=1)
-                
-                # Calculate and display the mean
-                st.write("Mean:")
-                st.write(data.mean())
-                
-                # Calculate and display the median
-                st.write("\nMedian:")
-                st.write(data.median())
-            
-            # Now you can call the function
-            display_mean_median(data, excluded_columns)
-
-            # Display mean and median values
-            display_mean_median(data, excluded_columns)
-
-            # Display summary statistics
-            display_summary_statistics(data, excluded_columns)
-
-            # Display Correlation Heatmap
-            display_correlation_table(data, excluded_columns)
-            # Option to download data
-            st.header("Download Data")
-            csv = data.to_csv(index=True)
-            st.download_button(
-                label="Download data as CSV",
-                data=csv,
-                file_name='stock_data.csv',
-                mime='text/csv',
-                )
-        else:
-            st.write("No data available for the given ticker and date range.")
-
-if __name__ =="__main__":
+if __name__ == "__main__":
     main()
