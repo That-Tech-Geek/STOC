@@ -247,16 +247,12 @@ def plot_correlation_heatmap(data, excluded_columns):
 
 # Function to display mean and median
 def display_mean_median(data, excluded_columns):
-    data_copy = data.copy()
-    for column in excluded_columns:
-        if column in data_copy.columns:
-            data_copy = data_copy.drop(column, axis=1)
-    mean = data_copy.mean()
-    median = data_copy.median()
-    st.write("Mean:")
-    st.write(mean)
-    st.write("Median:")
-    st.write(median)
+    st.header("Mean and Median Values")
+    columns_to_include = [col for col in data.columns if col not in excluded_columns]
+    mean_values = data[columns_to_include].mean()
+    median_values = data[columns_to_include].median()
+    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
+    st.dataframe(summary)
 
 # Function to display summary statistics
 def display_summary_statistics(data, excluded_columns):
@@ -347,19 +343,27 @@ def main():
         start_date = pd.to_datetime('1924-01-01')
         end_date = pd.to_datetime('today')
 
-    if st.button("Fetch Data"):
-        if ticker and exchange and start_date and end_date:
-            ticker_with_suffix = ticker + exchange_suffixes[exchange]
-            data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-            excluded_columns = ['Adj Close', 'Volume']
-            plot_time_series(data, excluded_columns)
-            plot_correlation_heatmap(data, excluded_columns)
-            display_mean_median(data, excluded_columns)
-            display_summary_statistics(data, excluded_columns)
-            plot_vix(start_date, end_date)
-            plot_estimated_debt_volume(data)
+    if ticker and exchange and start_date and end_date:
+        ticker_with_suffix = ticker + exchange_suffixes[exchange]
+        data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
+        # Add a section to collect user's first name and email ID
+        st.header("Get in touch!")
+        first_name = st.text_input("Enter your first name:")
+        email_id = st.text_input("Enter your email ID:")
+        submit_button = st.button("Submit")
 
-     
+        if submit_button:
+            # Send an email with a thank you message and an invitation to contribute to Patreon
+            msg = EmailMessage()
+            msg.set_content(f"Thank you for using STOC, {first_name}! We appreciate your interest in our project. If you'd like to contribute to our development, please visit https://www.patreon.com/alfazeta.")
+            msg["Subject"] = "Thank you for using STOC!"
+            msg["From"] = "your_email_id"
+            msg["To"] = email_id
+
+            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+            server.login("your_email_id", "your_password")
+            server.send_message(msg)
+            server.quit()
         if not data.empty:
             # Calculate estimated debt volume
             data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
@@ -516,17 +520,17 @@ def main():
                 columns_to_include = [col for col in data.columns if col not in excluded_columns]
                 corr = data[columns_to_include].corr()
                 st.dataframe(corr.style.format("{:.2f}"))  # Display correlation matrix as a table
-            def display_mean_median(data, excluded_columns):
-                data_copy = data.copy()
-                for column in excluded_columns:
-                    if column in data_copy.columns:
-                        data_copy = data_copy.drop(column, axis=1)
-                mean = data_copy.mean()
-                median = data_copy.median()
+            def display_mean_median(data, excluded_cols):
+                # Drop the excluded columns
+                data = data.drop(excluded_cols, axis=1)
+                
+                # Calculate and display the mean
                 st.write("Mean:")
-                st.write(mean)
-                st.write("Median:")
-                st.write(median)
+                st.write(data.mean())
+                
+                # Calculate and display the median
+                st.write("\nMedian:")
+                st.write(data.median())
             
             # Now you can call the function
             display_mean_median(data, excluded_columns)
