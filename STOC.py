@@ -370,8 +370,25 @@ def plot_time_series(data, excluded_columns):
 
 # Function to plot correlation heatmap
 def plot_correlation_heatmap(data, parameters):
+    # Remove rows with NaN or inf values
     data = data.replace([np.inf, -np.inf], np.nan).dropna(how='any', axis=0)
+    
+    # Calculate correlation matrix
     corr = data.corr()
+    
+    # Remove rows and columns with NaN or inf values
+    corr = corr.replace([np.inf, -np.inf], np.nan).dropna(how='any', axis=0).dropna(how='any', axis=1)
+    
+    # Create a table with correlation values
+    corr_table = corr.round(2).reset_index()
+    corr_table.columns.name = ''
+    corr_table.index.name = ''
+    
+    # Display the correlation table
+    st.write("Correlation Table:")
+    st.table(corr_table)
+    
+    # Plot correlation heatmap
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
     st.pyplot(fig)
