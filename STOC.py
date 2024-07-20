@@ -386,11 +386,14 @@ def display_mean_median(data, excluded_columns):
     st.dataframe(summary)
 
 # Function to display summary statistics
-def display_summary_statistics(data, excluded_columns):
-    st.header("Summary Statistics")
-    columns_to_include = [col for col in data.columns if col not in excluded_columns]
-    summary_stats = data[columns_to_include].describe()
-    st.dataframe(summary_stats)
+def display_summary_statistics(data, parameters):
+    columns_to_include = [...]  # define the columns to include
+    valid_columns = [col for col in columns_to_include if col in data.columns]
+    if not valid_columns:
+        st.write("No valid columns to include. Please check the column names.")
+        return
+    summary_stats = data[valid_columns].describe()
+    st.write(summary_stats)
 
 # Function to plot Volatility Index (VIX)
 def plot_vix(start_date, end_date):
