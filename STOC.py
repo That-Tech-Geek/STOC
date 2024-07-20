@@ -536,6 +536,7 @@ def main():
                 mime='text/csv',
                 )
             st.title("Get in Touch!")
+            st.write("After you submit this data which we assure is confidential, we will send you an email. You can list any suggestions or revies to us from that email. We're looking forward to what you have to say!")
             st.write("Please enter your first name and email address:")
 
             first_name = st.text_input("First Name")
