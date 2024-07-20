@@ -8,4 +8,4 @@ scipy
 plotly
 timedelta
 datetime
-email.message
+yagmail
