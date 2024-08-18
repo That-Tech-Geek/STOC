@@ -506,7 +506,7 @@ try:
 except:
     st.write("ERROR")
 else:
-st.write("No data available for the given ticker and date range.")
+    st.write("No data available for the given ticker and date range.")
 
 if __name__ =="__main__":
     main()
