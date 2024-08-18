@@ -204,9 +204,6 @@ exchange_indices = {
     "Caracas Stock Exchange": "^IBC"
 }
 
-market_cap_categories = {
-    "Mega-cap": 200e9,
-    "Large-cap": 10e9,# Function to fetch data
 def fetch_data(ticker, start, end):
     data = yf.download(ticker, start=start, end=end, progress=False)
     # Keep only the specified columns
