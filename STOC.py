@@ -204,86 +204,10 @@ exchange_indices = {
     "Caracas Stock Exchange": "^IBC"
 }
 
+# Function to fetch data
 def fetch_data(ticker, start, end):
     data = yf.download(ticker, start=start, end=end, progress=False)
-    # Keep only the specified columns
-    data = data[['Open', 'Close', 'Volume', 'High', 'Low', 'Adj Close']]
     return data
-
-# Function to plot time series data
-def plot_time_series(data):
-    st.header("Time Series Data")
-    columns_to_plot = ['Open', 'Close', 'Volume', 'High', 'Low', 'Adj Close']
-    for col in columns_to_plot:
-        st.subheader(f"{col} over time")
-        plt.style.use('dark_background')  # Set plot background to black
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(data.index, data[col], color='blue')  # Set plot color to blue
-        ax.set_xlabel('Time')
-        ax.set_ylabel(col)
-        ax.grid(color='white')  # Set gridline color to white
-        ax.set_facecolor('black')  # Set axis background to black
-        ax.spines['bottom'].set_color('black')  # Set axis spines to black
-        ax.spines['top'].set_color('black')
-        ax.spines['right'].set_color('black')
-        ax.spines['left'].set_color('black')
-        st.pyplot(fig)
-
-# Function to plot correlation heatmap
-def plot_correlation_heatmap(data):
-    st.header("Correlation Heatmap")
-    corr = data.corr()
-    fig, ax = plt.subplots()
-    sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
-    st.pyplot(fig)
-
-# Function to display mean and median
-def display_mean_median(data):
-    st.header("Mean and Median Values")
-    mean_values = data.mean()
-    median_values = data.median()
-    summary = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
-    st.dataframe(summary)
-
-# Function to display summary statistics
-def display_summary_statistics(data):
-    st.header("Summary Statistics")
-    summary_stats = data.describe()
-    st.dataframe(summary_stats)
-
-# Function to plot Volatility Index (VIX)
-def plot_vix(start_date, end_date):
-    st.header("Volatility Index (VIX)")
-    vix_data = yf.download('^VIX', start=start_date, end=end_date, progress=False)
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(vix_data.index, vix_data['Close'], color='blue')  # Set plot color to blue
-    ax.set_xlabel('Time')
-    ax.set_ylabel('VIX')
-    ax.grid(color='white')  # Set gridline color to white
-    ax.set_facecolor('black')  # Set axis background to black
-    ax.spines['bottom'].set_color('black')  # Set axis spines to black
-    ax.spines['top'].set_color('black')
-    ax.spines['right'].set_color('black')
-    ax.spines['left'].set_color('black')
-    st.pyplot(fig)
-
-# Function to calculate and plot estimated debt volume
-def plot_estimated_debt_volume(data):
-    st.header("Estimated Debt Volume")
-    data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-    plt.style.use('dark_background')  # Set plot background to black
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data.index, data['Estimated Debt Volume'], color='blue')  # Set plot color to blue
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Estimated Debt Volume')
-    ax.grid(color='white')  # Set gridline color to white
-    ax.set_facecolor('black')  # Set axis background to black
-    ax.spines['bottom'].set_color('black')  # Set axis spines to black
-    ax.spines['top'].set_color('black')
-    ax.spines['right'].set_color('black')
-    ax.spines['left'].set_color('black')
-    st.pyplot(fig)
 
 def main():
     st.title("Welcome to STOC!")
@@ -292,7 +216,7 @@ def main():
 
     # Input fields
     ticker = st.text_input("Enter stock ticker:")
-    exchange = st.selectbox("Select exchange:", list(exchange_suffixes.keys()))
+    exchange = st.selectbox("Select exchange:", ["NSE", "NYSE", "NASDAQ"])  # Example exchanges
     date_range = st.selectbox("Select date range:", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "max"])
 
     if date_range == "1d":
@@ -322,46 +246,24 @@ def main():
     elif date_range == "10y":
         start_date = pd.to_datetime('today') - pd.Timedelta(days=3650)
         end_date = pd.to_datetime('today')
-    elif date_range == "ytd":
-        start_date = pd.to_datetime(f'{pd.to_datetime("today").year}-01-01')
-        end_date = pd.to_datetime('today')
     elif date_range == "max":
         start_date = pd.to_datetime('1924-01-01')
         end_date = pd.to_datetime('today')
 
     if ticker and exchange and start_date and end_date:
-        ticker_with_suffix = ticker + exchange_suffixes[exchange]
+        ticker_with_suffix = ticker + (".NS" if exchange == "NSE" else "")
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-        
-        # Dropdown to select parameter to plot
-        parameters = ['Open', 'Close', 'Volume', 'High', 'Low', 'Adj Close']
-        parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
-        
-        if parameter_to_plot == 'Open':
-            st.write("The Open price is the price at which the stock opens for trading on a given day.")
-        elif parameter_to_plot == 'High':
-            st.write("The High price is the highest price at which the stock trades on a given day.")
-        elif parameter_to_plot == 'Low':
-            st.write("The Low price is the lowest price at which the stock trades on a given day.")
-        elif parameter_to_plot == 'Close':
-            st.write("The Close price is the price at which the stock closes for trading on a given day.")
-        elif parameter_to_plot == 'Adj Close':
-            st.write("The Adjusted Close price is the closing price of the stock adjusted for dividends and splits.")
-        elif parameter_to_plot == 'Volume':
-            st.write("The Volume is the number of shares traded on a given day.")
-        elif parameter_to_plot == 'Estimated Debt Volume':
-            st.write("The Estimated Debt Volume is an estimate of the company's debt. It is the product of Share Trade Volume and the difference of adjusted closing and closing prices. It is the replacement quantity for the debt quantity, for more info, refer to below the plot.")
-        elif parameter_to_plot == 'VIX':
-            st.write("The VIX is a measure of the market's expected volatility.")
-        else:
-            st.write("Please select a parameter to plot.")
 
-        if parameter_to_plot == 'VIX':
-            plot_vix(start_date, end_date)
-        else:
-            plot_time_series(data)
-            plot_correlation_heatmap(data)
-            display_mean_median(data)
+        # Display data in app
+        st.header("Stock Data")
+        st.dataframe(data)
+
+        # Display CSV download link
+        csv = data.to_csv(index=True)
+        st.download_button(label="Download CSV", data=csv, file_name=f"{ticker_with_suffix}_data.csv", mime="text/csv")
+
+if __name__ == "__main__":
+    main()n(data)
             display_summary_statistics(data)
             plot_estimated_debt_volume(data)
 
