@@ -347,55 +347,8 @@ def main():
     if ticker and exchange and start_date and end_date:
         ticker_with_suffix = ticker + exchange_suffixes[exchange]
         data = fetch_data(ticker_with_suffix, start=start_date, end=end_date)
-        
-        if not data.empty:
-            # Calculate estimated debt volume
-            data['Estimated Debt Volume'] = (data['Close'] - data['Adj Close']) * data['Volume']
-            data['Average Total Assets'] = data['Adj Close'] * data['Volume']
-            data['Asset Turnover Ratio'] = data['Volume'] / data['Average Total Assets']
-            data['EBIT'] = (data['Volume'] * data['Close']) - (data['Volume'] * data['Close']) - ((data['Volume'] * data['Close']) * (data['Close'] - data['Open']) / data['Volume'])
-            data['Interest Rate'] = 0.08
-            data['Corporate Tax'] = 0.235
-            # Calculate various ratios
-            data['Debt-to-Equity Ratio'] = data['Estimated Debt Volume'] / data['Adj Close']
-            data['Current Ratio'] = data['Adj Close'] / data['Estimated Debt Volume']
-            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Debt-to-Capital Ratio'] = data['Estimated Debt Volume'] / (data['Adj Close'] + data['Estimated Debt Volume'])
-            data['Price-to-Earnings Ratio'] = data['Close'] / data['Adj Close']
-            data['Price-to-Book Ratio'] = data['Close'] / data['Adj Close']
-            data['Return on Equity (ROE)'] = (data['Close'] - data['Open']) / data['Adj Close']
-            data['Return on Assets (ROA)'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Earnings Yield'] = data['Adj Close'] / data['Close']
-            data['Dividend Yield'] = data['Adj Close'] / data['Close']
-            data['Price-to-Sales Ratio'] = data['Close'] / data['Volume']
-            data['Enterprise Value-to-EBITDA Ratio'] = (data['Close'] * data['Volume']) / (data['Adj Close'] * 0.05)
-            data['Asset Turnover Ratio'] = data['Volume'] / data['Adj Close']
-            data['Inventory Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Receivables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Payables Turnover Ratio'] = data['Volume'] / (data['Close'] - data['Open'])
-            data['Cash Conversion Cycle'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Interest Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Debt Service Coverage Ratio'] = data['Adj Close'] / (data['Estimated Debt Volume'] * 0.05)
-            data['Return on Invested Capital (ROIC)'] = (data['Close'] - data['Open']) / (data['Adj Close'] + data['Estimated Debt Volume'])
-            data['Return on Common Equity (ROCE)'] = (data['Close'] - data['Open']) / data['Adj Close']
-            data['Gross Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Operating Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Net Profit Margin Ratio'] = (data['Close'] - data['Open']) / data['Volume']
-            data['Debt to Assets Ratio'] = data['Estimated Debt Volume'] / data['Asset Turnover Ratio']
-            data['Equity Ratio'] = data['Volume'] / data['Asset Turnover Ratio']
-            data['Financial Leverage Ratio'] = data['Asset Turnover Ratio'] / data['Volume']
-            data['Proprietary Ratio'] = data['Volume'] / data['Asset Turnover Ratio']
-            data['Capital Gearing Ratio'] = data['Estimated Debt Volume'] / data['Volume']
-            data['Interest Coverage Ratio'] = data['EBIT'] / (data['Estimated Debt Volume'] * data['Interest Rate'])
-            data['DSCR'] = (data['Adj Close'] * data['Volume']) / (data['Estimated Debt Volume'])
-            data['Gross Profit Ratio'] = (data['Adj Close'] * data['Volume']) - (data['Close'] * data['Volume']) / (data['Adj Close'] * data['Volume'])
-            data['Net Profit Ratio'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / (data['Adj Close'] * data['Volume'])
-            data['ROI'] = (data['Close'] * data['Volume']) * data['Corporate Tax'] / data['High']
-            data['EBITDA Margin'] = data['EBIT'] / (data['Adj Close'] * data['Volume'])
-            data['Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Asset Turnover Ratio']
-            data['Fixed Asset Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / data['Volume'] * (data['Open'] + data['Close']) / 2
-            data['Capital Turnover Ratio'] = (data['Adj Close'] * data['Volume']) / (data['Volume'] + data['Estimated Debt Volume'])
-
+    else:
+        st.write("NO DATA FOUND")
             # Dropdown to select parameter to plot
             parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Capital Turnover Ratio', 'Fixed Asset Turnover Ratio', 'ROI', 'EBITDA Margin', 'Asset Turnover Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
