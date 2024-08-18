@@ -350,7 +350,7 @@ def main():
     else:
         st.write("NO DATA FOUND")
             # Dropdown to select parameter to plot
-            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'Estimated Debt Volume', 'VIX', 'Debt-to-Equity Ratio', 'Capital Turnover Ratio', 'Fixed Asset Turnover Ratio', 'ROI', 'EBITDA Margin', 'Asset Turnover Ratio', 'Current Ratio', 'Interest Coverage Ratio', 'Debt-to-Capital Ratio', 'Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Return on Equity (ROE)', 'Return on Assets (ROA)', 'Earnings Yield', 'Dividend Yield', 'Price-to-Sales Ratio', 'Enterprise Value-to-EBITDARatio', 'Asset Turnover Ratio', 'Inventory Turnover Ratio', 'Receivables Turnover Ratio', 'Payables Turnover Ratio', 'Cash Conversion Cycle', 'Interest Coverage Ratio', 'Debt Service Coverage Ratio', 'Return on Invested Capital (ROIC)', 'Return on Common Equity (ROCE)', 'Gross Margin Ratio', 'Operating Margin Ratio', 'Net Profit Margin Ratio']
+            parameters = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
             parameter_to_plot = st.selectbox("Select parameter to plot:", parameters)
             if parameter_to_plot == 'Open':
                 st.write("The Open price is the price at which the stock opens for trading on a given day.")
