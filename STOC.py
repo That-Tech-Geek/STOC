@@ -505,7 +505,7 @@ try:
     st.success("Email sent successfully!")
 except:
     st.write("ERROR")
- else:
+else:
 st.write("No data available for the given ticker and date range.")
 
 if __name__ =="__main__":
