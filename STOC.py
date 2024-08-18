@@ -263,12 +263,4 @@ def main():
         st.download_button(label="Download CSV", data=csv, file_name=f"{ticker_with_suffix}_data.csv", mime="text/csv")
 
 if __name__ == "__main__":
-    main()n(data)
-            display_summary_statistics(data)
-            plot_estimated_debt_volume(data)
-
-    else:
-        st.write("NO DATA FOUND")
-
-if __name__ =="__main__":
     main()
